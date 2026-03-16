@@ -57,14 +57,5 @@ npm run dev
 
 ---
 
-## 🛡️ Liên minh Triple-AI
-
-Dự án này được phát triển bởi sự phối hợp của:
-- **Antigravity**: Chịu trách nhiệm thực thi logic và gõ code.
-- **Siêu Reviewer**: Đảm bảo code luôn sạch, tối ưu và bảo mật.
-- **Gemini CLI**: Cố vấn chiến lược và kiểm tra chéo kiến trúc.
-
----
-
 ## 📝 Giấy phép
 Bản quyền thuộc về **bimm1010**. Vui lòng liên hệ tác giả để biết thêm chi tiết.
