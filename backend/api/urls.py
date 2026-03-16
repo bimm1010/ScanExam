@@ -1,0 +1,12 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('health/', views.health_check, name='health_check'),
+    path('process-test-paper/', views.process_test_paper, name='process_test_paper'),
+    path('get-sheet-results/', views.get_sheet_results, name='get_sheet_results'),
+    path('delete-image/', views.delete_image, name='delete_image'),
+    path('upload-roster-excel/', views.upload_roster_excel, name='upload_roster_excel'),
+    path('download-updated-excel/', views.download_updated_excel, name='download_updated_excel'),
+    path('analyze-excel-columns/', views.analyze_excel_columns, name='analyze_excel_columns'),
+]

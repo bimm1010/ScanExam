@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased text-slate-900 bg-slate-50;
+    /* Sophisticated Rose & Slate gradient */
+    background: radial-gradient(circle at top left, #fff1f2 0%, #f8fafc 40%, #fff7ed 100%);
+    background-attachment: fixed;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-white/30 backdrop-blur-[16px] border border-white/40 shadow-[0_4px_24px_rgba(0,0,0,0.03)];
+  }
+  
+  /* <label accessibility-fix /> */
+  .glass-card {
+    @apply bg-white/40 backdrop-blur-xl border border-white/60 shadow-[0_8px_32px_rgba(15,23,42,0.05)] transition-all duration-300;
+  }
+
+  .squircle-btn {
+    @apply relative overflow-hidden transition-all duration-500 ease-out;
+    background: linear-gradient(135deg, #fb7185 0%, #fda4af 100%);
+    border-radius: 24px;
+    box-shadow: 
+      0 10px 25px -5px rgba(251, 113, 133, 0.4),
+      inset 0 2px 4px rgba(255, 255, 255, 0.3);
+  }
+
+  .squircle-btn:hover {
+    @apply scale-[1.02] -translate-y-0.5;
+    box-shadow: 
+      0 20px 30px -10px rgba(251, 113, 133, 0.5),
+      inset 0 2px 4px rgba(255, 255, 255, 0.4);
+  }
+
+  .squircle-btn:active {
+    @apply scale-[0.98] translate-y-0;
+  }
+
+  .secondary-btn {
+    @apply bg-white/80 backdrop-blur-md border border-slate-200 text-slate-700 font-semibold px-6 py-3 rounded-[20px] transition-all hover:bg-slate-50 hover:border-slate-300 active:scale-95;
+  }
+}
