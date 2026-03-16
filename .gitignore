@@ -15,10 +15,12 @@ frontend/.env
 backend/db.sqlite3
 backend/media/scanned_images/
 backend/media/rosters/*.xlsx
+backend/media/rosters/backups/
 !backend/media/rosters/.gitkeep
 
 # AI/Agent
-.agent/
+.agent/*
+!.agent/scripts/
 CODEBASE.md
 MISSION_CONTROL.md
 scan-exercise-v1.md
@@ -27,6 +29,8 @@ test_excel.js
 backend/__pycache__/
 backend/scanning_results_*.json
 backend/mock_roster.xlsx
+backend/test_downloaded_result.xlsx
+test_downloaded_result.xlsx
 
 # Misc
 *.log

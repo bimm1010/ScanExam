@@ -164,7 +164,7 @@ export const useScanning = ({
     console.log(`📊 [useScanning] Pending Queue size: ${updatedQueue.length}`);
     
     // Batch processing (groups of 5)
-    const BATCH_SIZE = 5;
+    const BATCH_SIZE = 10;
     if (updatedQueue.length >= BATCH_SIZE) {
       setIsProcessing(true);
       const toProcess = updatedQueue.slice(0, BATCH_SIZE);

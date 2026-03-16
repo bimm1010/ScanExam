@@ -20,8 +20,17 @@ from rapidfuzz import process, fuzz
 load_dotenv()
 
 # Configure Gemini client (new SDK)
-api_key = os.getenv("GEMINI_API_KEY")
-client = genai.Client(api_key=api_key) if api_key else None
+api_keys_raw = os.getenv("GEMINI_API_KEY", "")
+api_keys = [k.strip() for k in api_keys_raw.split(",") if k.strip()]
+current_key_index = 0
+
+def get_gemini_client():
+    global current_key_index
+    if not api_keys:
+        return None
+    return genai.Client(api_key=api_keys[current_key_index])
+
+client = get_gemini_client()
 
 # Constants for security
 MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024  # 10MB limit
@@ -60,6 +69,21 @@ def normalize_string(text):
     text = re.sub(r'\s+', ' ', text).strip()
     return text
 
+def translate_error(error_msg):
+    """Translates technical errors into teacher-friendly Vietnamese messages."""
+    msg = str(error_msg).lower()
+    if "429" in msg or "quota" in msg or "resource_exhausted" in msg:
+        return "Hệ thống đang hơi bận vì nhiều người dùng cùng lúc. Đại ca đợi em khoảng vài giây rồi quét tiếp nhé! (≧◡≦)"
+    if "api_key" in msg or "client" in msg:
+        return "Hình như API Key đang gặp trục trặc. Đại ca kiểm tra lại file .env giúp em nhé! (╥﹏╥)"
+    if "sheet" in msg or "worksheet" in msg:
+        return "Em không tìm thấy tên môn học này trong file Excel. Đại ca kiểm tra lại xem tên sheet đã đúng chưa ạ?"
+    if "file" in msg or "not found" in msg:
+        return "Em không tìm thấy file Excel. Đại ca thử tải lại file lên xem sao nhé."
+    if "timeout" in msg:
+        return "Kết nối mạng hơi chậm, Đại ca thử lại giúp em nhé!"
+    return f"Có xíu lỗi xảy ra: {error_msg}. Đại ca thử lại giúp em nhé!"
+
 def fuzzy_match_student(detected_name, roster_choices):
     """
     Tries to find the best match for a detected name in the roster using fuzzy matching.
@@ -86,9 +110,27 @@ def fuzzy_match_student(detected_name, roster_choices):
             if token_score > 92:
                 score = max(score, token_score)
         
-        if score >= 85: # Threshold remains 85% but with smarter internal scoring
-            student_data = roster_choices[matched_key]
-            return student_data['id'], student_data['name'], score
+    if score >= 85: # High confidence
+        student_data = roster_choices[matched_key]
+        return student_data['id'], student_data['name'], score
+        
+    # 3. Fallback: If match is uncertain, try matching without ANY non-alpha chars (pure tokens)
+    # This helps if names have weird symbols or extra spaces AI picked up
+    query_clean = re.sub(r'[^a-zA-Z0-9]', '', query)
+    best_fallback = None
+    max_fallback_score = 0
+    
+    for roster_key, s_data in roster_choices.items():
+        rk_clean = re.sub(r'[^a-zA-Z0-9]', '', roster_key)
+        f_score = fuzz.ratio(query_clean, rk_clean)
+        if f_score > max_fallback_score:
+            max_fallback_score = f_score
+            best_fallback = s_data
+            
+    if max_fallback_score >= 90:
+        return best_fallback['id'], best_fallback['name'], max_fallback_score
+        
+    return None, None, 0
     
     return None, None, 0
 
@@ -150,69 +192,82 @@ def call_gemini_with_router(prompt, image_bytes, mime_type="image/jpeg"):
     Models priority: 2.0 Flash -> 1.5 Flash (Quota fallback) -> 1.5 Pro (Logic fallback)
     """
     models_to_try = [
-        'gemini-2.5-flash',
+        'gemini-2.0-flash',
         'gemini-flash-latest',
-        'gemini-2.0-flash'
+        'gemini-1.5-flash',
+        'gemini-2.5-flash'
     ]
+    
+    global client, current_key_index
     
     last_error = None
     
     for model_name in models_to_try:
-        try:
-            print(f"🤖 Attempting with model: {model_name}")
-            
-            # Support list of images or single image
-            if isinstance(image_bytes, list):
-                contents = [prompt]
-                for img in image_bytes:
-                    contents.append(types.Part(
-                        inline_data=types.Blob(mime_type=mime_type, data=img)
-                    ))
-            else:
-                image_part = types.Part(
-                    inline_data=types.Blob(mime_type=mime_type, data=image_bytes)
-                )
-                contents = [prompt, image_part]
-            
-            if not client:
-                raise Exception("Gemini client is not initialized. Check your GEMINI_API_KEY.")
-
-            response = client.models.generate_content(
-                model=model_name,
-                contents=contents,
-                config=types.GenerateContentConfig(
-                    response_mime_type='application/json',
-                )
-            )
-            
-            raw_text = response.text.strip()
+        # Retry with key rotation if we hit a 429
+        for key_attempt in range(max(1, len(api_keys))):
             try:
-                result = json.loads(raw_text)
-            except Exception:
-                clean_text = re.sub(r'```json\s*|\s*```', '', raw_text)
-                result = json.loads(clean_text)
-            
-            # Basic validation: If it's a batch, we expect a list
-            if isinstance(image_bytes, list) and not isinstance(result, list):
-                # If AI returned single object instead of list, wrap it
-                result = [result]
+                print(f"🤖 Attempting with model: {model_name} (Key Index: {current_key_index})")
                 
-            print(f"✅ Success with model: {model_name}")
-            return result
-            
-        except Exception as e:
-            last_error = e
-            error_str = str(e).lower()
-            if "429" in error_str or "resource_exhausted" in error_str:
-                print(f"🚨 Quota exhausted for {model_name}. Failing over...")
-                continue
-            else:
-                print(f"❌ Error with {model_name}: {str(e)}")
-                continue
+                # Support list of images or single image
+                if isinstance(image_bytes, list):
+                    contents = [prompt]
+                    for img in image_bytes:
+                        contents.append(types.Part(
+                            inline_data=types.Blob(mime_type=mime_type, data=img)
+                        ))
+                else:
+                    image_part = types.Part(
+                        inline_data=types.Blob(mime_type=mime_type, data=image_bytes)
+                    )
+                    contents = [prompt, image_part]
                 
+                if not client:
+                    raise Exception("Gemini client is not initialized. Check your GEMINI_API_KEY.")
+
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=contents,
+                    config=types.GenerateContentConfig(
+                        response_mime_type='application/json',
+                    )
+                )
+                
+                raw_text = response.text.strip()
+                try:
+                    result = json.loads(raw_text)
+                except Exception:
+                    clean_text = re.sub(r'```json\s*|\s*```', '', raw_text)
+                    result = json.loads(clean_text)
+                
+                # Basic validation: If it's a batch, we expect a list
+                if isinstance(image_bytes, list) and not isinstance(result, list):
+                    # If AI returned single object instead of list, wrap it
+                    result = [result]
+                    
+                print(f"✅ Success with model: {model_name}")
+                return result
+                
+            except Exception as e:
+                last_error = e
+                error_str = str(e).lower()
+                
+                # Check for rate limit error (Quota exceeded)
+                if "429" in error_str or "quota" in error_str or "resource_exhausted" in error_str:
+                    if len(api_keys) > 1:
+                        current_key_index = (current_key_index + 1) % len(api_keys)
+                        client = get_gemini_client()
+                        print(f"🔄 Rate limit hit. Rotating to next API Key (Index: {current_key_index})...")
+                        continue # Try same model with next key
+                    else:
+                        print(f"⚠️ Rate limit hit and only 1 key available. Trying next model...")
+                        break # Try next model
+                else:
+                    print(f"❌ Error with model {model_name}: {str(e)}")
+                    break # Try next model
+                    
     if last_error:
         raise last_error
-    raise Exception("All models failed to respond.")
+    raise Exception("All models and keys failed to respond.")
 
 def save_result_to_json(result, sheet_name=None):
     """Helper to save/append results to a local JSON file corresponding to the sheet name."""
@@ -481,9 +536,7 @@ Hãy trả về một {'MẢNG (Array) các đối tượng' if is_batch else '�
 
     except Exception as e:
         print(f"❌ Error in process_test_paper: {str(e)}")
-        error_msg = "Có lỗi xảy ra khi xử lý bài thi. Đại Ca vui lòng thử lại nhé!"
-        if "quota" in str(e).lower():
-            error_msg = "Gemini bị hết lượt dùng miễn phí rồi Đại Ca ơi! (ಥ﹏ಥ)"
+        error_msg = translate_error(e)
         return Response({"error": error_msg, "detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST'])

@@ -57,18 +57,21 @@ const ColumnMappingStep = ({
             <select id="id-col-select" value={selectedIdCol} onChange={(e) => setSelectedIdCol(Number(e.target.value))} className="w-full bg-white border border-slate-200 text-slate-800 text-sm rounded-2xl focus:ring-4 focus:ring-rose-500/10 focus:border-rose-300 block p-3 font-bold transition-all appearance-none cursor-pointer">
               {Array.from({ length: totalColumns }).map((_, i) => <option key={`id-${i + 1}`} value={i + 1}>Cột {getColumnLetter(i + 1)}</option>)}
             </select>
+            <p className="text-[10px] text-slate-400 mt-2 px-1 font-medium">Cột chứa STT hoặc mã định danh của học sinh.</p>
           </div>
           <div className="w-full">
             <label htmlFor="name-col-select" className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-widest pl-1">Họ và Tên</label>
             <select id="name-col-select" value={selectedNameCol} onChange={(e) => setSelectedNameCol(Number(e.target.value))} className="w-full bg-white border border-slate-200 text-slate-800 text-sm rounded-2xl focus:ring-4 focus:ring-rose-500/10 focus:border-rose-300 block p-3 font-bold transition-all appearance-none cursor-pointer">
               {Array.from({ length: totalColumns }).map((_, i) => <option key={`name-${i + 1}`} value={i + 1}>Cột {getColumnLetter(i + 1)}</option>)}
             </select>
+            <p className="text-[10px] text-slate-400 mt-2 px-1 font-medium">Dùng để kiểm tra lại nếu AI không đọc được mã.</p>
           </div>
           <div className="w-full">
             <label htmlFor="score-col-select" className="block text-xs font-black text-rose-600/60 mb-2 uppercase tracking-widest pl-1">Điểm số</label>
             <select id="score-col-select" value={selectedScoreCol} onChange={(e) => setSelectedScoreCol(Number(e.target.value))} className="w-full bg-rose-50/50 border border-rose-200 text-rose-900 text-sm rounded-2xl focus:ring-4 focus:ring-rose-500/10 focus:border-rose-400 block p-3 font-bold transition-all appearance-none cursor-pointer">
               {Array.from({ length: totalColumns }).map((_, i) => <option key={`score-${i + 1}`} value={i + 1}>Cột {getColumnLetter(i + 1)}</option>)}
             </select>
+            <p className="text-[10px] text-rose-400/80 mt-2 px-1 font-medium italic">Điểm AI sẽ được ghi vào đây.</p>
           </div>
           <div className="w-full">
             <label htmlFor="level-col-select" className="block text-xs font-black text-rose-600/60 mb-2 uppercase tracking-widest pl-1">Mức đạt</label>
@@ -87,6 +90,7 @@ const ColumnMappingStep = ({
             <select id="data-row-select" value={dataRowStart} onChange={(e) => setDataRowStart(Number(e.target.value))} className="w-full bg-amber-50/50 border border-amber-200 text-amber-900 text-sm rounded-2xl focus:ring-4 focus:ring-amber-500/10 focus:border-amber-400 block p-3 font-bold transition-all appearance-none cursor-pointer">
               {sheetSampleData.map((row) => <option key={`data-start-${row.rowNumber}`} value={row.rowNumber}>Dòng {row.rowNumber}</option>)}
             </select>
+            <p className="text-[10px] text-amber-500/80 mt-2 px-1 font-medium italic">Dòng đầu tiên có tên học sinh.</p>
           </div>
         </div>
         <div className="mb-8">

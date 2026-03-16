@@ -46,7 +46,16 @@ const ScanningStep = ({
         <input id="camera-capture-input" type="file" ref={cameraInputRef} onChange={onImageCapture} accept="image/*" capture="environment" multiple className="hidden" />
         <input id="gallery-pick-input" type="file" ref={galleryInputRef} onChange={onImageCapture} accept="image/*" multiple className="hidden" />
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 relative">
+           {isProcessing && (
+             <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center rounded-[32px] border border-white/80 shadow-inner">
+               <div className="w-12 h-12 border-4 border-rose-100 border-t-rose-500 rounded-full animate-spin mb-4" />
+               <p className="text-slate-900 font-black text-xs uppercase tracking-[0.2em] animate-pulse">
+                 Đang nhận diện học sinh & ghi điểm...
+               </p>
+               <p className="text-slate-500 text-[10px] font-bold mt-2 italic">Đại ca đợi em một xíu nhé! (≧◡≦)</p>
+             </div>
+           )}
            <button onClick={onCameraClick} disabled={isProcessing} aria-label="Mở camera chụp ảnh" className="flex flex-col items-center justify-center p-10 bg-white/60 rounded-[32px] border border-white/80 hover:border-rose-200 hover:bg-rose-50/50 active:scale-[0.98] transition-all group disabled:opacity-50 disabled:cursor-not-allowed">
              <div className="w-20 h-20 bg-white rounded-[24px] shadow-sm border border-slate-100 flex items-center justify-center text-rose-500 mb-6 group-hover:-translate-y-2 transition-transform duration-500">
                {isProcessing ? <div className="w-8 h-8 border-3 border-rose-200 border-t-rose-500 rounded-full animate-spin" /> : <Camera className="w-10 h-10" />}
