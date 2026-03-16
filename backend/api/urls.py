@@ -9,4 +9,5 @@ urlpatterns = [
     path('upload-roster-excel/', views.upload_roster_excel, name='upload_roster_excel'),
     path('download-updated-excel/', views.download_updated_excel, name='download_updated_excel'),
     path('analyze-excel-columns/', views.analyze_excel_columns, name='analyze_excel_columns'),
+    path('sync-roster/', views.sync_roster, name='sync_roster'),
 ]

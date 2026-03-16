@@ -7,9 +7,10 @@ interface RosterModalProps {
   sheetName: string | null;
   onClose: () => void;
   onExport: () => void;
+  onUpdateStudent: (id: string | number, field: 'score' | 'level', value: string) => void;
 }
 
-const RosterModal = ({ students, sheetName, onClose, onExport }: RosterModalProps) => {
+const RosterModal = ({ students, sheetName, onClose, onExport, onUpdateStudent }: RosterModalProps) => {
   return (
     <motion.div 
       initial={{ opacity: 0 }} 
@@ -58,8 +59,25 @@ const RosterModal = ({ students, sheetName, onClose, onExport }: RosterModalProp
                     <td className="px-6 py-3"><span className="font-semibold text-slate-700 bg-slate-100 px-3 py-1 rounded-lg">{student.id}</span></td>
                     <td className="px-6 py-3 font-medium text-slate-800">{student.name}</td>
                     <td className="px-6 py-3">{student.subject ? <span className="text-xs font-bold text-amber-700 bg-amber-50 px-2 py-1 rounded-md border border-amber-100 uppercase tracking-tighter">{student.subject}</span> : <span className="text-slate-300 italic text-xs">-</span>}</td>
-                    <td className="px-6 py-3 text-center">{student.score ? <span className="font-bold text-teal-700 bg-teal-50 px-3 py-1 rounded-lg border border-teal-100">{student.score}</span> : <span className="text-slate-300 italic">-</span>}</td>
-                    <td className="px-6 py-3 text-center">{student.level ? <span className="font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-lg border border-indigo-100">{student.level}</span> : <span className="text-slate-300 italic">-</span>}</td>
+                    <td className="px-6 py-3 text-center">
+                      <input 
+                        type="number" 
+                        step="0.1"
+                        value={student.score ?? ''} 
+                        onChange={(e) => onUpdateStudent(student.id, 'score', e.target.value)}
+                        className="w-16 font-bold text-teal-700 bg-teal-50 px-2 py-1 rounded-lg border border-teal-100 text-center focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all"
+                        placeholder="-"
+                      />
+                    </td>
+                    <td className="px-6 py-3 text-center">
+                      <input 
+                        type="text" 
+                        value={student.level || ''} 
+                        onChange={(e) => onUpdateStudent(student.id, 'level', e.target.value)}
+                        className="w-12 font-bold text-indigo-700 bg-indigo-50 px-2 py-1 rounded-lg border border-indigo-100 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all uppercase"
+                        placeholder="-"
+                      />
+                    </td>
                   </tr>
                 ))}
               </tbody>

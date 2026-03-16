@@ -587,14 +587,22 @@ def upload_roster_excel(request):
 
 @api_view(['GET'])
 def download_updated_excel(request):
-    """Endpoint to download the updated Excel file."""
+    """Endpoint to download the updated Excel file with original filename preserved."""
     filename = request.query_params.get('filename')
     if not filename:
         return Response({"error": "No filename provided"}, status=status.HTTP_400_BAD_REQUEST)
     
     file_path = get_backend_root() / 'media' / 'rosters' / filename
     if file_path.exists():
-        return FileResponse(open(file_path, 'rb'), as_attachment=True, filename=filename)
+        # Strip the roster_YYYYMMDD_HHMMSS_ prefix to give back the original name
+        # roster_20240316_123456_MyFile.xlsx -> MyFile.xlsx
+        display_name = filename
+        if filename.startswith("roster_") and len(filename) > 23:
+            # roster_ (7) + timestamp (15) + _ (1) = 23 chars
+            display_name = filename[23:]
+            
+        print(f"📦 Downloading: {filename} as '{display_name}'")
+        return FileResponse(open(file_path, 'rb'), as_attachment=True, filename=display_name)
     
     return Response({"error": "File not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -697,3 +705,68 @@ DỮ LIỆU MẪU:
             "error": "AI không thể phân tích file này. Vui lòng kiểm tra lại API Key hoặc quota.",
             "details": str(e)
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+def sync_roster(request):
+    """
+    Manually sync roster data from frontend to Excel file.
+    Expects: { roster: StudentData[], excel_filename: string, mapping_config: MappingConfig, expected_subject: string }
+    """
+    roster = request.data.get('roster')
+    excel_filename = request.data.get('excel_filename')
+    mapping_config = request.data.get('mapping_config')
+    expected_subject = request.data.get('expected_subject')
+
+    if not all([roster, excel_filename, mapping_config]):
+        return Response({"error": "Thiếu dữ liệu đồng bộ (roster/file/mapping)."}, status=status.HTTP_400_BAD_REQUEST)
+
+    excel_path = get_backend_root() / 'media' / 'rosters' / excel_filename
+    if not excel_path.exists():
+        return Response({"error": f"Không tìm thấy file Excel: {excel_filename}"}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        backup_roster(excel_filename)
+        wb = openpyxl.load_workbook(excel_path)
+        sheet = wb.active
+        
+        # Select correct sheet
+        if expected_subject:
+            norm_expected = normalize_string(expected_subject)
+            for s in wb.worksheets:
+                if normalize_string(s.title) == norm_expected:
+                    sheet = s
+                    break
+
+        id_col = mapping_config.get('idCol')
+        score_col = mapping_config.get('scoreCol')
+        level_col = mapping_config.get('levelCol')
+        data_row_start = mapping_config.get('dataRowStart', 2)
+
+        # Build row map for efficiency
+        row_id_map = {}
+        for row in range(data_row_start, sheet.max_row + 1):
+            val = sheet.cell(row=row, column=id_col).value
+            if val:
+                row_id_map[normalize_string(str(val))] = row
+
+        updates_count = 0
+        for student in roster:
+            s_id = normalize_string(str(student.get('id')))
+            if s_id in row_id_map:
+                row = row_id_map[s_id]
+                score = student.get('score')
+                level = student.get('level')
+                # Only update if score is not None
+                if score is not None:
+                    sheet.cell(row=row, column=score_col).value = score
+                    if level_col and level_col > 0:
+                        sheet.cell(row=row, column=level_col).value = level
+                    updates_count += 1
+
+        wb.save(excel_path)
+        print(f"✅ Manual Sync Complete: {updates_count} students updated in {excel_filename}")
+        return Response({"success": True, "updates_count": updates_count})
+
+    except Exception as e:
+        print(f"❌ Sync Roster Error: {str(e)}")
+        return Response({"error": f"Lỗi đồng bộ dữ liệu: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -185,11 +185,21 @@ export const useScanning = ({
   };
 
   const forceFlushPending = async () => {
+    // 1. If already processing a batch, we MUST wait for it to finish first
+    // This is crucial for the "Download" button to wait for the final recording
+    if (isProcessing) {
+      console.log("⏳ [useScanning] Already processing, waiting child process...");
+      // Poll every 500ms until isProcessing is false
+      while (isProcessing) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+    }
+
     const currentQueue = pendingQueueRef.current;
-    console.log(`⚡ [useScanning] forceFlushPending called. Queue size (ref): ${currentQueue.length}, isProcessing: ${isProcessing}`);
+    console.log(`⚡ [useScanning] forceFlushPending execution. Queue size (ref): ${currentQueue.length}`);
     
-    if (currentQueue.length === 0 || isProcessing) {
-      console.log("⏭️ [useScanning] Skipping flush (queue empty or already processing)");
+    if (currentQueue.length === 0) {
+      console.log("⏭️ [useScanning] Queue empty, nothing to flush.");
       return;
     }
 
@@ -200,11 +210,13 @@ export const useScanning = ({
     setPendingQueue([]); // Clear state
     pendingQueueRef.current = []; // Clear ref immediately
     
-    await processBatch(toProcess);
-    
-    setIsProcessing(false);
-    setBatchProgress({ total: 0, current: 0 });
-    console.log("🏁 [useScanning] forceFlushPending finished");
+    try {
+      await processBatch(toProcess);
+    } finally {
+      setIsProcessing(false);
+      setBatchProgress({ total: 0, current: 0 });
+      console.log("🏁 [useScanning] forceFlushPending finished");
+    }
   };
 
   return {

@@ -106,16 +106,30 @@ function App() {
 
   // --- ACTIONS ---
   const handleDownload = async () => {
-    if (isProcessing) return;
-    
-    // 1. Force AI to process any images remaining in the 1-4 queue
+    // 0. Sync any manual edits made in the Roster UI to the backend first
+    setIsProcessing(true);
+    await syncManualChanges();
+
+    // 1. Force AI to process any images remaining (even if a batch is already running)
+    // The improved forceFlushPending will wait for the active batch if necessary
     await forceFlushPending();
     
-    // 2. Trigger the actual download
+    // 2. Trigger the actual download using a robust hidden link method
+    // This is less likely to be blocked by browser popup blockers after async calls
     if (backendExcelFilename) {
       const url = `http://${window.location.hostname}:8000/api/download-updated-excel/?filename=${encodeURIComponent(backendExcelFilename)}`;
-      window.open(url, '_blank');
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', backendExcelFilename);
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      console.log("📥 [App] Automatic download triggered for internal file:", backendExcelFilename);
     }
+    setIsProcessing(false);
   };
 
   const resetFlow = () => {
@@ -134,6 +148,46 @@ function App() {
       setProcessedFiles([]);
       setScannedImages(prev => { prev.forEach(img => URL.revokeObjectURL(img.url)); return []; });
       setStudents(prev => prev.map(s => ({ ...s, score: null, level: null, subject: null })));
+    }
+  };
+
+  const handleUpdateStudent = (id: string | number, field: 'score' | 'level', value: string) => {
+    setStudents(prev => prev.map(s => {
+      if (String(s.id) === String(id)) {
+        return { 
+          ...s, 
+          [field]: value === '' ? null : (field === 'score' ? parseFloat(value) : value) 
+        };
+      }
+      return s;
+    }));
+  };
+
+  const syncManualChanges = async () => {
+    if (!backendExcelFilename || !mappingConfig) return;
+    
+    console.log("🔄 [App] Syncing manual changes to backend...");
+    try {
+      const apiHost = window.location.hostname;
+      const response = await fetch(`http://${apiHost}:8000/api/sync-roster/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          roster: students,
+          excel_filename: backendExcelFilename,
+          mapping_config: mappingConfig,
+          expected_subject: selectedSheetName
+        }),
+      });
+      
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || 'Không thể đồng bộ bảng điểm.');
+      }
+      console.log("✅ [App] Manual sync successful");
+    } catch (e: any) {
+      console.error("❌ [App] Sync error:", e);
+      setError("Cảnh báo: Không thể đồng bộ một số thay đổi thủ công lên server.");
     }
   };
 
@@ -254,7 +308,15 @@ function App() {
         </div>
 
         {/* Modals & UI Overlays */}
-        <AnimatePresence>{showRosterModal && <RosterModal students={students} sheetName={selectedSheetName} onClose={() => setShowRosterModal(false)} onExport={handleExport} />}</AnimatePresence>
+        <AnimatePresence>{showRosterModal && (
+          <RosterModal 
+            students={students} 
+            sheetName={selectedSheetName} 
+            onClose={() => setShowRosterModal(false)} 
+            onExport={handleExport}
+            onUpdateStudent={handleUpdateStudent}
+          />
+        )}</AnimatePresence>
         <AnimatePresence>{showImageGallery && <ImageGalleryModal images={scannedImages} onClose={() => setShowImageGallery(false)} onDelete={(keys) => {
           setScannedImages(prev => prev.filter(img => !keys.includes(img.key)));
           setProcessedFiles(prev => prev.filter(key => !keys.includes(key)));
@@ -263,8 +325,10 @@ function App() {
         <AnimatePresence>{isProcessing && (
            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-xl">
              <div className="flex flex-col items-center">
-               <h2 className="text-2xl font-black text-white mb-2">Đang xử lý...</h2>
-               {batchProgress.total > 0 && <p className="text-rose-300 font-bold">Tiến độ: {batchProgress.current} / {batchProgress.total}</p>}
+                <h2 className="text-2xl font-black text-white mb-2">
+                  {batchProgress.total > 0 ? "Đang xử lý nốt dữ liệu..." : "Đang chuẩn bị file tải về..."}
+                </h2>
+                {batchProgress.total > 0 && <p className="text-rose-300 font-bold">Tiến độ: {batchProgress.current} / {batchProgress.total}</p>}
              </div>
            </motion.div>
         )}</AnimatePresence>
