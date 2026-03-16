@@ -18,7 +18,13 @@ backend/media/rosters/*.xlsx
 !backend/media/rosters/.gitkeep
 
 # AI/Agent
-.agent/__pycache__/
+.agent/
+CODEBASE.md
+MISSION_CONTROL.md
+scan-exercise-v1.md
+ui-minimalist-refinement.md
+test_excel.js
+backend/__pycache__/
 backend/scanning_results_*.json
 backend/mock_roster.xlsx
 
