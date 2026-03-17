@@ -19,8 +19,7 @@ backend/media/rosters/backups/
 !backend/media/rosters/.gitkeep
 
 # AI/Agent
-.agent/*
-!.agent/scripts/
+.agent/
 CODEBASE.md
 MISSION_CONTROL.md
 scan-exercise-v1.md
