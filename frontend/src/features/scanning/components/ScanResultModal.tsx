@@ -57,6 +57,13 @@ const ScanResultModal = ({ result, onClose, onConfirm }: ScanResultModalProps) =
                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Môn học</span>
                <span className="text-sm font-bold text-slate-600">{result.subject || "..."}</span>
             </div>
+
+            {result.remark && (
+              <div className="w-full p-5 bg-indigo-50/30 rounded-[24px] border border-indigo-100/50 text-left">
+                <span className="block text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">Nhận xét</span>
+                <span className="text-sm font-medium text-indigo-900 leading-relaxed italic">"{result.remark}"</span>
+              </div>
+            )}
           </div>
 
           <div className="flex gap-4 w-full">

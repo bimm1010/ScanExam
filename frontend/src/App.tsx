@@ -3,7 +3,7 @@ import { FileSpreadsheet } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Types
-import type { AppStep, StudentData, MappingConfig, MismatchData, RowSample } from './types';
+import type { AppStep, StudentData, MappingConfig, MismatchData, RowSample, RemarkRule } from './types';
 
 // Hooks
 import { useAppPersistence } from './hooks/useAppPersistence';
@@ -23,6 +23,7 @@ import ScanningStep from './features/scanning/components/ScanningStep';
 import RosterModal from './features/roster/components/RosterModal';
 import MismatchModal from './features/scanning/components/MismatchModal';
 import ImageGalleryModal from './features/scanning/components/ImageGalleryModal';
+import RemarkConfigModal from './features/scanning/components/RemarkConfigModal';
 
 // Utils
 import { getColumnLetter } from './utils/excel';
@@ -37,12 +38,19 @@ function App() {
   const [selectedSheetId, setSelectedSheetId] = useState<number | null>(null);
   const [mappingConfig, setMappingConfig] = useState<MappingConfig | null>(null);
   const [backendExcelFilename, setBackendExcelFilename] = useState<string | null>(null);
+  const [remarkRules, setRemarkRules] = useState<RemarkRule[]>([
+    { min: 9, max: 10, text: "Con làm bài rất xuất sắc, kiến thức rất vững! (≧◡≦)" },
+    { min: 7, max: 8.9, text: "Bài làm khá tốt, cần phát huy thêm nhé! (¬‿¬)" },
+    { min: 5, max: 6.9, text: "Con đã nắm được kiến thức cơ bản, cố gắng hơn ở các bài tập nâng cao." },
+    { min: 0, max: 4.9, text: "Con cần ôn tập lại kỹ hơn các nội dung đã học. Cố lên nhé!" }
+  ]);
   
   // Column Mapping Detailed State
-  const [selectedIdCol, setSelectedIdCol] = useState<number>(1);
-  const [selectedNameCol, setSelectedNameCol] = useState<number>(2);
-  const [selectedScoreCol, setSelectedScoreCol] = useState<number>(3); 
-  const [selectedLevelCol, setSelectedLevelCol] = useState<number>(4); 
+  const [selectedIdCol, setSelectedIdCol] = useState<number>(0);
+  const [selectedNameCol, setSelectedNameCol] = useState<number>(0);
+  const [selectedScoreCol, setSelectedScoreCol] = useState<number>(0); 
+  const [selectedLevelCol, setSelectedLevelCol] = useState<number>(0); 
+  const [selectedRemarkCol, setSelectedRemarkCol] = useState<number>(0);
   const [headerRowIndex, setHeaderRowIndex] = useState<number>(1);
   const [dataRowStart, setDataRowStart] = useState<number>(2);
   const [sheetSampleData, setSheetSampleData] = useState<RowSample[]>([]);
@@ -62,6 +70,7 @@ function App() {
   // Modals Visibility
   const [showRosterModal, setShowRosterModal] = useState(false);
   const [showImageGallery, setShowImageGallery] = useState(false);
+  const [showRemarkConfig, setShowRemarkConfig] = useState(false);
   const [mismatchData, setMismatchData] = useState<MismatchData | null>(null);
 
   // --- REFS ---
@@ -77,8 +86,10 @@ function App() {
     scannedImages, setScannedImages, backendExcelFilename, setBackendExcelFilename,
     selectedIdCol, setSelectedIdCol, selectedNameCol, setSelectedNameCol,
     selectedScoreCol, setSelectedScoreCol, selectedLevelCol, setSelectedLevelCol,
+    selectedRemarkCol, setSelectedRemarkCol,
     headerRowIndex, setHeaderRowIndex, dataRowStart, setDataRowStart, 
-    sheetSampleData, setSheetSampleData, totalColumns, setTotalColumns
+    sheetSampleData, setSheetSampleData, totalColumns, setTotalColumns,
+    remarkRules, setRemarkRules
   });
 
   const {
@@ -101,7 +112,8 @@ function App() {
     selectedSheetName, backendExcelFilename, mappingConfig, students, setStudents,
     processedFiles, setProcessedFiles, setScannedImages, setExcelUpdateCount,
     setShowSuccessToast, setLastMatchedStudent, setMismatchData,
-    isProcessing, setIsProcessing, error, setError
+    isProcessing, setIsProcessing, error, setError,
+    remarkRules
   });
 
   // --- ACTIONS ---
@@ -147,22 +159,21 @@ function App() {
     if (window.confirm("Xóa toàn bộ ảnh đã quét và làm lại?")) {
       setProcessedFiles([]);
       setScannedImages(prev => { prev.forEach(img => URL.revokeObjectURL(img.url)); return []; });
-      setStudents(prev => prev.map(s => ({ ...s, score: null, level: null, subject: null })));
+      setStudents(prev => prev.map(s => ({ ...s, score: null, level: null, remark: null, subject: null })));
     }
   };
 
-  const handleUpdateStudent = (id: string | number, field: 'score' | 'level', value: string) => {
+  const handleUpdateStudent = (id: string | number, field: 'score' | 'level' | 'remark', value: string) => {
     setStudents(prev => prev.map(s => {
       if (String(s.id) === String(id)) {
-        return { 
-          ...s, 
-          [field]: value === '' ? null : (field === 'score' ? parseFloat(value) : value) 
+        return {
+          ...s,
+          [field]: value === '' ? null : (field === 'score' ? parseFloat(value) : value)
         };
       }
       return s;
     }));
   };
-
   const syncManualChanges = async () => {
     if (!backendExcelFilename || !mappingConfig) return;
     
@@ -230,24 +241,25 @@ function App() {
                         setSelectedNameCol(suggestedMapping.nameCol);
                         setSelectedScoreCol(suggestedMapping.scoreCol);
                         setSelectedLevelCol(suggestedMapping.levelCol);
+                        setSelectedRemarkCol(suggestedMapping.remarkCol);
                         setHeaderRowIndex(suggestedMapping.headerRow);
                         if (suggestedMapping.dataRowStart) {
                           setDataRowStart(suggestedMapping.dataRowStart);
                         }
-                        
+
                         // MAGIC IMPORT: If AI is very confident, skip mapping screen
                         if ((suggestedMapping.confidence || 0) >= 80) {
                           setMappingConfig(suggestedMapping);
                           await processWorksheet(
-                            id, 
-                            suggestedMapping.headerRow, 
-                            suggestedMapping.idCol, 
-                            suggestedMapping.nameCol, 
-                            suggestedMapping.scoreCol, 
+                            id,
+                            suggestedMapping.headerRow,
+                            suggestedMapping.idCol,
+                            suggestedMapping.nameCol,
+                            suggestedMapping.scoreCol,
                             suggestedMapping.levelCol,
+                            suggestedMapping.remarkCol,
                             suggestedMapping.dataRowStart
-                          );
-                          setStep('success');
+                          );                          setStep('success');
                           return;
                         }
                       } else {
@@ -270,13 +282,13 @@ function App() {
                 selectedNameCol={selectedNameCol} setSelectedNameCol={setSelectedNameCol}
                 selectedScoreCol={selectedScoreCol} setSelectedScoreCol={setSelectedScoreCol}
                 selectedLevelCol={selectedLevelCol} setSelectedLevelCol={setSelectedLevelCol}
+                selectedRemarkCol={selectedRemarkCol} setSelectedRemarkCol={setSelectedRemarkCol}
                 headerRowIndex={headerRowIndex} setHeaderRowIndex={setHeaderRowIndex}
                 dataRowStart={dataRowStart} setDataRowStart={setDataRowStart}
                 sheetSampleData={sheetSampleData} getColumnLetter={getColumnLetter}
-                error={error} onBack={() => setStep('select-sheet')} 
-                onConfirm={() => processWorksheet(selectedSheetId, headerRowIndex, selectedIdCol, selectedNameCol, selectedScoreCol, selectedLevelCol, dataRowStart)}
-                isProcessing={isProcessing}
-              />
+                error={error} onBack={() => setStep('select-sheet')}
+                onConfirm={() => processWorksheet(selectedSheetId, headerRowIndex, selectedIdCol, selectedNameCol, selectedScoreCol, selectedLevelCol, selectedRemarkCol, dataRowStart)}
+                isProcessing={isProcessing}              />
             )}
             {step === 'success' && (
               <SuccessStep 
@@ -290,19 +302,32 @@ function App() {
               />
             )}
             {step === 'scan' && (
-              <ScanningStep 
-                scannedImagesCount={scannedImages.length} 
-                studentsWithScoresCount={students.filter(s => s.score != null).length}
-                isProcessing={isProcessing} 
-                onCameraClick={() => cameraInputRef.current?.click()}
-                onGalleryClick={() => galleryInputRef.current?.click()}
-                onShowGallery={() => setShowImageGallery(true)}
-                onClearData={clearScannedData} onBack={() => setStep('success')}
-                backendExcelFilename={backendExcelFilename}
-                cameraInputRef={cameraInputRef as React.RefObject<HTMLInputElement>} galleryInputRef={galleryInputRef as React.RefObject<HTMLInputElement>}
-                onImageCapture={handleImageCapture}
-                onDownload={handleDownload}
-              />
+              <>
+                <ScanningStep 
+                  scannedImagesCount={scannedImages.length} 
+                  studentsWithScoresCount={students.filter(s => s.score != null).length}
+                  isProcessing={isProcessing} 
+                  onCameraClick={() => cameraInputRef.current?.click()}
+                  onGalleryClick={() => galleryInputRef.current?.click()}
+                  onShowGallery={() => setShowImageGallery(true)}
+                  onShowRemarkConfig={() => setShowRemarkConfig(true)}
+                  onClearData={clearScannedData} onBack={() => setStep('success')}
+                  backendExcelFilename={backendExcelFilename}
+                  cameraInputRef={cameraInputRef as React.RefObject<HTMLInputElement>} galleryInputRef={galleryInputRef as React.RefObject<HTMLInputElement>}
+                  onImageCapture={handleImageCapture}
+                  onDownload={handleDownload}
+                />
+
+                <AnimatePresence>
+                  {showRemarkConfig && (
+                    <RemarkConfigModal 
+                      remarkRules={remarkRules}
+                      setRemarkRules={setRemarkRules}
+                      onClose={() => setShowRemarkConfig(false)}
+                    />
+                  )}
+                </AnimatePresence>
+              </>
             )}
           </AnimatePresence>
         </div>

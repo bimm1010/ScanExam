@@ -183,6 +183,7 @@ export const useExcel = ({
     selectedNameCol: number,
     selectedScoreCol: number,
     selectedLevelCol: number,
+    selectedRemarkCol: number,
     dataRowStart?: number
   ) => {
     if (!workbookData || selectedSheetId === null) return;
@@ -204,7 +205,8 @@ export const useExcel = ({
              id: idValue,
              name: nameValue,
              score: formatCellValue(row.getCell(selectedScoreCol).value),
-             level: formatCellValue(row.getCell(selectedLevelCol).value)
+             level: formatCellValue(row.getCell(selectedLevelCol).value),
+             remark: formatCellValue(row.getCell(selectedRemarkCol).value)
            });
         }
       }
@@ -220,6 +222,7 @@ export const useExcel = ({
         nameCol: selectedNameCol,
         scoreCol: selectedScoreCol,
         levelCol: selectedLevelCol,
+        remarkCol: selectedRemarkCol,
         headerRow: headerRowIndex
       });
       setError(null);

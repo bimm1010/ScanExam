@@ -26,6 +26,8 @@ interface UseAppPersistenceProps {
   setSelectedScoreCol: (col: number) => void;
   selectedLevelCol: number;
   setSelectedLevelCol: (col: number) => void;
+  selectedRemarkCol: number;
+  setSelectedRemarkCol: (col: number) => void;
   headerRowIndex: number;
   setHeaderRowIndex: (idx: number) => void;
   dataRowStart: number;
@@ -36,6 +38,8 @@ interface UseAppPersistenceProps {
   setScannedImages: (images: {key: string, url: string}[]) => void;
   backendExcelFilename: string | null;
   setBackendExcelFilename: (name: string | null) => void;
+  remarkRules: RemarkRule[];
+  setRemarkRules: (rules: RemarkRule[]) => void;
 }
 
 export const useAppPersistence = ({
@@ -51,11 +55,13 @@ export const useAppPersistence = ({
   selectedNameCol, setSelectedNameCol,
   selectedScoreCol, setSelectedScoreCol,
   selectedLevelCol, setSelectedLevelCol,
+  selectedRemarkCol, setSelectedRemarkCol,
   headerRowIndex, setHeaderRowIndex,
   dataRowStart, setDataRowStart,
   processedFiles, setProcessedFiles,
   scannedImages, setScannedImages,
-  backendExcelFilename, setBackendExcelFilename
+  backendExcelFilename, setBackendExcelFilename,
+  remarkRules, setRemarkRules
 }: UseAppPersistenceProps) => {
   const isRestored = useRef(false);
 
@@ -76,11 +82,13 @@ export const useAppPersistence = ({
           if (savedState.selectedNameCol) setSelectedNameCol(savedState.selectedNameCol);
           if (savedState.selectedScoreCol) setSelectedScoreCol(savedState.selectedScoreCol);
           if (savedState.selectedLevelCol) setSelectedLevelCol(savedState.selectedLevelCol);
+          if (savedState.selectedRemarkCol) setSelectedRemarkCol(savedState.selectedRemarkCol);
           if (savedState.headerRowIndex) setHeaderRowIndex(savedState.headerRowIndex);
           if (savedState.dataRowStart) setDataRowStart(savedState.dataRowStart);
           if (savedState.processedFiles) setProcessedFiles(savedState.processedFiles);
           if (savedState.scannedImages) setScannedImages(savedState.scannedImages);
           if (savedState.backendExcelFilename) setBackendExcelFilename(savedState.backendExcelFilename);
+          if (savedState.remarkRules) setRemarkRules(savedState.remarkRules);
 
           if (savedState.mappingConfig) {
             const config = savedState.mappingConfig;
@@ -89,6 +97,7 @@ export const useAppPersistence = ({
             setSelectedNameCol(config.nameCol);
             setSelectedScoreCol(config.scoreCol);
             setSelectedLevelCol(config.levelCol);
+            setSelectedRemarkCol(config.remarkCol);
             setHeaderRowIndex(config.headerRow);
           }
         }
@@ -103,8 +112,9 @@ export const useAppPersistence = ({
   }, [
     setStep, setStudents, setFileName, setSelectedSheetName, setSelectedSheetId,
     setSheetSampleData, setTotalColumns, setSelectedIdCol, setSelectedNameCol,
-    setSelectedScoreCol, setSelectedLevelCol, setHeaderRowIndex, setDataRowStart,
-    setProcessedFiles, setScannedImages, setBackendExcelFilename, setMappingConfig
+    setSelectedScoreCol, setSelectedLevelCol, setSelectedRemarkCol, setHeaderRowIndex, setDataRowStart,
+    setProcessedFiles, setScannedImages, setBackendExcelFilename, setMappingConfig,
+    setRemarkRules
   ]);
 
   useEffect(() => {
@@ -123,18 +133,20 @@ export const useAppPersistence = ({
       selectedNameCol,
       selectedScoreCol,
       selectedLevelCol,
+      selectedRemarkCol,
       headerRowIndex,
       dataRowStart,
       processedFiles,
       scannedImages,
-      backendExcelFilename
+      backendExcelFilename,
+      remarkRules
     };
     localStorage.setItem('aigrande_state', JSON.stringify(stateToSave));
   }, [
     step, students, fileName, selectedSheetName, selectedSheetId,
     mappingConfig, sheetSampleData, totalColumns, selectedIdCol,
-    selectedNameCol, selectedScoreCol, selectedLevelCol, headerRowIndex, dataRowStart,
-    processedFiles, scannedImages, backendExcelFilename
+    selectedNameCol, selectedScoreCol, selectedLevelCol, selectedRemarkCol, headerRowIndex, dataRowStart,
+    processedFiles, scannedImages, backendExcelFilename, remarkRules
   ]);
 
   return { isRestored };

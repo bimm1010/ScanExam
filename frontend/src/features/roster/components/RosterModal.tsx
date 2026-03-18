@@ -7,7 +7,7 @@ interface RosterModalProps {
   sheetName: string | null;
   onClose: () => void;
   onExport: () => void;
-  onUpdateStudent: (id: string | number, field: 'score' | 'level', value: string) => void;
+  onUpdateStudent: (id: string | number, field: 'score' | 'level' | 'remark', value: string) => void;
 }
 
 const RosterModal = ({ students, sheetName, onClose, onExport, onUpdateStudent }: RosterModalProps) => {
@@ -50,6 +50,7 @@ const RosterModal = ({ students, sheetName, onClose, onExport, onUpdateStudent }
                   <th className="px-6 py-4">Môn học</th>
                   <th className="px-6 py-4 text-center">Điểm</th>
                   <th className="px-6 py-4 text-center">Mức đạt</th>
+                  <th className="px-6 py-4">Nhận xét</th>
                 </tr>
               </thead>
               <tbody>
@@ -76,6 +77,15 @@ const RosterModal = ({ students, sheetName, onClose, onExport, onUpdateStudent }
                         onChange={(e) => onUpdateStudent(student.id, 'level', e.target.value)}
                         className="w-12 font-bold text-indigo-700 bg-indigo-50 px-2 py-1 rounded-lg border border-indigo-100 text-center focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all uppercase"
                         placeholder="-"
+                      />
+                    </td>
+                    <td className="px-6 py-3">
+                      <input 
+                        type="text" 
+                        value={student.remark || ''} 
+                        onChange={(e) => onUpdateStudent(student.id, 'remark', e.target.value)}
+                        className="w-full font-medium text-slate-700 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-400 transition-all"
+                        placeholder="Ghi chú bài làm..."
                       />
                     </td>
                   </tr>

@@ -3,6 +3,7 @@ export interface StudentData {
   name: string;
   score?: string | number | null;
   level?: string | number | null;
+  remark?: string | null;
   subject?: string | null;
 }
 
@@ -11,6 +12,7 @@ export interface MappingConfig {
   nameCol: number;
   scoreCol: number;
   levelCol: number;
+  remarkCol: number;
   headerRow: number;
   confidence?: number;
   cleaningRules?: string[];
@@ -22,6 +24,7 @@ export interface ScanResult {
   studentName?: string;
   score: string | number | null;
   level: string | null;
+  remark?: string | null;
   subject?: string;
   imageUrl?: string;
   isFuzzyMatch?: boolean;
@@ -46,6 +49,12 @@ export interface RowSample {
   metadata?: CellMetadata[];
 }
 
+export interface RemarkRule {
+  min: number;
+  max: number;
+  text: string;
+}
+
 export interface AppSavedState {
   step: AppStep;
   students: StudentData[];
@@ -59,11 +68,13 @@ export interface AppSavedState {
   selectedNameCol: number;
   selectedScoreCol: number;
   selectedLevelCol: number;
+  selectedRemarkCol: number;
   headerRowIndex: number;
   dataRowStart: number;
   processedFiles: string[];
   scannedImages: {key: string, url: string}[];
   backendExcelFilename: string | null;
+  remarkRules: RemarkRule[];
 }
 
 export type AppStep = 'upload' | 'select-sheet' | 'map-columns' | 'success' | 'scan';

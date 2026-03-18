@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import type { ScanResult, StudentData, MappingConfig, MismatchData } from '../types';
+import type { ScanResult, StudentData, MappingConfig, MismatchData, RemarkRule } from '../types';
 import { compressImage } from '../utils/image';
 
 interface UseScanningProps {
@@ -17,9 +17,9 @@ interface UseScanningProps {
   setMismatchData: React.Dispatch<React.SetStateAction<MismatchData | null>>;
   isProcessing: boolean;
   setIsProcessing: React.Dispatch<React.SetStateAction<boolean>>;
-  error: string | null;
   setError: React.Dispatch<React.SetStateAction<string | null>>;
-}
+  remarkRules: RemarkRule[];
+  }
 
 export const useScanning = ({
   selectedSheetName,
@@ -36,7 +36,8 @@ export const useScanning = ({
   setMismatchData,
   isProcessing,
   setIsProcessing,
-  setError
+  setError,
+  remarkRules
 }: UseScanningProps) => {
   const [batchProgress, setBatchProgress] = useState<{ total: number; current: number }>({ total: 0, current: 0 });
   const [pendingQueue, setPendingQueue] = useState<File[]>([]);
@@ -62,6 +63,7 @@ export const useScanning = ({
           expected_subject: selectedSheetName,
           excel_filename: backendExcelFilename,
           mapping_config: mappingConfig,
+          remark_rules: remarkRules,
           roster: students.map((s, idx) => ({ 
             id: s.id, 
             name: s.name,
@@ -106,7 +108,13 @@ export const useScanning = ({
           if (data.studentId && data.score !== null) {
             setStudents(prev => prev.map(s => {
               if (String(s.id) === String(data.studentId)) {
-                return { ...s, score: data.score, level: data.level, subject: data.subject || s.subject };
+                return { 
+                  ...s, 
+                  score: data.score, 
+                  level: data.level, 
+                  remark: data.remark || s.remark,
+                  subject: data.subject || s.subject 
+                };
               }
               return s;
             }));

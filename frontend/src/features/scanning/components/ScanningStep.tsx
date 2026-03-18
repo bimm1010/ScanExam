@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ScanLine, ImagePlus, Camera, FileSpreadsheet, Trash2 } from 'lucide-react';
+import { ScanLine, ImagePlus, Camera, FileSpreadsheet, Trash2, MessageSquareQuote } from 'lucide-react';
 
 interface ScanningStepProps {
   scannedImagesCount: number;
@@ -8,6 +8,7 @@ interface ScanningStepProps {
   onCameraClick: () => void;
   onGalleryClick: () => void;
   onShowGallery: () => void;
+  onShowRemarkConfig: () => void;
   onClearData: () => void;
   onBack: () => void;
   backendExcelFilename: string | null;
@@ -24,6 +25,7 @@ const ScanningStep = ({
   onCameraClick,
   onGalleryClick,
   onShowGallery,
+  onShowRemarkConfig,
   onClearData,
   onBack,
   backendExcelFilename,
@@ -37,10 +39,17 @@ const ScanningStep = ({
       <div className="w-full rounded-[32px] bg-slate-50/30 border border-white/40 min-h-[300px] flex flex-col p-6 md:p-10 relative overflow-hidden">
         <div className="flex items-center space-x-5 mb-10">
           <div className="w-14 h-14 bg-white rounded-[20px] flex items-center justify-center shadow-sm border border-slate-100 text-rose-500 shrink-0"><ScanLine className="w-7 h-7" /></div>
-          <div>
+          <div className="flex-1">
             <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Thu thập Bài Thi</h2>
             <p className="text-slate-500 font-medium text-sm md:text-base italic">Vui lòng cung cấp hình ảnh bài kiểm tra:</p>
           </div>
+          <button 
+            onClick={onShowRemarkConfig}
+            className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm border border-slate-100 text-slate-400 hover:text-rose-500 hover:border-rose-200 transition-all group shrink-0"
+            title="Cấu hình lời phê"
+          >
+            <MessageSquareQuote className="w-6 h-6 group-hover:scale-110 transition-transform" />
+          </button>
         </div>
         
         <input id="camera-capture-input" type="file" ref={cameraInputRef} onChange={onImageCapture} accept="image/*" capture="environment" multiple className="hidden" />
