@@ -21,6 +21,7 @@ backend/media/rosters/backups/
 # AI/Agent
 .agent/
 CODEBASE.md
+PROGRESS.md
 MISSION_CONTROL.md
 scan-exercise-v1.md
 ui-minimalist-refinement.md

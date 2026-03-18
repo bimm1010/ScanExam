@@ -36,7 +36,6 @@ export const useScanning = ({
   setMismatchData,
   isProcessing,
   setIsProcessing,
-  error,
   setError
 }: UseScanningProps) => {
   const [batchProgress, setBatchProgress] = useState<{ total: number; current: number }>({ total: 0, current: 0 });

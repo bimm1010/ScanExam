@@ -7,7 +7,7 @@ class TestApiKeyRotation(unittest.TestCase):
     @patch('api.views.api_keys', ['mock_key_1', 'mock_key_2'])
     @patch('api.views.get_gemini_client')
     @patch('api.views.client')
-    def test_rotation_on_429(self, mock_client_var, mock_get_client, mock_keys):
+    def test_rotation_on_429(self, mock_client_var, mock_get_client):
         # Setup mock client behavior
         mock_client_1 = MagicMock()
         mock_client_2 = MagicMock()
@@ -17,7 +17,7 @@ class TestApiKeyRotation(unittest.TestCase):
         # Second call (after rotation) succeeds
         mock_client_2.models.generate_content.return_value = MagicMock(text='{"success": true}')
         
-        mock_get_client.side_effect = [mock_client_1, mock_client_2]
+        mock_get_client.side_effect = [mock_client_2]
         
         # We need to ensure the global 'client' in api.views is updated
         # This is tricky with mocks, so let's check if call_gemini_with_router handles it

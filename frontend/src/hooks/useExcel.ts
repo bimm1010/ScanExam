@@ -88,10 +88,10 @@ export const useExcel = ({
     if (typeof cellValue === 'object') {
       if (cellValue instanceof Date) return cellValue.toLocaleDateString('vi-VN');
       
-      const cellObj = cellValue as any;
+      const cellObj = cellValue as unknown as Record<string, unknown>;
 
       if (cellObj.richText && Array.isArray(cellObj.richText)) {
-        return cellObj.richText.map((rt: any) => rt.text).join('');
+        return cellObj.richText.map((rt: Record<string, unknown>) => String(rt.text)).join('');
       }
 
       if ('formula' in cellObj || 'sharedFormula' in cellObj) {

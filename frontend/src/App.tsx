@@ -185,7 +185,7 @@ function App() {
         throw new Error(errData.error || 'Không thể đồng bộ bảng điểm.');
       }
       console.log("✅ [App] Manual sync successful");
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("❌ [App] Sync error:", e);
       setError("Cảnh báo: Không thể đồng bộ một số thay đổi thủ công lên server.");
     }
@@ -254,9 +254,9 @@ function App() {
                         setError("AI không phản hồi hoặc hết lượt dùng. Vui lòng tự chọn các cột.");
                       }
                     }
-                  } catch (e: any) {
+                  } catch (e: unknown) {
                     console.error("Selection Flow Error:", e);
-                    setError("Lỗi khi phân tích dữ liệu: " + (e.message || "Unknown error"));
+                    setError("Lỗi khi phân tích dữ liệu: " + (e instanceof Error ? e.message : "Unknown error"));
                   } finally {
                     setIsProcessing(false);
                   }
