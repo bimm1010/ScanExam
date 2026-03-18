@@ -163,6 +163,28 @@ def sanitize_sheet_name(sheet_name):
     clean_name = re.sub(r'[-\s]+', '_', clean_name)
     return clean_name or "default"
 
+def apply_grading_logic(result_obj):
+    """
+    Applies custom Vietnamese grading rules:
+    1. If score ends in .5, round it up to the next integer (e.g., 6.5 -> 7.0).
+    2. Re-calculate level (T if score >= 9.0, else H).
+    """
+    score = result_obj.get('score')
+    if score is not None:
+        try:
+            score_float = float(score)
+            # Check if fractional part is exactly 0.5
+            if score_float % 1 == 0.5:
+                score_float = float(int(score_float) + 1)
+                print(f"Rounding up: {score} -> {score_float}")
+            
+            result_obj['score'] = score_float
+            # Recalculate level based on new rounded score
+            result_obj['level'] = 'T' if score_float >= 9.0 else 'H'
+        except (ValueError, TypeError):
+            pass
+    return result_obj
+
 @api_view(['GET'])
 def health_check(request):
     return Response({"status": "healthy", "message": "ScanExercise API is running"})
@@ -476,7 +498,10 @@ Hãy trả về một {'MẢNG (Array) các đối tượng' if is_batch else '�
             if idx < len(image_data_list):
                 result['imageUrl'] = save_image_on_server(image_data_list[idx])
             
-            # Logic: Match Subject
+            # 6. Apply Custom Grading Logic (Rounding .5 up)
+            result = apply_grading_logic(result)
+
+            # 7. Logic: Match Subject
             if result.get('mismatch'):
                 # Delete the physical file if subjects don't match
                 if result.get('imageUrl'):
@@ -756,6 +781,12 @@ def sync_roster(request):
                 row = row_id_map[s_id]
                 score = student.get('score')
                 level = student.get('level')
+                # Apply grading logic (rounding) to manual edits too
+                temp_obj = {'score': score, 'level': level}
+                temp_obj = apply_grading_logic(temp_obj)
+                score = temp_obj['score']
+                level = temp_obj['level']
+
                 # Only update if score is not None
                 if score is not None:
                     sheet.cell(row=row, column=score_col).value = score
