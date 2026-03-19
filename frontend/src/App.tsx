@@ -311,7 +311,8 @@ function App() {
                 <ScanningStep 
                   scannedImagesCount={scannedImages.length} 
                   studentsWithScoresCount={students.filter(s => s.score != null).length}
-                  isProcessing={isProcessing} 
+                  isProcessing={isProcessing}
+                  batchProgress={batchProgress}
                   onCameraClick={() => cameraInputRef.current?.click()}
                   onGalleryClick={() => galleryInputRef.current?.click()}
                   onShowGallery={() => setShowImageGallery(true)}

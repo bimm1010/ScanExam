@@ -5,6 +5,7 @@ interface ScanningStepProps {
   scannedImagesCount: number;
   studentsWithScoresCount: number;
   isProcessing: boolean;
+  batchProgress: { total: number; current: number };
   onCameraClick: () => void;
   onGalleryClick: () => void;
   onShowGallery: () => void;
@@ -22,6 +23,7 @@ const ScanningStep = ({
   scannedImagesCount,
   studentsWithScoresCount,
   isProcessing,
+  batchProgress,
   onCameraClick,
   onGalleryClick,
   onShowGallery,
@@ -56,16 +58,7 @@ const ScanningStep = ({
         <input id="gallery-pick-input" type="file" ref={galleryInputRef} onChange={onImageCapture} accept="image/*" multiple className="hidden" />
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 relative">
-           {isProcessing && (
-             <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center rounded-[32px] border border-white/80 shadow-inner">
-               <div className="w-12 h-12 border-4 border-rose-100 border-t-rose-500 rounded-full animate-spin mb-4" />
-               <p className="text-slate-900 font-black text-xs uppercase tracking-[0.2em] animate-pulse">
-                 Đang nhận diện học sinh & ghi điểm...
-               </p>
-               <p className="text-slate-500 text-[10px] font-bold mt-2 italic">Đại ca đợi em một xíu nhé! (≧◡≦)</p>
-             </div>
-           )}
-           <button onClick={onCameraClick} disabled={isProcessing} aria-label="Mở camera chụp ảnh" className="flex flex-col items-center justify-center p-10 bg-white/60 rounded-[32px] border border-white/80 hover:border-rose-200 hover:bg-rose-50/50 active:scale-[0.98] transition-all group disabled:opacity-50 disabled:cursor-not-allowed">
+           <button onClick={onCameraClick} aria-label="Mở camera chụp ảnh" className="flex flex-col items-center justify-center p-10 bg-white/60 rounded-[32px] border border-white/80 hover:border-rose-200 hover:bg-rose-50/50 active:scale-[0.98] transition-all group">
              <div className="w-20 h-20 bg-white rounded-[24px] shadow-sm border border-slate-100 flex items-center justify-center text-rose-500 mb-6 group-hover:-translate-y-2 transition-transform duration-500">
                {isProcessing ? <div className="w-8 h-8 border-3 border-rose-200 border-t-rose-500 rounded-full animate-spin" /> : <Camera className="w-10 h-10" />}
              </div>
@@ -73,7 +66,7 @@ const ScanningStep = ({
              <p className="text-slate-500 text-xs text-center font-medium opacity-70">Sử dụng camera trực tiếp</p>
            </button>
            
-           <button onClick={onGalleryClick} disabled={isProcessing} aria-label="Chọn ảnh từ thư viện" className="flex flex-col items-center justify-center p-10 bg-white/60 rounded-[32px] border border-white/80 hover:border-slate-300 hover:bg-slate-100/50 active:scale-[0.98] transition-all group disabled:opacity-50 disabled:cursor-not-allowed">
+           <button onClick={onGalleryClick} aria-label="Chọn ảnh từ thư viện" className="flex flex-col items-center justify-center p-10 bg-white/60 rounded-[32px] border border-white/80 hover:border-slate-300 hover:bg-slate-100/50 active:scale-[0.98] transition-all group">
 
              <div className="w-20 h-20 bg-white rounded-[24px] shadow-sm border border-slate-100 flex items-center justify-center text-slate-600 mb-6 group-hover:-translate-y-2 transition-transform duration-500">
                {isProcessing ? <div className="w-8 h-8 border-3 border-slate-200 border-t-slate-500 rounded-full animate-spin" /> : <ImagePlus className="w-10 h-10" />}
@@ -82,6 +75,23 @@ const ScanningStep = ({
              <p className="text-slate-500 text-xs text-center font-medium opacity-70">Chọn từ bộ nhớ máy</p>
            </button>
         </div>
+
+        {isProcessing && batchProgress.total > 0 && (
+          <div className="mb-4 bg-white/80 backdrop-blur-md p-4 rounded-2xl border border-white/80 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
+             <div className="flex justify-between items-center mb-2">
+                <span className="text-[10px] font-black text-rose-500 uppercase tracking-widest">Đang xử lý trong nền...</span>
+                <span className="text-[10px] font-black text-slate-400">{batchProgress.current} / {batchProgress.total}</span>
+             </div>
+             <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                <motion.div 
+                   className="h-full bg-rose-500" 
+                   initial={{ width: 0 }}
+                   animate={{ width: `${(batchProgress.current / batchProgress.total) * 100}%` }}
+                   transition={{ duration: 0.3 }}
+                />
+             </div>
+          </div>
+        )}
 
         <div className="flex items-center justify-center gap-4 py-6 bg-white/40 rounded-[24px] border border-white/60 mb-10">
           <div className="text-center px-8 border-r border-slate-200">
