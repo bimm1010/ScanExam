@@ -239,7 +239,7 @@ function App() {
                   try {
                     const sample = await extractSheetSample(id);
                     if (sample) {
-                      const suggestedMapping = await autoDetectMapping(sample);
+                      const suggestedMapping = await autoDetectMapping(sample.slice(0, 30));
                       if (suggestedMapping) {
                         // Crucial: Update each state individually
                         setSelectedIdCol(suggestedMapping.idCol);

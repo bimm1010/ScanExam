@@ -121,9 +121,9 @@ export const useExcel = ({
     const sampleRows: RowSample[] = [];
     let maxCols = 0;
 
-    // First pass to find max columns in the first 30 rows
+    // First pass to find max columns in the first 1000 rows
     worksheet.eachRow((row, rowNumber) => {
-      if (rowNumber <= 30) {
+      if (rowNumber <= 1000) {
         row.eachCell({ includeEmpty: true }, (_, colNumber) => {
           if (colNumber > maxCols) maxCols = colNumber;
         });
@@ -132,7 +132,7 @@ export const useExcel = ({
 
     // Second pass to extract structured data with metadata
     worksheet.eachRow((row, rowNumber) => {
-      if (rowNumber <= 30) {
+      if (rowNumber <= 1000) {
         const rowValues: string[] = Array(maxCols).fill("");
         const rowMetadata: CellMetadata[] = Array(maxCols).fill({ isBold: false });
         
