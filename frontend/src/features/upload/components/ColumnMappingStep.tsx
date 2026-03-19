@@ -126,7 +126,7 @@ const ColumnMappingStep = ({
                 </tr>
               </thead>
               <tbody>
-                {sheetSampleData.map((row) => (
+                {sheetSampleData.filter(row => row.rowNumber < dataRowStart || (row.rowNumber >= dataRowStart && row.rowNumber < dataRowStart + 10)).map((row) => (
                   <tr key={`tr-${row.rowNumber}`} className={`border-b last:border-0 border-white/60 hover:bg-white/40 transition-colors ${row.rowNumber === headerRowIndex ? 'bg-rose-50/20' : row.rowNumber === dataRowStart ? 'bg-amber-50/20' : ''}`}>
                     <td className={`px-5 py-3 font-bold border-r border-white/60 text-slate-400 text-center ${row.rowNumber === headerRowIndex ? 'bg-rose-50/40' : row.rowNumber === dataRowStart ? 'bg-amber-50/30' : 'bg-slate-50/30'}`}>{row.rowNumber}</td>
                     {Array.from({ length: totalColumns }).map((_, i) => {
