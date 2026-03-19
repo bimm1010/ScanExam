@@ -82,12 +82,17 @@ const ScanningStep = ({
                 <span className="text-[10px] font-black text-rose-500 uppercase tracking-widest">Đang xử lý trong nền...</span>
                 <span className="text-[10px] font-black text-slate-400">{batchProgress.current} / {batchProgress.total}</span>
              </div>
-             <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+             <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden relative">
                 <motion.div 
-                   className="h-full bg-rose-500" 
+                   className="h-full bg-gradient-to-r from-rose-500 via-amber-400 to-rose-500 absolute left-0 top-0" 
                    initial={{ width: 0 }}
                    animate={{ width: `${(batchProgress.current / batchProgress.total) * 100}%` }}
                    transition={{ duration: 0.3 }}
+                />
+                <motion.div 
+                   className="h-full bg-white/30 absolute inset-0 w-[200%]" 
+                   animate={{ x: ["-50%", "0%"] }}
+                   transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
                 />
              </div>
           </div>
