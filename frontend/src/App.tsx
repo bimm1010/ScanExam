@@ -115,6 +115,29 @@ function App() {
   const handleDownload = async () => {
     if (!backendExcelFilename) return;
     
+    let fileHandle: any = null;
+    
+    // 0. Bắt buộc gọi showSaveFilePicker ngay lập tức khi người dùng click
+    // Nếu để sau các lệnh await (fetch/flush), trình duyệt sẽ hủy "User Gesture" và báo lỗi SecurityError
+    if ('showSaveFilePicker' in window) {
+      try {
+        fileHandle = await (window as any).showSaveFilePicker({
+          suggestedName: backendExcelFilename,
+          types: [{
+            description: 'Excel File',
+            accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] },
+          }],
+        });
+      } catch (err: any) {
+        // Nếu user nhấn Huỷ (Cancel), dừng toàn bộ tiến trình
+        if (err.name === 'AbortError') {
+          console.log("🛑 [App] Download cancelled by user in picker");
+          return;
+        }
+        console.error("❌ [App] File system error during picker:", err);
+      }
+    }
+
     setIsProcessing(true);
     await syncManualChanges();
 
@@ -129,36 +152,23 @@ function App() {
       const apiHost = window.location.hostname;
       const url = `http://${apiHost}:8000/api/download-updated-excel/?filename=${encodeURIComponent(backendExcelFilename)}`;
       
-      // 1. Fetch the file data as a blob
-      const response = await fetch(url);
-      if (!response.ok) throw new Error("Không thể tải file từ server.");
-      const blob = await response.blob();
-
-      // 2. Check if File System Access API is supported (showSaveFilePicker)
-      if ('showSaveFilePicker' in window) {
+      if (fileHandle) {
+        // Fetch data và ghi trực tiếp vào File Handle đã được cấp quyền từ trước
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Không thể tải file từ server.");
+        const blob = await response.blob();
+        
         try {
-          const handle = await (window as any).showSaveFilePicker({
-            suggestedName: backendExcelFilename,
-            types: [{
-              description: 'Excel File',
-              accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] },
-            }],
-          });
-          
-          const writable = await handle.createWritable();
+          const writable = await fileHandle.createWritable();
           await writable.write(blob);
           await writable.close();
           console.log("✅ [App] File saved successfully via File System Access API");
-        } catch (err: any) {
-          // User cancelled the picker, or other error
-          if (err.name !== 'AbortError') {
-            console.error("❌ [App] File system error:", err);
-            // Fallback to traditional download if user didn't just cancel
-            triggerTraditionalDownload(url, backendExcelFilename);
-          }
+        } catch (writeErr: any) {
+          console.error("❌ [App] Failed to write to file:", writeErr);
+          triggerTraditionalDownload(url, backendExcelFilename);
         }
       } else {
-        // 3. Fallback for older browsers (Safari/Firefox)
+        // Fallback cho trình duyệt cũ (Safari/Firefox) hoặc HTTP không bảo mật
         triggerTraditionalDownload(url, backendExcelFilename);
       }
     } catch (e: unknown) {
