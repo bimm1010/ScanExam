@@ -353,16 +353,6 @@ function App() {
           setProcessedFiles(prev => prev.filter(key => !keys.includes(key)));
         }} />}</AnimatePresence>
         <AnimatePresence>{mismatchData && <MismatchModal data={mismatchData} onClose={() => setMismatchData(null)} />}</AnimatePresence>
-        <AnimatePresence>{isProcessing && (
-           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-xl">
-             <div className="flex flex-col items-center">
-                <h2 className="text-2xl font-black text-white mb-2">
-                  {batchProgress.total > 0 ? "Đang xử lý nốt dữ liệu..." : "Đang chuẩn bị file tải về..."}
-                </h2>
-                {batchProgress.total > 0 && <p className="text-rose-300 font-bold">Tiến độ: {batchProgress.current} / {batchProgress.total}</p>}
-             </div>
-           </motion.div>
-        )}</AnimatePresence>
       </div>
       <SuccessToast show={showSuccessToast} studentNames={lastMatchedStudent} count={excelUpdateCount} />
     </Layout>
