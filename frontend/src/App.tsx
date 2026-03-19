@@ -39,10 +39,10 @@ function App() {
   const [mappingConfig, setMappingConfig] = useState<MappingConfig | null>(null);
   const [backendExcelFilename, setBackendExcelFilename] = useState<string | null>(null);
   const [remarkRules, setRemarkRules] = useState<RemarkRule[]>([
-    { min: 9, max: 10, text: "Con làm bài rất xuất sắc, kiến thức rất vững! (≧◡≦)" },
-    { min: 7, max: 8.9, text: "Bài làm khá tốt, cần phát huy thêm nhé! (¬‿¬)" },
-    { min: 5, max: 6.9, text: "Con đã nắm được kiến thức cơ bản, cố gắng hơn ở các bài tập nâng cao." },
-    { min: 0, max: 4.9, text: "Con cần ôn tập lại kỹ hơn các nội dung đã học. Cố lên nhé!" }
+    { min: 9, max: 10, text: "Em làm bài rất xuất sắc, kiến thức rất vững!" },
+    { min: 7, max: 8.9, text: "Bài làm khá tốt, cần phát huy thêm nhé!" },
+    { min: 5, max: 6.9, text: "Em đã nắm được kiến thức cơ bản, cố gắng hơn ở các bài tập nâng cao." },
+    { min: 0, max: 4.9, text: "Em cần ôn tập lại kỹ hơn các nội dung đã học. Cố lên nhé!" }
   ]);
   
   // Column Mapping Detailed State

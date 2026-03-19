@@ -71,7 +71,7 @@ export const useScanning = ({
         }),
       });
 
-      if (!response.ok) throw new Error('Cầu truyền hình Gemini đang bận, Đại Ca thử lại nhé!');
+      if (!response.ok) throw new Error('Hệ thống đang bận, vui lòng thử lại sau giây lát.');
 
       const results: (ScanResult & { mismatch?: boolean })[] = await response.json();
       const resultsArray = Array.isArray(results) ? results : [results];
@@ -151,7 +151,7 @@ export const useScanning = ({
     });
 
     if (duplicates.length > 0) {
-      alert(`Cô giáo lưu ý: Các ảnh sau đã được quét rồi nên em sẽ bỏ qua nhé:\n- ${duplicates.join('\n- ')}`);
+      alert(`Lưu ý: Các ảnh sau đã được quét rồi nên hệ thống sẽ bỏ qua:\n- ${duplicates.join('\n- ')}`);
     }
 
     if (newFiles.length === 0) {

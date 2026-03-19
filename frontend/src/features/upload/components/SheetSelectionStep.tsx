@@ -34,8 +34,7 @@ const SheetSelectionStep = ({ availableSheets, fileName, error, isProcessing, on
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6 bg-white/80 backdrop-blur-md p-4 rounded-2xl border border-white/80 shadow-sm flex items-center gap-4">
              <div className="w-8 h-8 border-3 border-rose-100 border-t-rose-500 rounded-full animate-spin shrink-0" />
              <div>
-                <p className="text-[10px] font-black text-rose-500 uppercase tracking-widest leading-none mb-1">Đang phân tích bảng điểm...</p>
-                <p className="text-slate-500 text-[10px] font-bold italic">Đại ca đợi em một xíu nhé! (o^ ^o)</p>
+                <p className="text-[10px] font-black text-rose-500 uppercase tracking-widest leading-none">Đang phân tích bảng điểm...</p>
              </div>
           </motion.div>
         )}
