@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import type { ScanResult, StudentData, MappingConfig, MismatchData, RemarkRule } from '../types';
 import { compressImage } from '../utils/image';
 
@@ -43,14 +43,15 @@ export const useScanning = ({
   const [pendingQueue, setPendingQueue] = useState<File[]>([]);
   const pendingQueueRef = useRef<File[]>([]);
 
-  // Keep ref in sync with state
-  useEffect(() => {
-    pendingQueueRef.current = pendingQueue;
-  }, [pendingQueue]);
+  const flushTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const processBatch = async (batch: File[]) => {
+  // Success = no mismatch found in the batch
+  const processBatch = async (batch: File[]): Promise<boolean> => {
+    if (batch.length === 0) return true;
     console.log(`🚀 [useScanning] Starting processBatch with ${batch.length} files`);
     const apiHost = window.location.hostname;
+    let allGood = true;
+
     try {
       const imagePromises = batch.map(file => compressImage(file, 1600, 1600, 0.7));
       const imageDatas = await Promise.all(imagePromises);
@@ -84,6 +85,7 @@ export const useScanning = ({
         const serverImageUrl = data.imageUrl ? `http://${apiHost}:8000${data.imageUrl}` : null;
 
         if (data.mismatch) {
+          allGood = false;
           setMismatchData({
             originalKey: `${file.name}-${file.size}`,
             fileName: file.name,
@@ -123,10 +125,12 @@ export const useScanning = ({
       });
 
       setBatchProgress(prev => ({ ...prev, current: prev.current + batch.length }));
+      return allGood;
     } catch (err: unknown) {
       const error = err as Error;
       console.error("❌ [useScanning] Batch error:", error);
       setError(`Lỗi khi xử lý đợt bài thi: ${error.message}`);
+      return false;
     }
   };
 
@@ -168,48 +172,54 @@ export const useScanning = ({
 
     // Add to pending queue
     const updatedQueue = [...pendingQueue, ...newFiles];
-    console.log(`📊 [useScanning] Pending Queue size: ${updatedQueue.length}`);
+    setPendingQueue(updatedQueue);
+    console.log(`📊 [useScanning] Pending Queue updated: ${updatedQueue.length} files`);
     
-    // Batch processing (groups of 5)
-    const BATCH_SIZE = 10;
-    if (updatedQueue.length >= BATCH_SIZE) {
-      setIsProcessing(true);
-      const toProcess = updatedQueue.slice(0, BATCH_SIZE);
-      const remaining = updatedQueue.slice(BATCH_SIZE);
-      
-      setPendingQueue(remaining);
-      setBatchProgress({ total: BATCH_SIZE, current: 0 });
-      
-      await processBatch(toProcess);
-      
-      setIsProcessing(false);
-      setBatchProgress({ total: 0, current: 0 });
+    // Clear existing timer
+    if (flushTimerRef.current) {
+      clearTimeout(flushTimerRef.current);
+    }
+
+    // Auto-Flush Logic:
+    // 1. If queue is big enough (8+), flush immediately
+    // 2. Otherwise, wait 2.5 seconds of inactivity then flush
+    const BATCH_THRESHOLD = 8;
+    if (updatedQueue.length >= BATCH_THRESHOLD) {
+      console.log("⚡ [useScanning] Batch threshold reached. Flushing immediately.");
+      forceFlushPending();
     } else {
-      setPendingQueue(updatedQueue);
+      console.log("⏱️ [useScanning] Setting auto-flush timer (2.5s)...");
+      flushTimerRef.current = setTimeout(() => {
+        console.log("🔔 [useScanning] Auto-flush timer fired!");
+        forceFlushPending();
+      }, 2500);
     }
 
     if (event.target) event.target.value = '';
   };
 
-  const forceFlushPending = async () => {
+  const forceFlushPending = async (): Promise<boolean> => {
+    // Clear any pending timer
+    if (flushTimerRef.current) {
+      clearTimeout(flushTimerRef.current);
+      flushTimerRef.current = null;
+    }
+
     // 1. If already processing a batch, we MUST wait for it to finish first
-    // This is crucial for the "Download" button to wait for the final recording
     if (isProcessing) {
       console.log("⏳ [useScanning] Already processing, waiting child process...");
-      // Poll every 500ms until isProcessing is false
       while (isProcessing) {
         await new Promise(resolve => setTimeout(resolve, 500));
       }
     }
 
     const currentQueue = pendingQueueRef.current;
-    console.log(`⚡ [useScanning] forceFlushPending execution. Queue size (ref): ${currentQueue.length}`);
-    
     if (currentQueue.length === 0) {
       console.log("⏭️ [useScanning] Queue empty, nothing to flush.");
-      return;
+      return true;
     }
 
+    console.log(`⚡ [useScanning] forceFlushPending execution. Queue size: ${currentQueue.length}`);
     setIsProcessing(true);
     setBatchProgress({ total: currentQueue.length, current: 0 });
     
@@ -218,7 +228,8 @@ export const useScanning = ({
     pendingQueueRef.current = []; // Clear ref immediately
     
     try {
-      await processBatch(toProcess);
+      const result = await processBatch(toProcess);
+      return result;
     } finally {
       setIsProcessing(false);
       setBatchProgress({ total: 0, current: 0 });

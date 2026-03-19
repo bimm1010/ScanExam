@@ -124,7 +124,12 @@ function App() {
 
     // 1. Force AI to process any images remaining (even if a batch is already running)
     // The improved forceFlushPending will wait for the active batch if necessary
-    await forceFlushPending();
+    const success = await forceFlushPending();
+    if (!success) {
+      console.log("🛑 [App] Download aborted due to mismatch or error in final flush");
+      setIsProcessing(false);
+      return;
+    }
     
     // 2. Trigger the actual download using a robust hidden link method
     // This is less likely to be blocked by browser popup blockers after async calls
