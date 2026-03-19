@@ -113,12 +113,11 @@ function App() {
 
   // --- ACTIONS ---
   const handleDownload = async () => {
-    // 0. Sync any manual edits made in the Roster UI to the backend first
+    if (!backendExcelFilename) return;
+    
     setIsProcessing(true);
     await syncManualChanges();
 
-    // 1. Force AI to process any images remaining (even if a batch is already running)
-    // The improved forceFlushPending will wait for the active batch if necessary
     const success = await forceFlushPending();
     if (!success) {
       console.log("🛑 [App] Download aborted due to mismatch or error in final flush");
@@ -126,22 +125,59 @@ function App() {
       return;
     }
     
-    // 2. Trigger the actual download using a robust hidden link method
-    // This is less likely to be blocked by browser popup blockers after async calls
-    if (backendExcelFilename) {
-      const url = `http://${window.location.hostname}:8000/api/download-updated-excel/?filename=${encodeURIComponent(backendExcelFilename)}`;
+    try {
+      const apiHost = window.location.hostname;
+      const url = `http://${apiHost}:8000/api/download-updated-excel/?filename=${encodeURIComponent(backendExcelFilename)}`;
       
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', backendExcelFilename);
-      link.style.display = 'none';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      console.log("📥 [App] Automatic download triggered for internal file:", backendExcelFilename);
+      // 1. Fetch the file data as a blob
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Không thể tải file từ server.");
+      const blob = await response.blob();
+
+      // 2. Check if File System Access API is supported (showSaveFilePicker)
+      if ('showSaveFilePicker' in window) {
+        try {
+          const handle = await (window as any).showSaveFilePicker({
+            suggestedName: backendExcelFilename,
+            types: [{
+              description: 'Excel File',
+              accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] },
+            }],
+          });
+          
+          const writable = await handle.createWritable();
+          await writable.write(blob);
+          await writable.close();
+          console.log("✅ [App] File saved successfully via File System Access API");
+        } catch (err: any) {
+          // User cancelled the picker, or other error
+          if (err.name !== 'AbortError') {
+            console.error("❌ [App] File system error:", err);
+            // Fallback to traditional download if user didn't just cancel
+            triggerTraditionalDownload(url, backendExcelFilename);
+          }
+        }
+      } else {
+        // 3. Fallback for older browsers (Safari/Firefox)
+        triggerTraditionalDownload(url, backendExcelFilename);
+      }
+    } catch (e: unknown) {
+      console.error("❌ [App] Download error:", e);
+      setError("Lỗi khi tải file: " + (e instanceof Error ? e.message : "Không xác định"));
+    } finally {
+      setIsProcessing(false);
     }
-    setIsProcessing(false);
+  };
+
+  const triggerTraditionalDownload = (url: string, filename: string) => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', filename);
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    console.log("📥 [App] Traditional download triggered as fallback");
   };
 
   const resetFlow = () => {
