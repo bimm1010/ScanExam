@@ -17,6 +17,7 @@ export interface MappingConfig {
   confidence?: number;
   cleaningRules?: string[];
   dataRowStart?: number;
+  suggestedRemarkRules?: RemarkRule[];
 }
 
 export interface ScanResult {

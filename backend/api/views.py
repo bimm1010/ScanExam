@@ -706,6 +706,7 @@ def analyze_excel_columns(request):
        - Nếu KHÔNG tìm thấy tiêu đề nào khớp, hãy để giá trị là 0.
        - TUYỆT ĐỐI KHÔNG tự ý đề xuất cột trống SAU dữ liệu hiện có cho bất kỳ trường nào. 
        - TUYỆT ĐỐI KHÔNG đoán mò vị trí cột nếu dữ liệu không rõ ràng.
+    4. 'suggestedRemarkRules': Dựa vào dữ liệu trong cột 'Nhận xét' (nếu có) hoặc các cột điểm, hãy đề xuất 4 lời phê phù hợp với các khung điểm (vd: 0-5, 5-7, 7-9, 9-10). Ưu tiên dùng lời lẽ nhẹ nhàng, khích lệ của giáo viên Việt Nam.
 
     --- YÊU CẦU TRẢ VỀ JSON (1-based index) ---
     {{
@@ -717,6 +718,9 @@ def analyze_excel_columns(request):
         "headerRow": number,
         "dataRowStart": number,
         "confidence": number (0-100),
+        "suggestedRemarkRules": [
+            {{"min": number, "max": number, "text": "Nội dung lời phê (vd: 'Em làm bài tốt lắm, cố gắng phát huy nhé!')"}}
+        ],
         "cleaningRules": ["Giải thích lý do chọn hoặc bỏ qua cột"]
     }}
     """

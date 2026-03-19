@@ -25,6 +25,8 @@ interface ColumnMappingStepProps {
   onBack: () => void;
   onConfirm: () => void;
   isProcessing: boolean;
+  onShowRemarkConfig: () => void;
+  remarkRulesCount: number;
 }
 
 const ColumnMappingStep = ({
@@ -42,7 +44,9 @@ const ColumnMappingStep = ({
   error,
   onBack,
   onConfirm,
-  isProcessing
+  isProcessing,
+  onShowRemarkConfig,
+  remarkRulesCount
 }: ColumnMappingStepProps) => {
   return (
     <motion.div key="map-columns" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="glass-card p-3 rounded-[40px] text-left max-w-5xl">
@@ -138,7 +142,13 @@ const ColumnMappingStep = ({
         </div>
         {error && <div className="text-rose-600 font-bold bg-rose-50 px-4 py-3 rounded-xl mb-6 border border-rose-200 text-sm text-center">{error}</div>}
         <div className="mt-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <button onClick={onBack} className="secondary-btn w-full md:w-auto">Quay lại</button>
+          <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+            <button onClick={onBack} className="secondary-btn w-full md:w-auto">Quay lại</button>
+            <button onClick={onShowRemarkConfig} className="flex items-center justify-center space-x-2 px-6 py-3 bg-white/60 border border-amber-200 text-amber-600 rounded-2xl hover:bg-amber-50 transition-all font-bold text-sm w-full md:w-auto active:scale-95">
+               <span className="w-5 h-5 bg-amber-100 rounded-lg flex items-center justify-center text-[10px] font-black">{remarkRulesCount}</span>
+               <span>Tùy chỉnh Lời phê</span>
+            </button>
+          </div>
           <button onClick={onConfirm} disabled={isProcessing} className="squircle-btn px-10 py-4 text-white font-black text-lg w-full md:w-auto disabled:opacity-50 disabled:scale-100">{isProcessing ? 'Đang nạp...' : 'Xác nhận & Đồng bộ'}</button>
         </div>
       </div>

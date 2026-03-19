@@ -281,19 +281,33 @@ function App() {
               }} onReset={resetFlow} />
             )}
             {step === 'map-columns' && (
-              <ColumnMappingStep 
-                selectedSheetName={selectedSheetName} totalColumns={totalColumns} 
-                selectedIdCol={selectedIdCol} setSelectedIdCol={setSelectedIdCol}
-                selectedNameCol={selectedNameCol} setSelectedNameCol={setSelectedNameCol}
-                selectedScoreCol={selectedScoreCol} setSelectedScoreCol={setSelectedScoreCol}
-                selectedLevelCol={selectedLevelCol} setSelectedLevelCol={setSelectedLevelCol}
-                selectedRemarkCol={selectedRemarkCol} setSelectedRemarkCol={setSelectedRemarkCol}
-                headerRowIndex={headerRowIndex} setHeaderRowIndex={setHeaderRowIndex}
-                dataRowStart={dataRowStart} setDataRowStart={setDataRowStart}
-                sheetSampleData={sheetSampleData} getColumnLetter={getColumnLetter}
-                error={error} onBack={() => setStep('select-sheet')}
-                onConfirm={() => processWorksheet(selectedSheetId, headerRowIndex, selectedIdCol, selectedNameCol, selectedScoreCol, selectedLevelCol, selectedRemarkCol, dataRowStart)}
-                isProcessing={isProcessing}              />
+              <>
+                <ColumnMappingStep 
+                  selectedSheetName={selectedSheetName} totalColumns={totalColumns} 
+                  selectedIdCol={selectedIdCol} setSelectedIdCol={setSelectedIdCol}
+                  selectedNameCol={selectedNameCol} setSelectedNameCol={setSelectedNameCol}
+                  selectedScoreCol={selectedScoreCol} setSelectedScoreCol={setSelectedScoreCol}
+                  selectedLevelCol={selectedLevelCol} setSelectedLevelCol={setSelectedLevelCol}
+                  selectedRemarkCol={selectedRemarkCol} setSelectedRemarkCol={setSelectedRemarkCol}
+                  headerRowIndex={headerRowIndex} setHeaderRowIndex={setHeaderRowIndex}
+                  dataRowStart={dataRowStart} setDataRowStart={setDataRowStart}
+                  sheetSampleData={sheetSampleData} getColumnLetter={getColumnLetter}
+                  error={error} onBack={() => setStep('select-sheet')}
+                  onConfirm={() => processWorksheet(selectedSheetId, headerRowIndex, selectedIdCol, selectedNameCol, selectedScoreCol, selectedLevelCol, selectedRemarkCol, dataRowStart)}
+                  isProcessing={isProcessing}
+                  onShowRemarkConfig={() => setShowRemarkConfig(true)}
+                  remarkRulesCount={remarkRules.length}
+                />
+                <AnimatePresence>
+                  {showRemarkConfig && (
+                    <RemarkConfigModal 
+                      remarkRules={remarkRules}
+                      setRemarkRules={setRemarkRules}
+                      onClose={() => setShowRemarkConfig(false)}
+                    />
+                  )}
+                </AnimatePresence>
+              </>
             )}
             {step === 'success' && (
               <SuccessStep 
