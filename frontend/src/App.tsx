@@ -232,7 +232,7 @@ function App() {
               <UploadStep isProcessing={isProcessing} error={error} onUpload={handleFileUpload} onButtonClick={() => fileInputRef.current?.click()} fileInputRef={fileInputRef as React.RefObject<HTMLInputElement>} />
             )}
             {step === 'select-sheet' && (
-              <SheetSelectionStep availableSheets={availableSheets} fileName={fileName} error={error} onSelectSheet={async (id, name) => {
+              <SheetSelectionStep availableSheets={availableSheets} fileName={fileName} error={error} isProcessing={isProcessing} onSelectSheet={async (id, name) => {
                   setSelectedSheetName(name); setSelectedSheetId(id);
                   setError(null);
                   setIsProcessing(true);

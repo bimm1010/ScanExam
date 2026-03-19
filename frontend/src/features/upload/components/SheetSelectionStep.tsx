@@ -5,11 +5,12 @@ interface SheetSelectionStepProps {
   availableSheets: {id: number, name: string}[];
   fileName: string | null;
   error: string | null;
+  isProcessing: boolean;
   onSelectSheet: (id: number, name: string) => void;
   onReset: () => void;
 }
 
-const SheetSelectionStep = ({ availableSheets, fileName, error, onSelectSheet, onReset }: SheetSelectionStepProps) => {
+const SheetSelectionStep = ({ availableSheets, fileName, error, isProcessing, onSelectSheet, onReset }: SheetSelectionStepProps) => {
   return (
     <motion.div key="select-sheet" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="glass-card p-3 rounded-[40px] text-left" aria-label="Chọn bảng điểm">
       <div className="w-full rounded-[32px] bg-slate-50/30 border border-white/40 min-h-[300px] flex flex-col p-6 md:p-10 relative overflow-hidden">
@@ -20,14 +21,25 @@ const SheetSelectionStep = ({ availableSheets, fileName, error, onSelectSheet, o
             <p className="text-slate-500 font-medium text-sm md:text-base italic">Tìm thấy {availableSheets.length} sheet trong {fileName}</p>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 overflow-y-auto max-h-[40vh] pr-2 custom-scrollbar">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 overflow-y-auto max-h-[40vh] pr-2 custom-scrollbar">
           {availableSheets.map((sheet) => (
-            <button key={sheet.id} onClick={() => onSelectSheet(sheet.id, sheet.name)} className="flex items-center justify-between p-5 bg-white/60 rounded-[20px] shadow-sm border border-white/80 hover:border-rose-200 hover:bg-rose-50/50 active:scale-[0.98] transition-all group text-left">
+            <button key={sheet.id} disabled={isProcessing} onClick={() => onSelectSheet(sheet.id, sheet.name)} className="flex items-center justify-between p-5 bg-white/60 rounded-[20px] shadow-sm border border-white/80 hover:border-rose-200 hover:bg-rose-50/50 active:scale-[0.98] transition-all group text-left disabled:opacity-50 disabled:cursor-not-allowed">
               <span className="text-lg font-bold text-slate-700 truncate pr-2 group-hover:text-rose-600 transition-colors">{sheet.name}</span>
               <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-rose-400 group-hover:translate-x-1 transition-all shrink-0" />
             </button>
           ))}
         </div>
+
+        {isProcessing && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-6 bg-white/80 backdrop-blur-md p-4 rounded-2xl border border-white/80 shadow-sm flex items-center gap-4">
+             <div className="w-8 h-8 border-3 border-rose-100 border-t-rose-500 rounded-full animate-spin shrink-0" />
+             <div>
+                <p className="text-[10px] font-black text-rose-500 uppercase tracking-widest leading-none mb-1">Đang phân tích bảng điểm...</p>
+                <p className="text-slate-500 text-[10px] font-bold italic">Đại ca đợi em một xíu nhé! (o^ ^o)</p>
+             </div>
+          </motion.div>
+        )}
+
         {error && <div className="text-rose-600 font-bold bg-rose-50 px-4 py-3 rounded-xl mb-6 border border-rose-200 text-sm text-center">{error}</div>}
         <div className="mt-auto text-center"><button onClick={onReset} className="secondary-btn py-2 text-sm">Quay lại</button></div>
       </div>
