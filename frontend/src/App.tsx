@@ -314,7 +314,9 @@ function App() {
                 fileName={fileName} selectedSheetName={selectedSheetName} students={students} 
                 backendExcelFilename={backendExcelFilename} onShowRoster={() => setShowRosterModal(true)}
                 onStartScanning={() => setStep('scan')} onExportJson={handleExport}
-                onBackToMap={() => setStep('map-columns')} onReset={resetFlow}
+                onBackToMap={() => setStep('map-columns')} 
+                onBackToSelectSheet={() => setStep('select-sheet')}
+                onReset={resetFlow}
                 onDownload={handleDownload}
                 hasSheets={availableSheets.length > 1} hasScores={students.some(s => s.score != null)}
                 isProcessing={isProcessing}

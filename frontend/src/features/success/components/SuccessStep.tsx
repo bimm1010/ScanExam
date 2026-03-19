@@ -11,6 +11,7 @@ interface SuccessStepProps {
   onStartScanning: () => void;
   onExportJson: () => void;
   onBackToMap: () => void;
+  onBackToSelectSheet: () => void;
   onReset: () => void;
   onDownload: () => void;
   hasSheets: boolean;
@@ -27,6 +28,7 @@ const SuccessStep = ({
   onStartScanning,
   onExportJson,
   onBackToMap,
+  onBackToSelectSheet,
   onReset,
   onDownload,
   hasSheets,
@@ -77,7 +79,16 @@ const SuccessStep = ({
             <button onClick={onExportJson} disabled={!hasScores} className="px-6 py-3 text-xs font-black text-slate-400 hover:text-rose-500 uppercase tracking-widest transition-colors disabled:opacity-30">
               Xuất JSON Dự phòng
             </button>
-            {hasSheets && <button onClick={onBackToMap} className="px-6 py-3 text-xs font-black text-slate-400 hover:text-slate-600 uppercase tracking-widest transition-colors">Đổi môn học</button>}
+            <div className="flex items-center gap-4">
+              <button onClick={onBackToMap} className="px-6 py-3 text-xs font-black text-amber-500 hover:text-amber-600 uppercase tracking-widest transition-colors bg-amber-50 rounded-2xl">
+                Cấu hình Cột
+              </button>
+              {hasSheets && (
+                <button onClick={onBackToSelectSheet} className="px-6 py-3 text-xs font-black text-slate-400 hover:text-slate-600 uppercase tracking-widest transition-colors bg-slate-50 rounded-2xl">
+                  Đổi môn học
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
