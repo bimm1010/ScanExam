@@ -80,7 +80,7 @@ const SuccessStep = ({
               Xuất JSON Dự phòng
             </button>
             <div className="flex items-center gap-4">
-              <button onClick={onBackToMap} className="px-6 py-3 text-xs font-black text-amber-500 hover:text-amber-600 uppercase tracking-widest transition-colors bg-amber-50 rounded-2xl">
+              <button onClick={onBackToMap} className="px-6 py-3 text-xs font-black text-indigo-500 hover:text-indigo-600 uppercase tracking-widest transition-colors bg-indigo-50 rounded-2xl active:scale-95">
                 Cấu hình Cột
               </button>
               {hasSheets && (
