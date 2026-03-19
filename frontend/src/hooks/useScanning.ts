@@ -43,9 +43,7 @@ export const useScanning = ({
   const [pendingQueue, setPendingQueue] = useState<File[]>([]);
   const pendingQueueRef = useRef<File[]>([]);
 
-  const flushTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Success = no mismatch found in the batch
+  // Success = no mismatch found in the entire processing run
   const processBatch = async (batch: File[]): Promise<boolean> => {
     if (batch.length === 0) return true;
     console.log(`🚀 [useScanning] Starting processBatch with ${batch.length} files`);
@@ -170,71 +168,54 @@ export const useScanning = ({
     setScannedImages(prev => [...prev, ...newPreviews]);
     setError(null);
 
-    // Add to pending queue
+    // Add to pending queue and trigger processing immediately
     const updatedQueue = [...pendingQueue, ...newFiles];
     setPendingQueue(updatedQueue);
-    console.log(`📊 [useScanning] Pending Queue updated: ${updatedQueue.length} files`);
+    pendingQueueRef.current = updatedQueue; // Sync ref immediately
     
-    // Clear existing timer
-    if (flushTimerRef.current) {
-      clearTimeout(flushTimerRef.current);
-    }
-
-    // Auto-Flush Logic:
-    // 1. If queue is big enough (8+), flush immediately
-    // 2. Otherwise, wait 2.5 seconds of inactivity then flush
-    const BATCH_THRESHOLD = 8;
-    if (updatedQueue.length >= BATCH_THRESHOLD) {
-      console.log("⚡ [useScanning] Batch threshold reached. Flushing immediately.");
-      forceFlushPending();
-    } else {
-      console.log("⏱️ [useScanning] Setting auto-flush timer (2.5s)...");
-      flushTimerRef.current = setTimeout(() => {
-        console.log("🔔 [useScanning] Auto-flush timer fired!");
-        forceFlushPending();
-      }, 2500);
-    }
+    console.log(`⚡ [useScanning] Triggering immediate flush for ${updatedQueue.length} files`);
+    forceFlushPending();
 
     if (event.target) event.target.value = '';
   };
 
   const forceFlushPending = async (): Promise<boolean> => {
-    // Clear any pending timer
-    if (flushTimerRef.current) {
-      clearTimeout(flushTimerRef.current);
-      flushTimerRef.current = null;
-    }
-
-    // 1. If already processing a batch, we MUST wait for it to finish first
+    // If already processing, we don't start a NEW worker.
+    // The current worker's loop will pick up any newly added items in pendingQueueRef.
     if (isProcessing) {
-      console.log("⏳ [useScanning] Already processing, waiting child process...");
+      console.log("⏳ [useScanning] Already processing, loop will continue...");
+      // For external callers (like "Download"), we still need to wait for full drain
       while (isProcessing) {
         await new Promise(resolve => setTimeout(resolve, 500));
       }
+      return true; // We assume the ongoing worker succeeded or handled its errors
     }
 
-    const currentQueue = pendingQueueRef.current;
-    if (currentQueue.length === 0) {
-      console.log("⏭️ [useScanning] Queue empty, nothing to flush.");
-      return true;
-    }
-
-    console.log(`⚡ [useScanning] forceFlushPending execution. Queue size: ${currentQueue.length}`);
+    let overallSuccess = true;
     setIsProcessing(true);
-    setBatchProgress({ total: currentQueue.length, current: 0 });
-    
-    const toProcess = [...currentQueue];
-    setPendingQueue([]); // Clear state
-    pendingQueueRef.current = []; // Clear ref immediately
-    
+
     try {
-      const result = await processBatch(toProcess);
-      return result;
+      // Loop while there are items to process (Queue Worker Pattern 🏃‍♂️)
+      while (pendingQueueRef.current.length > 0) {
+        const toProcess = [...pendingQueueRef.current];
+        const currentCount = toProcess.length;
+        console.log(`🏃‍♂️ [useScanning] Worker picking up ${currentCount} images...`);
+        
+        // Clear queue before processing so new additions don't get lost
+        setPendingQueue([]);
+        pendingQueueRef.current = [];
+        
+        setBatchProgress({ total: currentCount, current: 0 });
+        const success = await processBatch(toProcess);
+        if (!success) overallSuccess = false;
+      }
     } finally {
       setIsProcessing(false);
       setBatchProgress({ total: 0, current: 0 });
-      console.log("🏁 [useScanning] forceFlushPending finished");
+      console.log("🏁 [useScanning] All pending images processed.");
     }
+
+    return overallSuccess;
   };
 
   return {
