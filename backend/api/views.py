@@ -206,7 +206,7 @@ def get_sheet_results(request):
     except Exception:
         return Response([])
 
-def call_gemini_with_router(prompt, image_bytes, mime_type="image/jpeg"):
+def call_gemini_with_router(prompt, image_bytes=None, mime_type="image/jpeg"):
     """
     Calls Gemini with automatic model fallback for Quota and Accuracy.
     Models priority: 2.0 Flash -> 1.5 Flash (Quota fallback) -> 1.5 Pro (Logic fallback)
@@ -228,8 +228,10 @@ def call_gemini_with_router(prompt, image_bytes, mime_type="image/jpeg"):
             try:
                 print(f"🤖 Attempting with model: {model_name} (Key Index: {current_key_index})")
                 
-                # Support list of images or single image
-                if isinstance(image_bytes, list):
+                # Support No images (Text only), list of images, or single image
+                if image_bytes is None:
+                    contents = [prompt]
+                elif isinstance(image_bytes, list):
                     contents = [prompt]
                     for img in image_bytes:
                         contents.append(types.Part(
@@ -718,23 +720,11 @@ def analyze_excel_columns(request):
         "cleaningRules": ["Giải thích lý do chọn hoặc bỏ qua cột"]
     }}
     """
-        # Call Gemini (using flash-latest for maximum quota and reliability)
-        response = client.models.generate_content(
-            model='models/gemini-flash-latest',
-            contents=[prompt],
-            config=types.GenerateContentConfig(
-                response_mime_type='application/json',
-            )
-        )
-
-        # Strip potential markdown fences if model doesn't respect JSON mode perfectly
-        raw_text = response.text.strip()
-        if raw_text.startswith("```json"):
-            raw_text = raw_text.split("```json")[1].split("```")[0].strip()
-        elif raw_text.startswith("```"):
-            raw_text = raw_text.split("```")[1].split("```")[0].strip()
-
-        result = json.loads(raw_text)
+        # Call Gemini via Unified Router (handles rotation and fallbacks)
+        result = call_gemini_with_router(prompt)
+        
+        if result is None:
+            return Response({"error": "AI không phản hồi hoặc hết lượt dùng. Vui lòng thử lại sau."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         # Validation & Defaults
         default_fields = {
