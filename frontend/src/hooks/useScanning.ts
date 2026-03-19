@@ -205,9 +205,19 @@ export const useScanning = ({
         setPendingQueue([]);
         pendingQueueRef.current = [];
         
-        setBatchProgress({ total: currentCount, current: 0 });
-        const success = await processBatch(toProcess);
-        if (!success) overallSuccess = false;
+        setBatchProgress(prev => ({ 
+          total: prev.total > 0 ? prev.total + currentCount : currentCount, 
+          current: prev.current 
+        }));
+        
+        // Process in chunks of 3 for concurrent performance while providing real-time progress update
+        const CHUNK_SIZE = 3;
+        for (let i = 0; i < toProcess.length; i += CHUNK_SIZE) {
+          const chunk = toProcess.slice(i, i + CHUNK_SIZE);
+          const promises = chunk.map(file => processBatch([file]));
+          const results = await Promise.all(promises);
+          if (results.some(r => !r)) overallSuccess = false;
+        }
       }
     } finally {
       setIsProcessing(false);
