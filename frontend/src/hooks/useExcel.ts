@@ -186,14 +186,30 @@ export const useExcel = ({
     selectedRemarkCol: number,
     dataRowStart?: number
   ) => {
-    if (!workbookData || selectedSheetId === null) return;
+    console.log("🚀 [useExcel] Processing worksheet...", {
+      selectedSheetId, headerRowIndex, selectedIdCol, selectedNameCol, dataRowStart
+    });
+
+    if (!workbookData) {
+      console.error("❌ [useExcel] No workbook data found!");
+      return;
+    }
+    if (selectedSheetId === null) {
+      console.error("❌ [useExcel] No sheet ID selected!");
+      return;
+    }
+
     const worksheet = workbookData.getWorksheet(selectedSheetId);
-    if (!worksheet) return;
+    if (!worksheet) {
+      console.error("❌ [useExcel] Worksheet not found for ID:", selectedSheetId);
+      return;
+    }
 
     setIsProcessing(true);
     const parsedStudents: StudentData[] = [];
 
     const actualStartRow = dataRowStart || (headerRowIndex + 1);
+    console.log("📊 [useExcel] Starting extraction from row:", actualStartRow);
 
     worksheet.eachRow((row, rowNumber) => {
       if (rowNumber >= actualStartRow) { 
@@ -208,9 +224,13 @@ export const useExcel = ({
              level: formatCellValue(row.getCell(selectedLevelCol).value),
              remark: formatCellValue(row.getCell(selectedRemarkCol).value)
            });
+        } else if (rowNumber < actualStartRow + 5) {
+          console.warn(`⚠️ [useExcel] Missing ID or Name at row ${rowNumber}:`, { idValue, nameValue });
         }
       }
     });
+
+    console.log(`✅ [useExcel] Extraction finished. Found ${parsedStudents.length} students.`);
 
     if (parsedStudents.length === 0) {
       setError(`Không trích xuất được học sinh nào. Hãy kiểm tra cấu hình cột.`);
@@ -223,7 +243,8 @@ export const useExcel = ({
         scoreCol: selectedScoreCol,
         levelCol: selectedLevelCol,
         remarkCol: selectedRemarkCol,
-        headerRow: headerRowIndex
+        headerRow: headerRowIndex,
+        dataRowStart: actualStartRow // Thêm cái này để persistence nhớ đúng dòng bắt đầu
       });
       setError(null);
       setStep('success');
