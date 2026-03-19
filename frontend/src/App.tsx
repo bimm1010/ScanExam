@@ -38,12 +38,7 @@ function App() {
   const [selectedSheetId, setSelectedSheetId] = useState<number | null>(null);
   const [mappingConfig, setMappingConfig] = useState<MappingConfig | null>(null);
   const [backendExcelFilename, setBackendExcelFilename] = useState<string | null>(null);
-  const [remarkRules, setRemarkRules] = useState<RemarkRule[]>([
-    { min: 9, max: 10, text: "Em làm bài rất xuất sắc, kiến thức rất vững!" },
-    { min: 7, max: 8.9, text: "Bài làm khá tốt, cần phát huy thêm nhé!" },
-    { min: 5, max: 6.9, text: "Em đã nắm được kiến thức cơ bản, cố gắng hơn ở các bài tập nâng cao." },
-    { min: 0, max: 4.9, text: "Em cần ôn tập lại kỹ hơn các nội dung đã học. Cố lên nhé!" }
-  ]);
+  const [remarkRules, setRemarkRules] = useState<RemarkRule[]>([]);
   
   // Column Mapping Detailed State
   const [selectedIdCol, setSelectedIdCol] = useState<number>(0);
@@ -150,9 +145,25 @@ function App() {
   };
 
   const resetFlow = () => {
-    localStorage.removeItem('aigrande_state');
+    // Xóa dữ liệu cũ nhưng giữ lại remarkRules
+    const savedStateStr = localStorage.getItem('aigrande_state');
+    if (savedStateStr) {
+      try {
+        const savedState = JSON.parse(savedStateStr);
+        // Chỉ giữ lại remarkRules, reset các thứ khác
+        const newState = {
+          remarkRules: savedState.remarkRules || []
+        };
+        localStorage.setItem('aigrande_state', JSON.stringify(newState));
+      } catch (e) {
+        localStorage.removeItem('aigrande_state');
+      }
+    } else {
+      localStorage.removeItem('aigrande_state');
+    }
+    
     scannedImages.forEach(img => URL.revokeObjectURL(img.url));
-    window.location.reload(); // Simplest way to clear complex state for now
+    window.location.reload(); // Reload để khởi tạo lại state sạch
   };
 
 
