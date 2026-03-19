@@ -60,7 +60,7 @@ const ScanningStep = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 relative">
            <button onClick={onCameraClick} aria-label="Mở camera chụp ảnh" className="flex flex-col items-center justify-center p-10 bg-white/60 rounded-[32px] border border-white/80 hover:border-rose-200 hover:bg-rose-50/50 active:scale-[0.98] transition-all group">
              <div className="w-20 h-20 bg-white rounded-[24px] shadow-sm border border-slate-100 flex items-center justify-center text-rose-500 mb-6 group-hover:-translate-y-2 transition-transform duration-500">
-               {isProcessing ? <div className="w-8 h-8 border-3 border-rose-200 border-t-rose-500 rounded-full animate-spin" /> : <Camera className="w-10 h-10" />}
+               <Camera className="w-10 h-10" />
              </div>
              <h3 className="text-xl font-black text-slate-900 mb-2">Chụp ảnh mới</h3>
              <p className="text-slate-500 text-xs text-center font-medium opacity-70">Sử dụng camera trực tiếp</p>
@@ -69,7 +69,7 @@ const ScanningStep = ({
            <button onClick={onGalleryClick} aria-label="Chọn ảnh từ thư viện" className="flex flex-col items-center justify-center p-10 bg-white/60 rounded-[32px] border border-white/80 hover:border-slate-300 hover:bg-slate-100/50 active:scale-[0.98] transition-all group">
 
              <div className="w-20 h-20 bg-white rounded-[24px] shadow-sm border border-slate-100 flex items-center justify-center text-slate-600 mb-6 group-hover:-translate-y-2 transition-transform duration-500">
-               {isProcessing ? <div className="w-8 h-8 border-3 border-slate-200 border-t-slate-500 rounded-full animate-spin" /> : <ImagePlus className="w-10 h-10" />}
+               <ImagePlus className="w-10 h-10" />
              </div>
              <h3 className="text-xl font-black text-slate-900 mb-2">Thư viện ảnh</h3>
              <p className="text-slate-500 text-xs text-center font-medium opacity-70">Chọn từ bộ nhớ máy</p>
