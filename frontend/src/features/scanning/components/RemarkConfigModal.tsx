@@ -53,7 +53,7 @@ const RemarkConfigModal = ({ remarkRules, setRemarkRules, onClose }: RemarkConfi
 
         <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
           <AnimatePresence>
-            {remarkRules.sort((a, b) => b.min - a.min).map((rule, index) => (
+            {[...remarkRules].sort((a, b) => b.min - a.min).map((rule, index) => (
               <motion.div 
                 key={index}
                 initial={{ opacity: 0, x: -10 }}

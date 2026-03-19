@@ -1,7 +1,6 @@
 import requests
 import base64
 import os
-import json
 
 API_BASE = "http://localhost:8000/api"
 

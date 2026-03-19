@@ -112,7 +112,7 @@ function App() {
     selectedSheetName, backendExcelFilename, mappingConfig, students, setStudents,
     processedFiles, setProcessedFiles, setScannedImages, setExcelUpdateCount,
     setShowSuccessToast, setLastMatchedStudent, setMismatchData,
-    isProcessing, setIsProcessing, error, setError,
+    isProcessing, setIsProcessing, setError,
     remarkRules
   });
 

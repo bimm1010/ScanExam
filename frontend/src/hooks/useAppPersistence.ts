@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import type { AppStep, StudentData, MappingConfig, RowSample, AppSavedState } from '../types';
+import type { AppStep, StudentData, MappingConfig, RowSample, AppSavedState, RemarkRule } from '../types';
 
 interface UseAppPersistenceProps {
   step: AppStep;

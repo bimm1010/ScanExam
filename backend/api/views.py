@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-import google.genai as genai
+from google import genai
 from google.genai import types
 import openpyxl
 from django.http import FileResponse
@@ -130,8 +130,6 @@ def fuzzy_match_student(detected_name, roster_choices):
     if max_fallback_score >= 90:
         return best_fallback['id'], best_fallback['name'], max_fallback_score
         
-    return None, None, 0
-    
     return None, None, 0
 
 def backup_roster(filename):
@@ -281,7 +279,7 @@ def call_gemini_with_router(prompt, image_bytes, mime_type="image/jpeg"):
                         print(f"🔄 Rate limit hit. Rotating to next API Key (Index: {current_key_index})...")
                         continue # Try same model with next key
                     else:
-                        print(f"⚠️ Rate limit hit and only 1 key available. Trying next model...")
+                        print("⚠️ Rate limit hit and only 1 key available. Trying next model...")
                         break # Try next model
                 else:
                     print(f"❌ Error with model {model_name}: {str(e)}")
