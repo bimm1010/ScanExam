@@ -144,8 +144,8 @@ const ColumnMappingStep = ({
         <div className="mt-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
             <button onClick={onBack} className="secondary-btn w-full md:w-auto">Quay lại</button>
-            <button onClick={onShowRemarkConfig} className="flex items-center justify-center space-x-2 px-6 py-3 bg-white/60 border border-amber-200 text-amber-600 rounded-2xl hover:bg-amber-50 transition-all font-bold text-sm w-full md:w-auto active:scale-95">
-               <span className="w-5 h-5 bg-amber-100 rounded-lg flex items-center justify-center text-[10px] font-black">{remarkRulesCount}</span>
+            <button onClick={onShowRemarkConfig} className="flex items-center justify-center space-x-2 px-6 py-3 bg-white/60 border border-indigo-200 text-indigo-600 rounded-2xl hover:bg-indigo-50 transition-all font-bold text-sm w-full md:w-auto active:scale-95">
+               <span className="w-5 h-5 bg-indigo-100 rounded-lg flex items-center justify-center text-[10px] font-black">{remarkRulesCount}</span>
                <span>Tùy chỉnh Lời phê</span>
             </button>
           </div>

@@ -1,5 +1,6 @@
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquareQuote, Plus, Trash2, X } from 'lucide-react';
+import { MessageSquareQuote, Plus, Trash2, X, CheckCircle2 } from 'lucide-react';
 import type { RemarkRule } from '../../../types';
 
 interface RemarkConfigModalProps {
@@ -9,6 +10,8 @@ interface RemarkConfigModalProps {
 }
 
 const RemarkConfigModal = ({ remarkRules, setRemarkRules, onClose }: RemarkConfigModalProps) => {
+  const [isSaved, setIsSaved] = useState(false);
+
   const addRule = () => {
     setRemarkRules([...remarkRules, { min: 0, max: 0, text: "" }]);
   };
@@ -21,6 +24,13 @@ const RemarkConfigModal = ({ remarkRules, setRemarkRules, onClose }: RemarkConfi
 
   const removeRule = (index: number) => {
     setRemarkRules(remarkRules.filter((_, i) => i !== index));
+  };
+
+  const handleSave = () => {
+    setIsSaved(true);
+    setTimeout(() => {
+      onClose();
+    }, 1200);
   };
 
   return (
@@ -36,8 +46,29 @@ const RemarkConfigModal = ({ remarkRules, setRemarkRules, onClose }: RemarkConfi
         animate={{ scale: 1, opacity: 1, y: 0 }} 
         exit={{ scale: 0.95, opacity: 0, y: 10 }} 
         onClick={(e) => e.stopPropagation()} 
-        className="w-full max-w-2xl bg-white border border-slate-200 rounded-[2rem] shadow-2xl flex flex-col max-h-[80vh] overflow-hidden text-left"
+        className="w-full max-w-2xl bg-white border border-slate-200 rounded-[2rem] shadow-2xl flex flex-col max-h-[80vh] overflow-hidden text-left relative"
       >
+        <AnimatePresence>
+          {isSaved && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: -10 }}
+              className="absolute inset-0 z-[80] flex items-center justify-center bg-white/60 backdrop-blur-md rounded-[2rem]"
+            >
+              <div className="bg-emerald-500 text-white px-8 py-4 rounded-3xl shadow-2xl shadow-emerald-200 flex items-center gap-4 border-4 border-white">
+                <div className="bg-white/20 p-2 rounded-full">
+                  <CheckCircle2 className="w-8 h-8 text-white" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-black text-xl tracking-tight leading-none mb-1">Đã Lưu Cấu Hình!</span>
+                  <span className="text-emerald-100 text-xs font-bold uppercase tracking-widest">Hệ thống đã cập nhật lời phê AI</span>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-slate-50/50">
           <div className="flex items-center space-x-3">
             <div className="bg-rose-100 p-2 rounded-xl text-rose-600">
@@ -109,7 +140,7 @@ const RemarkConfigModal = ({ remarkRules, setRemarkRules, onClose }: RemarkConfi
         </div>
 
         <div className="px-6 py-5 border-t border-slate-100 bg-slate-50/30 flex justify-end gap-3">
-          <button onClick={onClose} className="px-8 py-3 bg-slate-900 text-white rounded-full font-black text-sm shadow-lg hover:shadow-rose-500/20 transition-all active:scale-95">Lưu cấu hình</button>
+          <button onClick={handleSave} className="px-8 py-3 bg-slate-900 text-white rounded-full font-black text-sm shadow-lg hover:shadow-rose-500/20 transition-all active:scale-95">Lưu cấu hình</button>
         </div>
       </motion.div>
     </motion.div>
