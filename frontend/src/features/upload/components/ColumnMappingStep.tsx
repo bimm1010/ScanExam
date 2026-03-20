@@ -113,8 +113,8 @@ const ColumnMappingStep = ({
         </div>
         <div className="mb-8 overflow-hidden">
           <div className="flex items-center gap-3 mb-6">
-             <div className="w-1.5 h-7 bg-gradient-to-b from-rose-500 to-amber-400 rounded-full shadow-sm"></div>
-             <p className="text-xl md:text-2xl font-black text-slate-800 tracking-tight">Preview đối chiếu dữ liệu(5 HS đầu tiên)</p>
+            <div className="w-1.5 h-7 bg-gradient-to-b from-rose-500 to-amber-400 rounded-full shadow-sm"></div>
+            <p className="text-xl md:text-2xl font-black text-slate-800 tracking-tight">Preview đối chiếu dữ liệu(5 HS đầu tiên)</p>
           </div>
           <div className="overflow-x-auto bg-white/40 rounded-[24px] border border-white/80 shadow-sm custom-scrollbar pb-2">
             <table className="w-full text-left text-xs md:text-sm whitespace-nowrap">
@@ -148,8 +148,8 @@ const ColumnMappingStep = ({
           <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
             <button onClick={onBack} className="secondary-btn w-full md:w-auto">Quay lại</button>
             <button onClick={onShowRemarkConfig} className="flex items-center justify-center space-x-2 px-6 py-3 bg-white/60 border border-indigo-200 text-indigo-600 rounded-2xl hover:bg-indigo-50 transition-all font-bold text-sm w-full md:w-auto active:scale-95">
-               <span className="w-5 h-5 bg-indigo-100 rounded-lg flex items-center justify-center text-[10px] font-black">{remarkRulesCount}</span>
-               <span>Tùy chỉnh Lời phê</span>
+              <span className="w-5 h-5 bg-indigo-100 rounded-lg flex items-center justify-center text-[10px] font-black">{remarkRulesCount}</span>
+              <span>Tùy chỉnh Lời phê</span>
             </button>
           </div>
           <button onClick={onConfirm} disabled={isProcessing} className="squircle-btn px-10 py-4 text-white font-black text-lg w-full md:w-auto disabled:opacity-50 disabled:scale-100">{isProcessing ? 'Đang nạp...' : 'Xác nhận & Đồng bộ'}</button>
