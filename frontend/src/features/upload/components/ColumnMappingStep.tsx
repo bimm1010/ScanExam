@@ -111,8 +111,11 @@ const ColumnMappingStep = ({
             <p className="text-[10px] text-amber-500/80 mt-2 px-1 font-medium italic">Dòng đầu tiên có tên học sinh.</p>
           </div>
         </div>
-        <div className="mb-8">
-          <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Preview Dữ liệu Excel</p>
+        <div className="mb-8 overflow-hidden">
+          <div className="flex items-center gap-3 mb-6">
+             <div className="w-1.5 h-7 bg-gradient-to-b from-rose-500 to-amber-400 rounded-full shadow-sm"></div>
+             <p className="text-xl md:text-2xl font-black text-slate-800 tracking-tight">Dữ liệu Bảng điểm (Trích 5 dòng)</p>
+          </div>
           <div className="overflow-x-auto bg-white/40 rounded-[24px] border border-white/80 shadow-sm custom-scrollbar pb-2">
             <table className="w-full text-left text-xs md:text-sm whitespace-nowrap">
               <thead>
