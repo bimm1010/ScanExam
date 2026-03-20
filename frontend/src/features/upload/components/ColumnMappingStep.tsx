@@ -114,7 +114,7 @@ const ColumnMappingStep = ({
         <div className="mb-8 overflow-hidden">
           <div className="flex items-center gap-3 mb-6">
              <div className="w-1.5 h-7 bg-gradient-to-b from-rose-500 to-amber-400 rounded-full shadow-sm"></div>
-             <p className="text-xl md:text-2xl font-black text-slate-800 tracking-tight">Dữ liệu Bảng điểm (Trích 5 dòng)</p>
+             <p className="text-xl md:text-2xl font-black text-slate-800 tracking-tight">Preview đối chiếu dữ liệu(5 HS đầu tiên)</p>
           </div>
           <div className="overflow-x-auto bg-white/40 rounded-[24px] border border-white/80 shadow-sm custom-scrollbar pb-2">
             <table className="w-full text-left text-xs md:text-sm whitespace-nowrap">
