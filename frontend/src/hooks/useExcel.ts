@@ -28,8 +28,8 @@ export const useExcel = ({
   const [workbookData, setWorkbookData] = useState<ExcelJS.Workbook | null>(null);
   const [availableSheets, setAvailableSheets] = useState<{id: number, name: string}[]>([]);
 
-  // Pre-process xlsx buffer to handle non-standard namespace prefixes (e.g. from Bộ GD&ĐT tools)
-  // These files use x:workbook, x:sst, x:si etc. instead of standard workbook, sst, si
+  // Pre-process xlsx buffer to fix namespace prefixes for ExcelJS compatibility.
+  // Files from Bộ GD&ĐT use non-standard prefixes (x:, ap:, vt:) that ExcelJS can't parse.
   const sanitizeXlsxBuffer = async (buffer: ArrayBuffer): Promise<ArrayBuffer> => {
     try {
       const JSZip = (await import('jszip')).default;
@@ -39,15 +39,34 @@ export const useExcel = ({
         name => name.endsWith('.xml') || name.endsWith('.rels')
       );
 
+      // Tags that ExcelJS CoreXform expects WITH cp: prefix
+      const cpTags = ['keywords', 'category', 'lastModifiedBy', 'lastPrinted',
+                       'revision', 'version', 'contentStatus', 'contentType'];
+
       for (const entryName of xmlEntries) {
         const content = await zip.files[entryName].async('string');
-        if (!content.includes('xmlns:x=')) continue;
 
-        // Strip x: namespace prefix from tags only, keep attribute values intact
+        if (entryName === 'docProps/core.xml') {
+          // core.xml: ExcelJS expects dc:, cp:, dcterms: prefixed tags.
+          // Ministry files may omit cp: prefix on some tags (e.g. <lastModifiedBy>).
+          // Fix: add cp: prefix to bare tags that ExcelJS expects.
+          let fixed = content;
+          for (const tag of cpTags) {
+            fixed = fixed
+              .replace(new RegExp(`<${tag}([ >/])`, 'g'), `<cp:${tag}$1`)
+              .replace(new RegExp(`</${tag}>`, 'g'), `</cp:${tag}>`);
+          }
+          if (fixed !== content) zip.file(entryName, fixed);
+          continue;
+        }
+
+        // All other files: strip ALL namespace prefixes from element tags
+        if (!/<[a-z][a-z0-9]*:[A-Za-z]/i.test(content)) continue;
+
         const sanitized = content
-          .replace(/<x:([a-zA-Z][a-zA-Z0-9]*)/g, '<$1')    // opening tags: <x:foo → <foo
-          .replace(/<\/x:([a-zA-Z][a-zA-Z0-9]*)/g, '</$1') // closing tags: </x:foo → </foo
-          .replace(/xmlns:x="[^"]*"\s*/g, '');               // remove xmlns:x declaration
+          .replace(/<([a-z][a-z0-9]*):/gi, '<')              // <ap:Company → <Company
+          .replace(/<\/([a-z][a-z0-9]*):/gi, '</')            // </ap:Company → </Company
+          .replace(/\s*xmlns:[a-z][a-z0-9]*="[^"]*"/gi, '');  // remove xmlns:prefix declarations
 
         zip.file(entryName, sanitized);
       }

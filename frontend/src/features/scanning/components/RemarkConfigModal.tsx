@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquareQuote, Plus, Trash2, X, CheckCircle2 } from 'lucide-react';
 import type { RemarkRule } from '../../../types';
