@@ -28,6 +28,37 @@ export const useExcel = ({
   const [workbookData, setWorkbookData] = useState<ExcelJS.Workbook | null>(null);
   const [availableSheets, setAvailableSheets] = useState<{id: number, name: string}[]>([]);
 
+  // Pre-process xlsx buffer to handle non-standard namespace prefixes (e.g. from Bộ GD&ĐT tools)
+  // These files use x:workbook, x:sst, x:si etc. instead of standard workbook, sst, si
+  const sanitizeXlsxBuffer = async (buffer: ArrayBuffer): Promise<ArrayBuffer> => {
+    try {
+      const JSZip = (await import('jszip')).default;
+      const zip = await JSZip.loadAsync(buffer);
+
+      const xmlEntries = Object.keys(zip.files).filter(
+        name => name.endsWith('.xml') || name.endsWith('.rels')
+      );
+
+      for (const entryName of xmlEntries) {
+        const content = await zip.files[entryName].async('string');
+        if (!content.includes('xmlns:x=')) continue;
+
+        // Strip x: namespace prefix from tags only, keep attribute values intact
+        const sanitized = content
+          .replace(/<x:([a-zA-Z][a-zA-Z0-9]*)/g, '<$1')    // opening tags: <x:foo → <foo
+          .replace(/<\/x:([a-zA-Z][a-zA-Z0-9]*)/g, '</$1') // closing tags: </x:foo → </foo
+          .replace(/xmlns:x="[^"]*"\s*/g, '');               // remove xmlns:x declaration
+
+        zip.file(entryName, sanitized);
+      }
+
+      return await zip.generateAsync({ type: 'arraybuffer' });
+    } catch (e) {
+      console.warn('sanitizeXlsxBuffer failed, using original buffer:', e);
+      return buffer;
+    }
+  };
+
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -44,7 +75,8 @@ export const useExcel = ({
     try {
       const workbook = new ExcelJS.Workbook();
       const arrayBuffer = await file.arrayBuffer();
-      await workbook.xlsx.load(arrayBuffer);
+      const cleanBuffer = await sanitizeXlsxBuffer(arrayBuffer);
+      await workbook.xlsx.load(cleanBuffer);
 
       const formData = new FormData();
       formData.append('file', file);
@@ -84,6 +116,7 @@ export const useExcel = ({
   };
 
   const formatCellValue = (cellValue: ExcelJS.CellValue): string => {
+
     if (cellValue === null || cellValue === undefined) return '';
     if (typeof cellValue === 'object') {
       if (cellValue instanceof Date) return cellValue.toLocaleDateString('vi-VN');
