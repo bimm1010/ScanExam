@@ -1,0 +1,1625 @@
+diff --git a/node_modules/exceljs/LICENSE b/node_modules/exceljs/LICENSE
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/README.md b/node_modules/exceljs/README.md
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/README_zh.md b/node_modules/exceljs/README_zh.md
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/LICENSE b/node_modules/exceljs/dist/LICENSE
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/csv/csv.js b/node_modules/exceljs/dist/es5/csv/csv.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/csv/csv.js.map b/node_modules/exceljs/dist/es5/csv/csv.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/csv/line-buffer.js b/node_modules/exceljs/dist/es5/csv/line-buffer.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/csv/line-buffer.js.map b/node_modules/exceljs/dist/es5/csv/line-buffer.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/csv/stream-converter.js b/node_modules/exceljs/dist/es5/csv/stream-converter.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/csv/stream-converter.js.map b/node_modules/exceljs/dist/es5/csv/stream-converter.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/anchor.js b/node_modules/exceljs/dist/es5/doc/anchor.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/anchor.js.map b/node_modules/exceljs/dist/es5/doc/anchor.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/cell.js b/node_modules/exceljs/dist/es5/doc/cell.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/cell.js.map b/node_modules/exceljs/dist/es5/doc/cell.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/column.js b/node_modules/exceljs/dist/es5/doc/column.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/column.js.map b/node_modules/exceljs/dist/es5/doc/column.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/data-validations.js b/node_modules/exceljs/dist/es5/doc/data-validations.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/data-validations.js.map b/node_modules/exceljs/dist/es5/doc/data-validations.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/defined-names.js b/node_modules/exceljs/dist/es5/doc/defined-names.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/defined-names.js.map b/node_modules/exceljs/dist/es5/doc/defined-names.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/enums.js b/node_modules/exceljs/dist/es5/doc/enums.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/enums.js.map b/node_modules/exceljs/dist/es5/doc/enums.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/image.js b/node_modules/exceljs/dist/es5/doc/image.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/image.js.map b/node_modules/exceljs/dist/es5/doc/image.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/modelcontainer.js b/node_modules/exceljs/dist/es5/doc/modelcontainer.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/modelcontainer.js.map b/node_modules/exceljs/dist/es5/doc/modelcontainer.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/note.js b/node_modules/exceljs/dist/es5/doc/note.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/note.js.map b/node_modules/exceljs/dist/es5/doc/note.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/range.js b/node_modules/exceljs/dist/es5/doc/range.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/range.js.map b/node_modules/exceljs/dist/es5/doc/range.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/row.js b/node_modules/exceljs/dist/es5/doc/row.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/row.js.map b/node_modules/exceljs/dist/es5/doc/row.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/table.js b/node_modules/exceljs/dist/es5/doc/table.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/table.js.map b/node_modules/exceljs/dist/es5/doc/table.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/workbook.js b/node_modules/exceljs/dist/es5/doc/workbook.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/workbook.js.map b/node_modules/exceljs/dist/es5/doc/workbook.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/worksheet.js b/node_modules/exceljs/dist/es5/doc/worksheet.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/doc/worksheet.js.map b/node_modules/exceljs/dist/es5/doc/worksheet.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/exceljs.bare.js b/node_modules/exceljs/dist/es5/exceljs.bare.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/exceljs.bare.js.map b/node_modules/exceljs/dist/es5/exceljs.bare.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/exceljs.browser.js b/node_modules/exceljs/dist/es5/exceljs.browser.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/exceljs.browser.js.map b/node_modules/exceljs/dist/es5/exceljs.browser.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/exceljs.nodejs.js b/node_modules/exceljs/dist/es5/exceljs.nodejs.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/exceljs.nodejs.js.map b/node_modules/exceljs/dist/es5/exceljs.nodejs.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/index.js b/node_modules/exceljs/dist/es5/index.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/stream/xlsx/hyperlink-reader.js b/node_modules/exceljs/dist/es5/stream/xlsx/hyperlink-reader.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/stream/xlsx/hyperlink-reader.js.map b/node_modules/exceljs/dist/es5/stream/xlsx/hyperlink-reader.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/stream/xlsx/sheet-comments-writer.js b/node_modules/exceljs/dist/es5/stream/xlsx/sheet-comments-writer.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/stream/xlsx/sheet-comments-writer.js.map b/node_modules/exceljs/dist/es5/stream/xlsx/sheet-comments-writer.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/stream/xlsx/sheet-rels-writer.js b/node_modules/exceljs/dist/es5/stream/xlsx/sheet-rels-writer.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/stream/xlsx/sheet-rels-writer.js.map b/node_modules/exceljs/dist/es5/stream/xlsx/sheet-rels-writer.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/stream/xlsx/workbook-reader.js b/node_modules/exceljs/dist/es5/stream/xlsx/workbook-reader.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/stream/xlsx/workbook-reader.js.map b/node_modules/exceljs/dist/es5/stream/xlsx/workbook-reader.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/stream/xlsx/workbook-writer.js b/node_modules/exceljs/dist/es5/stream/xlsx/workbook-writer.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/stream/xlsx/workbook-writer.js.map b/node_modules/exceljs/dist/es5/stream/xlsx/workbook-writer.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/stream/xlsx/worksheet-reader.js b/node_modules/exceljs/dist/es5/stream/xlsx/worksheet-reader.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/stream/xlsx/worksheet-reader.js.map b/node_modules/exceljs/dist/es5/stream/xlsx/worksheet-reader.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/stream/xlsx/worksheet-writer.js b/node_modules/exceljs/dist/es5/stream/xlsx/worksheet-writer.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/stream/xlsx/worksheet-writer.js.map b/node_modules/exceljs/dist/es5/stream/xlsx/worksheet-writer.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/auto-drain.js b/node_modules/exceljs/dist/es5/utils/auto-drain.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/auto-drain.js.map b/node_modules/exceljs/dist/es5/utils/auto-drain.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/browser-buffer-decode.js b/node_modules/exceljs/dist/es5/utils/browser-buffer-decode.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/browser-buffer-decode.js.map b/node_modules/exceljs/dist/es5/utils/browser-buffer-decode.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/browser-buffer-encode.js b/node_modules/exceljs/dist/es5/utils/browser-buffer-encode.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/browser-buffer-encode.js.map b/node_modules/exceljs/dist/es5/utils/browser-buffer-encode.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/cell-matrix.js b/node_modules/exceljs/dist/es5/utils/cell-matrix.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/cell-matrix.js.map b/node_modules/exceljs/dist/es5/utils/cell-matrix.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/col-cache.js b/node_modules/exceljs/dist/es5/utils/col-cache.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/col-cache.js.map b/node_modules/exceljs/dist/es5/utils/col-cache.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/copy-style.js b/node_modules/exceljs/dist/es5/utils/copy-style.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/copy-style.js.map b/node_modules/exceljs/dist/es5/utils/copy-style.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/encryptor.js b/node_modules/exceljs/dist/es5/utils/encryptor.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/encryptor.js.map b/node_modules/exceljs/dist/es5/utils/encryptor.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/iterate-stream.js b/node_modules/exceljs/dist/es5/utils/iterate-stream.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/iterate-stream.js.map b/node_modules/exceljs/dist/es5/utils/iterate-stream.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/parse-sax.js b/node_modules/exceljs/dist/es5/utils/parse-sax.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/parse-sax.js.map b/node_modules/exceljs/dist/es5/utils/parse-sax.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/shared-formula.js b/node_modules/exceljs/dist/es5/utils/shared-formula.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/shared-formula.js.map b/node_modules/exceljs/dist/es5/utils/shared-formula.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/shared-strings.js b/node_modules/exceljs/dist/es5/utils/shared-strings.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/shared-strings.js.map b/node_modules/exceljs/dist/es5/utils/shared-strings.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/stream-base64.js b/node_modules/exceljs/dist/es5/utils/stream-base64.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/stream-base64.js.map b/node_modules/exceljs/dist/es5/utils/stream-base64.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/stream-buf.js b/node_modules/exceljs/dist/es5/utils/stream-buf.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/stream-buf.js.map b/node_modules/exceljs/dist/es5/utils/stream-buf.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/string-buf.js b/node_modules/exceljs/dist/es5/utils/string-buf.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/string-buf.js.map b/node_modules/exceljs/dist/es5/utils/string-buf.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/string-builder.js b/node_modules/exceljs/dist/es5/utils/string-builder.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/string-builder.js.map b/node_modules/exceljs/dist/es5/utils/string-builder.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/stuttered-pipe.js b/node_modules/exceljs/dist/es5/utils/stuttered-pipe.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/stuttered-pipe.js.map b/node_modules/exceljs/dist/es5/utils/stuttered-pipe.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/typed-stack.js b/node_modules/exceljs/dist/es5/utils/typed-stack.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/typed-stack.js.map b/node_modules/exceljs/dist/es5/utils/typed-stack.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/under-dash.js b/node_modules/exceljs/dist/es5/utils/under-dash.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/under-dash.js.map b/node_modules/exceljs/dist/es5/utils/under-dash.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/utils.js b/node_modules/exceljs/dist/es5/utils/utils.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/utils.js.map b/node_modules/exceljs/dist/es5/utils/utils.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/xml-stream.js b/node_modules/exceljs/dist/es5/utils/xml-stream.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/xml-stream.js.map b/node_modules/exceljs/dist/es5/utils/xml-stream.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/zip-stream.js b/node_modules/exceljs/dist/es5/utils/zip-stream.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/utils/zip-stream.js.map b/node_modules/exceljs/dist/es5/utils/zip-stream.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/defaultnumformats.js b/node_modules/exceljs/dist/es5/xlsx/defaultnumformats.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/defaultnumformats.js.map b/node_modules/exceljs/dist/es5/xlsx/defaultnumformats.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/rel-type.js b/node_modules/exceljs/dist/es5/xlsx/rel-type.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/rel-type.js.map b/node_modules/exceljs/dist/es5/xlsx/rel-type.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/base-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/base-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/base-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/base-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/book/defined-name-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/book/defined-name-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/book/defined-name-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/book/defined-name-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/book/sheet-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/book/sheet-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/book/sheet-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/book/sheet-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/book/workbook-calc-properties-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/book/workbook-calc-properties-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/book/workbook-calc-properties-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/book/workbook-calc-properties-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/book/workbook-properties-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/book/workbook-properties-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/book/workbook-properties-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/book/workbook-properties-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/book/workbook-view-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/book/workbook-view-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/book/workbook-view-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/book/workbook-view-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/book/workbook-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/book/workbook-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/book/workbook-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/book/workbook-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/comment/comment-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/comment/comment-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/comment/comment-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/comment/comment-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/comment/comments-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/comment/comments-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/comment/comments-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/comment/comments-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/comment/style/vml-position-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/comment/style/vml-position-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/comment/style/vml-position-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/comment/style/vml-position-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/comment/style/vml-protection-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/comment/style/vml-protection-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/comment/style/vml-protection-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/comment/style/vml-protection-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/comment/vml-anchor-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/comment/vml-anchor-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/comment/vml-anchor-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/comment/vml-anchor-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/comment/vml-client-data-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/comment/vml-client-data-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/comment/vml-client-data-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/comment/vml-client-data-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/comment/vml-notes-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/comment/vml-notes-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/comment/vml-notes-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/comment/vml-notes-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/comment/vml-shape-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/comment/vml-shape-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/comment/vml-shape-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/comment/vml-shape-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/comment/vml-textbox-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/comment/vml-textbox-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/comment/vml-textbox-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/comment/vml-textbox-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/composite-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/composite-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/composite-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/composite-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/core/app-heading-pairs-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/core/app-heading-pairs-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/core/app-heading-pairs-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/core/app-heading-pairs-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/core/app-titles-of-parts-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/core/app-titles-of-parts-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/core/app-titles-of-parts-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/core/app-titles-of-parts-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/core/app-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/core/app-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/core/app-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/core/app-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/core/content-types-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/core/content-types-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/core/content-types-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/core/content-types-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/core/core-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/core/core-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/core/core-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/core/core-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/core/relationship-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/core/relationship-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/core/relationship-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/core/relationship-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/core/relationships-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/core/relationships-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/core/relationships-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/core/relationships-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/base-cell-anchor-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/base-cell-anchor-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/base-cell-anchor-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/base-cell-anchor-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/blip-fill-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/blip-fill-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/blip-fill-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/blip-fill-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/blip-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/blip-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/blip-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/blip-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/c-nv-pic-pr-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/c-nv-pic-pr-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/c-nv-pic-pr-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/c-nv-pic-pr-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/c-nv-pr-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/c-nv-pr-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/c-nv-pr-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/c-nv-pr-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/cell-position-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/cell-position-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/cell-position-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/cell-position-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/drawing-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/drawing-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/drawing-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/drawing-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/ext-lst-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/ext-lst-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/ext-lst-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/ext-lst-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/ext-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/ext-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/ext-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/ext-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/hlink-click-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/hlink-click-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/hlink-click-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/hlink-click-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/nv-pic-pr-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/nv-pic-pr-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/nv-pic-pr-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/nv-pic-pr-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/one-cell-anchor-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/one-cell-anchor-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/one-cell-anchor-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/one-cell-anchor-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/pic-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/pic-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/pic-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/pic-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/sp-pr.js b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/sp-pr.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/sp-pr.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/sp-pr.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/two-cell-anchor-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/two-cell-anchor-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/drawing/two-cell-anchor-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/drawing/two-cell-anchor-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/list-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/list-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/list-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/list-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/auto-filter-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/auto-filter-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/auto-filter-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/auto-filter-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cell-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cell-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cell-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cell-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/cf-icon-ext-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/cf-icon-ext-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/cf-icon-ext-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/cf-icon-ext-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/cf-rule-ext-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/cf-rule-ext-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/cf-rule-ext-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/cf-rule-ext-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/cfvo-ext-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/cfvo-ext-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/cfvo-ext-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/cfvo-ext-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/conditional-formatting-ext-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/conditional-formatting-ext-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/conditional-formatting-ext-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/conditional-formatting-ext-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/conditional-formattings-ext-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/conditional-formattings-ext-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/conditional-formattings-ext-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/conditional-formattings-ext-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/databar-ext-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/databar-ext-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/databar-ext-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/databar-ext-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/f-ext-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/f-ext-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/f-ext-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/f-ext-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/icon-set-ext-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/icon-set-ext-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/icon-set-ext-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/icon-set-ext-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/sqref-ext-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/sqref-ext-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/sqref-ext-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf-ext/sqref-ext-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/cf-rule-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/cf-rule-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/cf-rule-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/cf-rule-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/cfvo-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/cfvo-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/cfvo-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/cfvo-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/color-scale-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/color-scale-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/color-scale-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/color-scale-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/conditional-formatting-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/conditional-formatting-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/conditional-formatting-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/conditional-formatting-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/conditional-formattings-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/conditional-formattings-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/conditional-formattings-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/conditional-formattings-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/databar-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/databar-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/databar-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/databar-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/ext-lst-ref-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/ext-lst-ref-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/ext-lst-ref-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/ext-lst-ref-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/formula-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/formula-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/formula-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/formula-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/icon-set-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/icon-set-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/icon-set-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/cf/icon-set-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/col-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/col-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/col-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/col-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/data-validations-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/data-validations-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/data-validations-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/data-validations-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/dimension-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/dimension-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/dimension-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/dimension-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/drawing-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/drawing-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/drawing-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/drawing-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/ext-lst-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/ext-lst-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/ext-lst-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/ext-lst-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/header-footer-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/header-footer-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/header-footer-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/header-footer-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/hyperlink-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/hyperlink-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/hyperlink-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/hyperlink-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/merge-cell-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/merge-cell-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/merge-cell-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/merge-cell-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/merges.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/merges.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/merges.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/merges.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/outline-properties-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/outline-properties-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/outline-properties-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/outline-properties-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/page-breaks-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/page-breaks-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/page-breaks-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/page-breaks-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/page-margins-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/page-margins-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/page-margins-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/page-margins-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/page-setup-properties-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/page-setup-properties-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/page-setup-properties-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/page-setup-properties-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/page-setup-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/page-setup-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/page-setup-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/page-setup-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/picture-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/picture-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/picture-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/picture-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/print-options-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/print-options-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/print-options-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/print-options-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/row-breaks-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/row-breaks-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/row-breaks-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/row-breaks-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/row-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/row-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/row-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/row-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/sheet-format-properties-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/sheet-format-properties-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/sheet-format-properties-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/sheet-format-properties-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/sheet-properties-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/sheet-properties-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/sheet-properties-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/sheet-properties-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/sheet-protection-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/sheet-protection-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/sheet-protection-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/sheet-protection-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/sheet-view-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/sheet-view-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/sheet-view-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/sheet-view-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/table-part-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/table-part-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/table-part-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/table-part-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/worksheet-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/worksheet-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/sheet/worksheet-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/sheet/worksheet-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/simple/boolean-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/simple/boolean-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/simple/boolean-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/simple/boolean-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/simple/date-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/simple/date-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/simple/date-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/simple/date-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/simple/float-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/simple/float-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/simple/float-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/simple/float-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/simple/integer-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/simple/integer-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/simple/integer-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/simple/integer-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/simple/string-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/simple/string-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/simple/string-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/simple/string-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/static-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/static-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/static-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/static-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/strings/phonetic-text-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/strings/phonetic-text-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/strings/phonetic-text-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/strings/phonetic-text-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/strings/rich-text-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/strings/rich-text-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/strings/rich-text-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/strings/rich-text-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/strings/shared-string-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/strings/shared-string-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/strings/shared-string-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/strings/shared-string-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/strings/shared-strings-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/strings/shared-strings-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/strings/shared-strings-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/strings/shared-strings-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/strings/text-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/strings/text-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/strings/text-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/strings/text-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/style/alignment-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/style/alignment-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/style/alignment-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/style/alignment-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/style/border-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/style/border-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/style/border-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/style/border-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/style/color-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/style/color-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/style/color-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/style/color-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/style/dxf-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/style/dxf-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/style/dxf-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/style/dxf-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/style/fill-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/style/fill-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/style/fill-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/style/fill-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/style/font-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/style/font-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/style/font-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/style/font-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/style/numfmt-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/style/numfmt-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/style/numfmt-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/style/numfmt-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/style/protection-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/style/protection-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/style/protection-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/style/protection-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/style/style-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/style/style-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/style/style-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/style/style-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/style/styles-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/style/styles-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/style/styles-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/style/styles-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/style/underline-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/style/underline-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/style/underline-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/style/underline-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/table/auto-filter-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/table/auto-filter-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/table/auto-filter-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/table/auto-filter-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/table/custom-filter-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/table/custom-filter-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/table/custom-filter-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/table/custom-filter-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/table/filter-column-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/table/filter-column-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/table/filter-column-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/table/filter-column-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/table/filter-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/table/filter-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/table/filter-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/table/filter-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/table/table-column-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/table/table-column-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/table/table-column-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/table/table-column-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/table/table-style-info-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/table/table-style-info-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/table/table-style-info-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/table/table-style-info-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/table/table-xform.js b/node_modules/exceljs/dist/es5/xlsx/xform/table/table-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xform/table/table-xform.js.map b/node_modules/exceljs/dist/es5/xlsx/xform/table/table-xform.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xlsx.js b/node_modules/exceljs/dist/es5/xlsx/xlsx.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xlsx.js.map b/node_modules/exceljs/dist/es5/xlsx/xlsx.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xml/theme1.js b/node_modules/exceljs/dist/es5/xlsx/xml/theme1.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/es5/xlsx/xml/theme1.js.map b/node_modules/exceljs/dist/es5/xlsx/xml/theme1.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/exceljs.bare.js b/node_modules/exceljs/dist/exceljs.bare.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/exceljs.bare.js.map b/node_modules/exceljs/dist/exceljs.bare.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/exceljs.bare.min.js b/node_modules/exceljs/dist/exceljs.bare.min.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/exceljs.bare.min.js.map b/node_modules/exceljs/dist/exceljs.bare.min.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/exceljs.js b/node_modules/exceljs/dist/exceljs.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/exceljs.js.map b/node_modules/exceljs/dist/exceljs.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/exceljs.min.js b/node_modules/exceljs/dist/exceljs.min.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/dist/exceljs.min.js.map b/node_modules/exceljs/dist/exceljs.min.js.map
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/excel.js b/node_modules/exceljs/excel.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/index.d.ts b/node_modules/exceljs/index.d.ts
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/index.ts b/node_modules/exceljs/index.ts
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/csv/csv.js b/node_modules/exceljs/lib/csv/csv.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/csv/line-buffer.js b/node_modules/exceljs/lib/csv/line-buffer.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/csv/stream-converter.js b/node_modules/exceljs/lib/csv/stream-converter.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/doc/anchor.js b/node_modules/exceljs/lib/doc/anchor.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/doc/cell.js b/node_modules/exceljs/lib/doc/cell.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/doc/column.js b/node_modules/exceljs/lib/doc/column.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/doc/data-validations.js b/node_modules/exceljs/lib/doc/data-validations.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/doc/data/theme1.json b/node_modules/exceljs/lib/doc/data/theme1.json
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/doc/defined-names.js b/node_modules/exceljs/lib/doc/defined-names.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/doc/enums.js b/node_modules/exceljs/lib/doc/enums.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/doc/image.js b/node_modules/exceljs/lib/doc/image.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/doc/modelcontainer.js b/node_modules/exceljs/lib/doc/modelcontainer.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/doc/note.js b/node_modules/exceljs/lib/doc/note.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/doc/range.js b/node_modules/exceljs/lib/doc/range.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/doc/row.js b/node_modules/exceljs/lib/doc/row.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/doc/table.js b/node_modules/exceljs/lib/doc/table.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/doc/workbook.js b/node_modules/exceljs/lib/doc/workbook.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/doc/worksheet.js b/node_modules/exceljs/lib/doc/worksheet.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/exceljs.bare.js b/node_modules/exceljs/lib/exceljs.bare.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/exceljs.browser.js b/node_modules/exceljs/lib/exceljs.browser.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/exceljs.nodejs.js b/node_modules/exceljs/lib/exceljs.nodejs.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/stream/xlsx/hyperlink-reader.js b/node_modules/exceljs/lib/stream/xlsx/hyperlink-reader.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/stream/xlsx/sheet-comments-writer.js b/node_modules/exceljs/lib/stream/xlsx/sheet-comments-writer.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/stream/xlsx/sheet-rels-writer.js b/node_modules/exceljs/lib/stream/xlsx/sheet-rels-writer.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/stream/xlsx/workbook-reader.js b/node_modules/exceljs/lib/stream/xlsx/workbook-reader.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/stream/xlsx/workbook-writer.js b/node_modules/exceljs/lib/stream/xlsx/workbook-writer.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/stream/xlsx/worksheet-reader.js b/node_modules/exceljs/lib/stream/xlsx/worksheet-reader.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/stream/xlsx/worksheet-writer.js b/node_modules/exceljs/lib/stream/xlsx/worksheet-writer.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/utils/auto-drain.js b/node_modules/exceljs/lib/utils/auto-drain.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/utils/browser-buffer-decode.js b/node_modules/exceljs/lib/utils/browser-buffer-decode.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/utils/browser-buffer-encode.js b/node_modules/exceljs/lib/utils/browser-buffer-encode.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/utils/cell-matrix.js b/node_modules/exceljs/lib/utils/cell-matrix.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/utils/col-cache.js b/node_modules/exceljs/lib/utils/col-cache.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/utils/copy-style.js b/node_modules/exceljs/lib/utils/copy-style.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/utils/encryptor.js b/node_modules/exceljs/lib/utils/encryptor.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/utils/iterate-stream.js b/node_modules/exceljs/lib/utils/iterate-stream.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/utils/parse-sax.js b/node_modules/exceljs/lib/utils/parse-sax.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/utils/shared-formula.js b/node_modules/exceljs/lib/utils/shared-formula.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/utils/shared-strings.js b/node_modules/exceljs/lib/utils/shared-strings.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/utils/stream-base64.js b/node_modules/exceljs/lib/utils/stream-base64.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/utils/stream-buf.js b/node_modules/exceljs/lib/utils/stream-buf.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/utils/string-buf.js b/node_modules/exceljs/lib/utils/string-buf.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/utils/string-builder.js b/node_modules/exceljs/lib/utils/string-builder.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/utils/stuttered-pipe.js b/node_modules/exceljs/lib/utils/stuttered-pipe.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/utils/typed-stack.js b/node_modules/exceljs/lib/utils/typed-stack.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/utils/under-dash.js b/node_modules/exceljs/lib/utils/under-dash.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/utils/utils.js b/node_modules/exceljs/lib/utils/utils.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/utils/xml-stream.js b/node_modules/exceljs/lib/utils/xml-stream.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/utils/zip-stream.js b/node_modules/exceljs/lib/utils/zip-stream.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/.rels b/node_modules/exceljs/lib/xlsx/.rels
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/calcChain.xml b/node_modules/exceljs/lib/xlsx/calcChain.xml
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/core.xml b/node_modules/exceljs/lib/xlsx/core.xml
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/defaultnumformats.js b/node_modules/exceljs/lib/xlsx/defaultnumformats.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/rel-type.js b/node_modules/exceljs/lib/xlsx/rel-type.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/styles.xml b/node_modules/exceljs/lib/xlsx/styles.xml
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/workbook.xml b/node_modules/exceljs/lib/xlsx/workbook.xml
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/base-xform.js b/node_modules/exceljs/lib/xlsx/xform/base-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/book/defined-name-xform.js b/node_modules/exceljs/lib/xlsx/xform/book/defined-name-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/book/sheet-xform.js b/node_modules/exceljs/lib/xlsx/xform/book/sheet-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/book/workbook-calc-properties-xform.js b/node_modules/exceljs/lib/xlsx/xform/book/workbook-calc-properties-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/book/workbook-properties-xform.js b/node_modules/exceljs/lib/xlsx/xform/book/workbook-properties-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/book/workbook-view-xform.js b/node_modules/exceljs/lib/xlsx/xform/book/workbook-view-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/book/workbook-xform.js b/node_modules/exceljs/lib/xlsx/xform/book/workbook-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/comment/comment-xform.js b/node_modules/exceljs/lib/xlsx/xform/comment/comment-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/comment/comments-xform.js b/node_modules/exceljs/lib/xlsx/xform/comment/comments-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/comment/style/vml-position-xform.js b/node_modules/exceljs/lib/xlsx/xform/comment/style/vml-position-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/comment/style/vml-protection-xform.js b/node_modules/exceljs/lib/xlsx/xform/comment/style/vml-protection-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/comment/vml-anchor-xform.js b/node_modules/exceljs/lib/xlsx/xform/comment/vml-anchor-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/comment/vml-client-data-xform.js b/node_modules/exceljs/lib/xlsx/xform/comment/vml-client-data-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/comment/vml-notes-xform.js b/node_modules/exceljs/lib/xlsx/xform/comment/vml-notes-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/comment/vml-shape-xform.js b/node_modules/exceljs/lib/xlsx/xform/comment/vml-shape-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/comment/vml-textbox-xform.js b/node_modules/exceljs/lib/xlsx/xform/comment/vml-textbox-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/composite-xform.js b/node_modules/exceljs/lib/xlsx/xform/composite-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/core/app-heading-pairs-xform.js b/node_modules/exceljs/lib/xlsx/xform/core/app-heading-pairs-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/core/app-titles-of-parts-xform.js b/node_modules/exceljs/lib/xlsx/xform/core/app-titles-of-parts-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/core/app-xform.js b/node_modules/exceljs/lib/xlsx/xform/core/app-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/core/content-types-xform.js b/node_modules/exceljs/lib/xlsx/xform/core/content-types-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/core/core-xform.js b/node_modules/exceljs/lib/xlsx/xform/core/core-xform.js
+old mode 100644
+new mode 100755
+index cedde0f..f5966cb
+--- a/node_modules/exceljs/lib/xlsx/xform/core/core-xform.js
++++ b/node_modules/exceljs/lib/xlsx/xform/core/core-xform.js
+@@ -76,7 +76,8 @@ class CoreXform extends BaseXform {
+           this.parser.parseOpen(node);
+           return true;
+         }
+-        throw new Error(`Unexpected xml node in parseOpen: ${JSON.stringify(node)}`);
++        // Silently ignore unknown tags (e.g. namespace-stripped tags from non-standard generators)
++        return false;
+     }
+   }
+ 
+@@ -115,7 +116,8 @@ class CoreXform extends BaseXform {
+         };
+         return false;
+       default:
+-        throw new Error(`Unexpected xml node in parseClose: ${name}`);
++        // Silently ignore unknown closing tags
++        return false;
+     }
+   }
+ }
+diff --git a/node_modules/exceljs/lib/xlsx/xform/core/relationship-xform.js b/node_modules/exceljs/lib/xlsx/xform/core/relationship-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/core/relationships-xform.js b/node_modules/exceljs/lib/xlsx/xform/core/relationships-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/drawing/base-cell-anchor-xform.js b/node_modules/exceljs/lib/xlsx/xform/drawing/base-cell-anchor-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/drawing/blip-fill-xform.js b/node_modules/exceljs/lib/xlsx/xform/drawing/blip-fill-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/drawing/blip-xform.js b/node_modules/exceljs/lib/xlsx/xform/drawing/blip-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/drawing/c-nv-pic-pr-xform.js b/node_modules/exceljs/lib/xlsx/xform/drawing/c-nv-pic-pr-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/drawing/c-nv-pr-xform.js b/node_modules/exceljs/lib/xlsx/xform/drawing/c-nv-pr-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/drawing/cell-position-xform.js b/node_modules/exceljs/lib/xlsx/xform/drawing/cell-position-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/drawing/drawing-xform.js b/node_modules/exceljs/lib/xlsx/xform/drawing/drawing-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/drawing/ext-lst-xform.js b/node_modules/exceljs/lib/xlsx/xform/drawing/ext-lst-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/drawing/ext-xform.js b/node_modules/exceljs/lib/xlsx/xform/drawing/ext-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/drawing/hlink-click-xform.js b/node_modules/exceljs/lib/xlsx/xform/drawing/hlink-click-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/drawing/nv-pic-pr-xform.js b/node_modules/exceljs/lib/xlsx/xform/drawing/nv-pic-pr-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/drawing/one-cell-anchor-xform.js b/node_modules/exceljs/lib/xlsx/xform/drawing/one-cell-anchor-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/drawing/pic-xform.js b/node_modules/exceljs/lib/xlsx/xform/drawing/pic-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/drawing/sp-pr.js b/node_modules/exceljs/lib/xlsx/xform/drawing/sp-pr.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/drawing/two-cell-anchor-xform.js b/node_modules/exceljs/lib/xlsx/xform/drawing/two-cell-anchor-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/list-xform.js b/node_modules/exceljs/lib/xlsx/xform/list-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/auto-filter-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/auto-filter-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/cell-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/cell-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/cf-ext/cf-icon-ext-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/cf-ext/cf-icon-ext-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/cf-ext/cf-rule-ext-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/cf-ext/cf-rule-ext-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/cf-ext/cfvo-ext-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/cf-ext/cfvo-ext-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/cf-ext/conditional-formatting-ext-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/cf-ext/conditional-formatting-ext-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/cf-ext/conditional-formattings-ext-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/cf-ext/conditional-formattings-ext-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/cf-ext/databar-ext-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/cf-ext/databar-ext-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/cf-ext/f-ext-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/cf-ext/f-ext-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/cf-ext/icon-set-ext-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/cf-ext/icon-set-ext-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/cf-ext/sqref-ext-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/cf-ext/sqref-ext-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/cf/cf-rule-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/cf/cf-rule-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/cf/cfvo-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/cf/cfvo-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/cf/color-scale-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/cf/color-scale-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/cf/conditional-formatting-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/cf/conditional-formatting-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/cf/conditional-formattings-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/cf/conditional-formattings-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/cf/databar-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/cf/databar-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/cf/ext-lst-ref-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/cf/ext-lst-ref-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/cf/formula-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/cf/formula-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/cf/icon-set-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/cf/icon-set-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/col-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/col-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/data-validations-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/data-validations-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/dimension-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/dimension-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/drawing-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/drawing-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/ext-lst-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/ext-lst-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/header-footer-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/header-footer-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/hyperlink-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/hyperlink-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/merge-cell-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/merge-cell-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/merges.js b/node_modules/exceljs/lib/xlsx/xform/sheet/merges.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/outline-properties-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/outline-properties-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/page-breaks-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/page-breaks-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/page-margins-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/page-margins-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/page-setup-properties-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/page-setup-properties-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/page-setup-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/page-setup-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/picture-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/picture-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/print-options-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/print-options-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/row-breaks-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/row-breaks-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/row-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/row-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/sheet-format-properties-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/sheet-format-properties-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/sheet-properties-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/sheet-properties-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/sheet-protection-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/sheet-protection-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/sheet-view-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/sheet-view-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/table-part-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/table-part-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/sheet/worksheet-xform.js b/node_modules/exceljs/lib/xlsx/xform/sheet/worksheet-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/simple/boolean-xform.js b/node_modules/exceljs/lib/xlsx/xform/simple/boolean-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/simple/date-xform.js b/node_modules/exceljs/lib/xlsx/xform/simple/date-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/simple/float-xform.js b/node_modules/exceljs/lib/xlsx/xform/simple/float-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/simple/integer-xform.js b/node_modules/exceljs/lib/xlsx/xform/simple/integer-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/simple/string-xform.js b/node_modules/exceljs/lib/xlsx/xform/simple/string-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/static-xform.js b/node_modules/exceljs/lib/xlsx/xform/static-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/strings/phonetic-text-xform.js b/node_modules/exceljs/lib/xlsx/xform/strings/phonetic-text-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/strings/rich-text-xform.js b/node_modules/exceljs/lib/xlsx/xform/strings/rich-text-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/strings/shared-string-xform.js b/node_modules/exceljs/lib/xlsx/xform/strings/shared-string-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/strings/shared-strings-xform.js b/node_modules/exceljs/lib/xlsx/xform/strings/shared-strings-xform.js
+old mode 100644
+new mode 100755
+index 0777b68..946a8be
+--- a/node_modules/exceljs/lib/xlsx/xform/strings/shared-strings-xform.js
++++ b/node_modules/exceljs/lib/xlsx/xform/strings/shared-strings-xform.js
+@@ -90,13 +90,16 @@ class SharedStringsXform extends BaseXform {
+     }
+     switch (node.name) {
+       case 'sst':
++      case 'x:sst':
+         return true;
+       case 'si':
++      case 'x:si':
+         this.parser = this.sharedStringXform;
+         this.parser.parseOpen(node);
+         return true;
+       default:
+-        throw new Error(`Unexpected xml node in parseOpen: ${JSON.stringify(node)}`);
++        // Silently ignore unknown tags from non-standard Excel generators
++        return false;
+     }
+   }
+ 
+@@ -117,9 +120,11 @@ class SharedStringsXform extends BaseXform {
+     }
+     switch (name) {
+       case 'sst':
++      case 'x:sst':
+         return false;
+       default:
+-        throw new Error(`Unexpected xml node in parseClose: ${name}`);
++        // Silently ignore unknown closing tags
++        return false;
+     }
+   }
+ }
+diff --git a/node_modules/exceljs/lib/xlsx/xform/strings/text-xform.js b/node_modules/exceljs/lib/xlsx/xform/strings/text-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/style/alignment-xform.js b/node_modules/exceljs/lib/xlsx/xform/style/alignment-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/style/border-xform.js b/node_modules/exceljs/lib/xlsx/xform/style/border-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/style/color-xform.js b/node_modules/exceljs/lib/xlsx/xform/style/color-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/style/dxf-xform.js b/node_modules/exceljs/lib/xlsx/xform/style/dxf-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/style/fill-xform.js b/node_modules/exceljs/lib/xlsx/xform/style/fill-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/style/font-xform.js b/node_modules/exceljs/lib/xlsx/xform/style/font-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/style/numfmt-xform.js b/node_modules/exceljs/lib/xlsx/xform/style/numfmt-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/style/protection-xform.js b/node_modules/exceljs/lib/xlsx/xform/style/protection-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/style/style-xform.js b/node_modules/exceljs/lib/xlsx/xform/style/style-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/style/styles-xform.js b/node_modules/exceljs/lib/xlsx/xform/style/styles-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/style/underline-xform.js b/node_modules/exceljs/lib/xlsx/xform/style/underline-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/table/auto-filter-xform.js b/node_modules/exceljs/lib/xlsx/xform/table/auto-filter-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/table/custom-filter-xform.js b/node_modules/exceljs/lib/xlsx/xform/table/custom-filter-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/table/filter-column-xform.js b/node_modules/exceljs/lib/xlsx/xform/table/filter-column-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/table/filter-xform.js b/node_modules/exceljs/lib/xlsx/xform/table/filter-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/table/table-column-xform.js b/node_modules/exceljs/lib/xlsx/xform/table/table-column-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/table/table-style-info-xform.js b/node_modules/exceljs/lib/xlsx/xform/table/table-style-info-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xform/table/table-xform.js b/node_modules/exceljs/lib/xlsx/xform/table/table-xform.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xlsx.js b/node_modules/exceljs/lib/xlsx/xlsx.js
+old mode 100644
+new mode 100755
+index ff2d9a1..b3ce79c
+--- a/node_modules/exceljs/lib/xlsx/xlsx.js
++++ b/node_modules/exceljs/lib/xlsx/xlsx.js
+@@ -345,8 +345,8 @@ class XLSX {
+           case 'docProps/app.xml': {
+             const appXform = new AppXform();
+             const appProperties = await appXform.parseStream(stream);
+-            model.company = appProperties.company;
+-            model.manager = appProperties.manager;
++            model.company = appProperties?.company;
++            model.manager = appProperties?.manager;
+             break;
+           }
+ 
+diff --git a/node_modules/exceljs/lib/xlsx/xml/theme1.js b/node_modules/exceljs/lib/xlsx/xml/theme1.js
+old mode 100644
+new mode 100755
+diff --git a/node_modules/exceljs/lib/xlsx/xml/theme1.xml b/node_modules/exceljs/lib/xlsx/xml/theme1.xml
+old mode 100644
+new mode 100755
