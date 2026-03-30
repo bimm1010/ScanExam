@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ScanLine, ImagePlus, Camera, FileSpreadsheet, Trash2, MessageSquareQuote } from 'lucide-react';
+import { ScanLine, ImagePlus, Camera, FileSpreadsheet, Trash2, MessageSquareQuote, Smartphone } from 'lucide-react';
 
 interface ScanningStepProps {
   scannedImagesCount: number;
@@ -13,11 +13,17 @@ interface ScanningStepProps {
   onClearData: () => void;
   onBack: () => void;
   backendExcelFilename: string | null;
+  expectedSubject: string | null;
   cameraInputRef: React.RefObject<HTMLInputElement>;
   galleryInputRef: React.RefObject<HTMLInputElement>;
   onImageCapture: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onDownload: () => void;
+  onMobileScanResult: (text: string) => void;
 }
+
+import { useState } from 'react';
+import { QRCodeScannerModal } from './QRCodeScannerModal';
+import { ExcelPreviewModal } from './ExcelPreviewModal';
 
 const ScanningStep = ({
   scannedImagesCount,
@@ -31,11 +37,20 @@ const ScanningStep = ({
   onClearData,
   onBack,
   backendExcelFilename,
+  expectedSubject,
   cameraInputRef,
   galleryInputRef,
   onImageCapture,
-  onDownload
+  onDownload,
+  onMobileScanResult
 }: ScanningStepProps) => {
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
+
+  const handleScanResult = (text: string) => {
+    onMobileScanResult(text);
+  };
+
   return (
     <motion.div key="scan" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="glass-card p-3 rounded-[40px] text-left max-w-4xl">
       <div className="w-full rounded-[32px] bg-slate-50/30 border border-white/40 min-h-[300px] flex flex-col p-6 md:p-10 relative overflow-hidden">
@@ -45,33 +60,50 @@ const ScanningStep = ({
             <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Thu thập Bài Thi</h2>
             <p className="text-slate-500 font-medium text-sm md:text-base italic">Vui lòng cung cấp hình ảnh bài kiểm tra:</p>
           </div>
-          <button 
-            onClick={onShowRemarkConfig}
-            className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm border border-slate-100 text-slate-400 hover:text-rose-500 hover:border-rose-200 transition-all group shrink-0"
-            title="Cấu hình lời phê"
-          >
-            <MessageSquareQuote className="w-6 h-6 group-hover:scale-110 transition-transform" />
-          </button>
+          <div className="flex gap-2 shrink-0">
+            <button 
+              onClick={() => setShowPreviewModal(true)}
+              disabled={!backendExcelFilename}
+              className={`w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm border border-slate-100 transition-all group ${!backendExcelFilename ? 'opacity-50 cursor-not-allowed text-slate-300' : 'text-slate-400 hover:text-emerald-500 hover:border-emerald-200'}`}
+              title="Xem trước dữ liệu Excel"
+            >
+              <FileSpreadsheet className="w-6 h-6 group-hover:scale-110 transition-transform" />
+            </button>
+            <button 
+              onClick={onShowRemarkConfig}
+              className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm border border-slate-100 text-slate-400 hover:text-rose-500 hover:border-rose-200 transition-all group"
+              title="Cấu hình lời phê"
+            >
+              <MessageSquareQuote className="w-6 h-6 group-hover:scale-110 transition-transform" />
+            </button>
+          </div>
         </div>
         
         <input id="camera-capture-input" type="file" ref={cameraInputRef} onChange={onImageCapture} accept="image/*" capture="environment" multiple className="hidden" />
         <input id="gallery-pick-input" type="file" ref={galleryInputRef} onChange={onImageCapture} accept="image/*" multiple className="hidden" />
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 relative">
-           <button onClick={onCameraClick} aria-label="Mở camera chụp ảnh" className="flex flex-col items-center justify-center p-10 bg-white/60 rounded-[32px] border border-white/80 hover:border-rose-200 hover:bg-rose-50/50 active:scale-[0.98] transition-all group">
-             <div className="w-20 h-20 bg-white rounded-[24px] shadow-sm border border-slate-100 flex items-center justify-center text-rose-500 mb-6 group-hover:-translate-y-2 transition-transform duration-500">
-               <Camera className="w-10 h-10" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 relative">
+           <button onClick={() => setShowQRModal(true)} aria-label="Quét điện thoại" className="flex flex-col items-center justify-center p-8 bg-white/60 rounded-[32px] border border-white/80 hover:border-emerald-200 hover:bg-emerald-50/50 active:scale-[0.98] transition-all group">
+             <div className="w-16 h-16 bg-white rounded-[24px] shadow-sm border border-slate-100 flex items-center justify-center text-emerald-500 mb-4 group-hover:-translate-y-2 transition-transform duration-500">
+               <Smartphone className="w-8 h-8" />
              </div>
-             <h3 className="text-xl font-black text-slate-900 mb-2">Chụp ảnh mới</h3>
-             <p className="text-slate-500 text-xs text-center font-medium opacity-70">Sử dụng camera trực tiếp</p>
+             <h3 className="text-lg font-black text-slate-900 mb-1">Dùng Điện Thoại</h3>
+             <p className="text-slate-500 text-xs text-center font-medium opacity-70">Camera từ xa cực nhanh</p>
            </button>
            
-           <button onClick={onGalleryClick} aria-label="Chọn ảnh từ thư viện" className="flex flex-col items-center justify-center p-10 bg-white/60 rounded-[32px] border border-white/80 hover:border-slate-300 hover:bg-slate-100/50 active:scale-[0.98] transition-all group">
-
-             <div className="w-20 h-20 bg-white rounded-[24px] shadow-sm border border-slate-100 flex items-center justify-center text-slate-600 mb-6 group-hover:-translate-y-2 transition-transform duration-500">
-               <ImagePlus className="w-10 h-10" />
+           <button onClick={onCameraClick} aria-label="Mở camera chụp ảnh" className="flex flex-col items-center justify-center p-8 bg-white/60 rounded-[32px] border border-white/80 hover:border-rose-200 hover:bg-rose-50/50 active:scale-[0.98] transition-all group">
+             <div className="w-16 h-16 bg-white rounded-[24px] shadow-sm border border-slate-100 flex items-center justify-center text-rose-500 mb-4 group-hover:-translate-y-2 transition-transform duration-500">
+               <Camera className="w-8 h-8" />
              </div>
-             <h3 className="text-xl font-black text-slate-900 mb-2">Thư viện ảnh</h3>
+             <h3 className="text-lg font-black text-slate-900 mb-1">Chụp Máy Tính</h3>
+             <p className="text-slate-500 text-xs text-center font-medium opacity-70">Sử dụng webcam</p>
+           </button>
+           
+           <button onClick={onGalleryClick} aria-label="Chọn ảnh từ thư viện" className="flex flex-col items-center justify-center p-8 bg-white/60 rounded-[32px] border border-white/80 hover:border-slate-300 hover:bg-slate-100/50 active:scale-[0.98] transition-all group">
+             <div className="w-16 h-16 bg-white rounded-[24px] shadow-sm border border-slate-100 flex items-center justify-center text-slate-600 mb-4 group-hover:-translate-y-2 transition-transform duration-500">
+               <ImagePlus className="w-8 h-8" />
+             </div>
+             <h3 className="text-lg font-black text-slate-900 mb-1">Thư viện ảnh</h3>
              <p className="text-slate-500 text-xs text-center font-medium opacity-70">Chọn từ bộ nhớ máy</p>
            </button>
         </div>
@@ -143,6 +175,17 @@ const ScanningStep = ({
             </div>
         </div>
       </div>
+      <QRCodeScannerModal 
+        isOpen={showQRModal} 
+        onClose={() => setShowQRModal(false)}
+        onScanResult={handleScanResult} 
+      />
+      <ExcelPreviewModal
+        isOpen={showPreviewModal}
+        onClose={() => setShowPreviewModal(false)}
+        filename={backendExcelFilename || ''}
+        subject={expectedSubject || undefined}
+      />
     </motion.div>
   );
 };

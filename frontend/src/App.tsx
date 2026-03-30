@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FileSpreadsheet } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -102,7 +102,9 @@ function App() {
   const {
     batchProgress,
     handleImageCapture,
-    forceFlushPending
+    handleMobileFile,
+    forceFlushPending,
+    handleMobileScanResult
   } = useScanning({
     selectedSheetName, backendExcelFilename, mappingConfig, students, setStudents,
     processedFiles, setProcessedFiles, setScannedImages, setExcelUpdateCount,
@@ -110,6 +112,17 @@ function App() {
     isProcessing, setIsProcessing, setError,
     remarkRules
   });
+
+  // Listen for images sent from mobile phone via WebSocket
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const file = (e as CustomEvent<{ file: File }>).detail.file;
+      console.log('📱 [App] mobileScanFile event received:', file.name);
+      handleMobileFile(file);
+    };
+    window.addEventListener('mobileScanFile', handler);
+    return () => window.removeEventListener('mobileScanFile', handler);
+  }, [handleMobileFile]);
 
   // --- ACTIONS ---
   const handleDownload = async () => {
@@ -149,8 +162,7 @@ function App() {
     }
     
     try {
-      const apiHost = window.location.hostname;
-      const url = `http://${apiHost}:8000/api/download-updated-excel/?filename=${encodeURIComponent(backendExcelFilename)}`;
+      const url = `/api/download-updated-excel/?filename=${encodeURIComponent(backendExcelFilename)}`;
       
       if (fileHandle) {
         // Fetch data và ghi trực tiếp vào File Handle đã được cấp quyền từ trước
@@ -241,8 +253,7 @@ function App() {
     
     console.log("🔄 [App] Syncing manual changes to backend...");
     try {
-      const apiHost = window.location.hostname;
-      const response = await fetch(`http://${apiHost}:8000/api/sync-roster/`, {
+      const response = await fetch(`/api/sync-roster/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -383,7 +394,7 @@ function App() {
               <>
                 <ScanningStep 
                   scannedImagesCount={scannedImages.length} 
-                  studentsWithScoresCount={students.filter(s => s.score != null).length}
+                  studentsWithScoresCount={students.filter(s => s.score !== null && s.score !== undefined && s.score !== '' && isFinite(Number(s.score))).length}
                   isProcessing={isProcessing}
                   batchProgress={batchProgress}
                   onCameraClick={() => cameraInputRef.current?.click()}
@@ -392,9 +403,11 @@ function App() {
                   onShowRemarkConfig={() => setShowRemarkConfig(true)}
                   onClearData={clearScannedData} onBack={() => setStep('success')}
                   backendExcelFilename={backendExcelFilename}
+                  expectedSubject={selectedSheetName}
                   cameraInputRef={cameraInputRef as React.RefObject<HTMLInputElement>} galleryInputRef={galleryInputRef as React.RefObject<HTMLInputElement>}
                   onImageCapture={handleImageCapture}
                   onDownload={handleDownload}
+                  onMobileScanResult={handleMobileScanResult}
                 />
 
                 <AnimatePresence>

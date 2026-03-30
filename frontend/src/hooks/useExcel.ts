@@ -99,10 +99,8 @@ export const useExcel = ({
 
       const formData = new FormData();
       formData.append('file', file);
-      const apiHost = window.location.hostname;
-      
       try {
-        const uploadRes = await fetch(`http://${apiHost}:8000/api/upload-roster-excel/`, {
+        const uploadRes = await fetch(`/api/upload-roster-excel/`, {
           method: 'POST',
           body: formData
         });
@@ -206,9 +204,8 @@ export const useExcel = ({
 
   const autoDetectMapping = async (sampleData: RowSample[]) => {
     setIsProcessing(true);
-    const apiHost = window.location.hostname;
     try {
-      const response = await fetch(`http://${apiHost}:8000/api/analyze-excel-columns/`, {
+      const response = await fetch(`/api/analyze-excel-columns/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

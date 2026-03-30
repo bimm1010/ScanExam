@@ -37,3 +37,4 @@ test_downloaded_result.xlsx
 .vscode/
 .idea/
 GEMINI.md
+.gemini/

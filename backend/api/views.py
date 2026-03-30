@@ -5,6 +5,7 @@ import datetime
 import re
 import unicodedata
 import shutil
+import socket
 from pathlib import Path
 from dotenv import load_dotenv
 from rest_framework.decorators import api_view
@@ -165,16 +166,24 @@ def apply_grading_logic(result_obj):
     """
     Applies custom Vietnamese grading rules:
     1. If score ends in .5, round it up to the next integer (e.g., 6.5 -> 7.0).
-    2. Re-calculate level (T if score >= 9.0, else H).
+    2. If score ends in .25, round it down to the nearest integer (e.g., 6.25 -> 6.0).
+    3. If score ends in .75, round it up to the next integer (e.g., 6.75 -> 7.0).
+    4. Re-calculate level (T if score >= 9.0, else H).
     """
     score = result_obj.get('score')
     if score is not None:
         try:
             score_float = float(score)
-            # Check if fractional part is exactly 0.5
-            if score_float % 1 == 0.5:
+            fractional_part = score_float % 1
+            
+            # Check if fractional part is exactly 0.5 or 0.75 (round up)
+            if fractional_part in (0.5, 0.75):
                 score_float = float(int(score_float) + 1)
                 print(f"Rounding up: {score} -> {score_float}")
+            # Check if fractional part is exactly 0.25 (round down)
+            elif fractional_part == 0.25:
+                score_float = float(int(score_float))
+                print(f"Rounding down: {score} -> {score_float}")
             
             result_obj['score'] = score_float
             # Recalculate level based on new rounded score
@@ -186,6 +195,19 @@ def apply_grading_logic(result_obj):
 @api_view(['GET'])
 def health_check(request):
     return Response({"status": "healthy", "message": "ScanExercise API is running"})
+
+@api_view(['GET'])
+def server_info(request):
+    """Returns the local network IP of the server so mobile devices can connect."""
+    try:
+        # Connect to a non-local address to find the outbound interface IP
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            s.settimeout(0)
+            s.connect(('8.8.8.8', 80))
+            local_ip = s.getsockname()[0]
+    except Exception:
+        local_ip = '127.0.0.1'
+    return Response({"local_ip": local_ip})
 
 @api_view(['GET'])
 def get_sheet_results(request):
@@ -641,6 +663,57 @@ def upload_roster_excel(request):
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET'])
+def preview_excel(request):
+    """Endpoint to preview the first 50 rows of the updated Excel file."""
+    filename = request.query_params.get('filename')
+    subject = request.query_params.get('subject')
+    
+    if not filename:
+        return Response({"error": "No filename provided"}, status=status.HTTP_400_BAD_REQUEST)
+        
+    excel_path = get_backend_root() / 'media' / 'rosters' / filename
+    if not excel_path.exists():
+        return Response({"error": "File not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+    try:
+        wb = openpyxl.load_workbook(excel_path, data_only=True)
+        sheet = wb.active
+        
+        if subject:
+            norm_expected = normalize_string(subject)
+            for s in wb.worksheets:
+                if normalize_string(s.title) == norm_expected:
+                    sheet = s
+                    break
+                    
+        data = []
+        empty_row_count = 0
+        for i, row in enumerate(sheet.iter_rows(values_only=True)):
+            # Lọc dòng trống hoàn toàn (giảm tải nếu excel rỗng phần đuôi)
+            is_empty = all(cell is None or str(cell).strip() == "" for cell in row)
+            if is_empty:
+                empty_row_count += 1
+                if empty_row_count >= 15:
+                    break
+            else:
+                empty_row_count = 0
+                
+            data.append([str(cell) if cell is not None else "" for cell in row])
+            
+        # Cắt bỏ dứt điểm các dòng rỗng cuối mảng bị dính chùm vào
+        while data and all(cell == "" for cell in data[-1]):
+            data.pop()
+            
+        return Response({
+            "success": True,
+            "filename": filename,
+            "sheetName": sheet.title,
+            "previewData": data
+        })
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
 def download_updated_excel(request):
     """Endpoint to download the updated Excel file with original filename preserved."""
     filename = request.query_params.get('filename')
@@ -664,89 +737,171 @@ def download_updated_excel(request):
 @api_view(['POST'])
 def analyze_excel_columns(request):
     """
-    Uses AI to analyze sample rows from an Excel sheet and identify column mappings.
+    Uses Smart Fuzzy Matching and Data Validation (Zero-Cost Local AI) to identify columns.
     Input: sample_data (list of RowSample objects)
-    Output: { idCol, nameCol, scoreCol, levelCol, headerRow }
+    Output: { idCol, nameCol, scoreCol, levelCol, remarkCol, headerRow, dataRowStart, confidence }
     """
     sample_data = request.data.get('sample_data', [])
     if not sample_data:
         return Response({"error": "Không có dữ liệu mẫu để phân tích."}, status=status.HTTP_400_BAD_REQUEST)
 
-    if not client:
-        return Response({"error": "Lỗi cấu hình: Thiếu API Key cho Gemini."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
     try:
-        # Format sample data for prompt - include boldness info to help detect headers
-        formatted_rows = ""
-        for row in sample_data:
-            cells_info = []
-            row_values = row.get('values', [])
-            row_metadata = row.get('metadata', [])
-
-            for i, val in enumerate(row_values):
-                meta = row_metadata[i] if i < len(row_metadata) else {}
-                bold_tag = "[B]" if meta.get('isBold') else ""
-                cell_text = str(val) if val is not None else "-"
-                cells_info.append(f"{bold_tag}{cell_text}")
-
-            formatted_rows += f"Dòng {row.get('rowNumber')}: {' | '.join(cells_info)}\n"
-
-        prompt = f"""Bạn là một Chuyên gia Dữ liệu Excel (Senior Data Engineer).
-    Hãy phân tích 30 dòng dữ liệu dưới đây từ một file danh sách lớp của giáo viên Việt Nam.
-    Ký tự [B] đứng trước dữ liệu nghĩa là ô đó được in đậm (Bold) - thường là tiêu đề.
-
-    DỮ LIỆU MẪU:
-    {formatted_rows}
-
-    --- QUY TẮC PHÂN TÍCH TUYỆT ĐỐI (BẮT BUỘC) ---
-    1. 'headerRow': Là dòng chứa các tiêu đề. Thường có nhiều ô in đậm [B].
-    2. 'dataRowStart': Là dòng chứa học sinh đầu tiên (STT là 1). PHẢI > 'headerRow'.
-    3. 'idCol', 'nameCol', 'scoreCol', 'levelCol', 'remarkCol':
-       - CHỈ ĐƯỢC CHỌN nếu bạn tìm thấy tiêu đề tương ứng (vd: 'Mã HS', 'Họ tên', 'Điểm', 'Mức đạt', 'Nhận xét'...).
-       - Nếu KHÔNG tìm thấy tiêu đề nào khớp, hãy để giá trị là 0.
-       - TUYỆT ĐỐI KHÔNG tự ý đề xuất cột trống SAU dữ liệu hiện có cho bất kỳ trường nào. 
-       - TUYỆT ĐỐI KHÔNG đoán mò vị trí cột nếu dữ liệu không rõ ràng.
-    4. 'suggestedRemarkRules': Dựa vào dữ liệu trong cột 'Nhận xét' (nếu có) hoặc các cột điểm, hãy đề xuất 4 lời phê phù hợp với các khung điểm (vd: 0-5, 5-7, 7-9, 9-10). Ưu tiên dùng lời lẽ nhẹ nhàng, khích lệ của giáo viên Việt Nam.
-
-    --- YÊU CẦU TRẢ VỀ JSON (1-based index) ---
-    {{
-        "idCol": number (0 nếu không thấy),
-        "nameCol": number (0 nếu không thấy),
-        "scoreCol": number (0 nếu không thấy),
-        "levelCol": number (0 nếu không thấy),
-        "remarkCol": number (0 nếu không thấy),
-        "headerRow": number,
-        "dataRowStart": number,
-        "confidence": number (0-100),
-        "suggestedRemarkRules": [
-            {{"min": number, "max": number, "text": "Nội dung lời phê (vd: 'Em làm bài tốt lắm, cố gắng phát huy nhé!')"}}
-        ],
-        "cleaningRules": ["Giải thích lý do chọn hoặc bỏ qua cột"]
-    }}
-    """
-        # Call Gemini via Unified Router (handles rotation and fallbacks)
-        result = call_gemini_with_router(prompt)
+        # 1. FIND HEADER ROW (SMART SCORING)
+        # Instead of stopping at the first 'mã', we score rows. 
+        # The true header row usually has many columns and contains keywords like "Họ tên", "Điểm".
+        best_header_row_idx = 0
+        max_row_score = -1
         
-        if result is None:
-            return Response({"error": "AI không phản hồi hoặc hết lượt dùng. Vui lòng thử lại sau."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        for i, row in enumerate(sample_data[:20]):  # scan up to 20 rows
+            raw_values = row.get('values', [])
+            values = [str(v).strip() for v in raw_values if str(v).strip()]
+            num_cols = len(values)
+            
+            if num_cols < 3 and i > 0:
+                continue # A header row is typically wider >= 3 cols, unless the sheet is very empty.
+                
+            row_text = normalize_string(" ".join(values))
+            
+            # Calculate row confidence score
+            score = num_cols * 10
+            if "ho ten" in row_text or "ho va ten" in row_text:
+                score += 100
+            if "ma " in row_text or "stt" in row_text or "sbd" in row_text:
+                score += 50
+            if "diem" in row_text or "ket qua" in row_text:
+                score += 50
+            if "nhan xet" in row_text or "ghi chu" in row_text:
+                score += 50
+                
+            # Bonus for bold formatting
+            metadata = row.get('metadata', [])
+            bolds = sum(1 for m in metadata if m.get('isBold'))
+            score += bolds * 5
+            
+            if score > max_row_score:
+                max_row_score = score
+                best_header_row_idx = i
+                
+        # Fallback if the sheet is completely blank
+        if max_row_score == -1:
+            best_header_row_idx = 0
+                
+        header_row_data = sample_data[best_header_row_idx]
+        header_row_number = header_row_data.get('rowNumber', 1)
+        headers = [str(v).strip() if v else "" for v in header_row_data.get('values', [])]
+        
+        # 2. DICTIONARIES FOR FUZZY MATCHING (EXTENDED)
+        # Prioritize "mã" over "stt"
+        dict_id = ["mã hs", "mã học sinh", "mã định danh", "sbd", "số báo danh", "mã số", "mã", "stt", "số thứ tự", "id", "student id"]
+        dict_name = ["họ tên", "họ và tên", "tên", "họ đệm", "fullname", "học sinh", "họ tên hs"]
+        dict_score = ["điểm", "điểm thi", "điểm số", "kết quả", "kq", "đ môn", "đ.kt", "ktđk", "score", "tổng điểm"]
+        dict_level = ["mức đạt", "phân loại", "xếp loại", "đánh giá", "level", "kết quả", "năng lực", "xếp loại hl"]
+        dict_remark = ["nhận xét", "nội dung nhận xét", "ghi chú", "lời phê", "lưu ý", "remark", "đánh giá gv", "noi dung"]
 
-        # Validation & Defaults
-        default_fields = {
-            "idCol": 0, "nameCol": 0, "scoreCol": 0, "levelCol": 0, "remarkCol": 0,
-            "headerRow": 1, "dataRowStart": 2, "confidence": 0, "cleaningRules": []
+        # 3. MATCHING LOGIC
+        from rapidfuzz import process, fuzz
+        
+        def find_best_col(headers_list, synonyms, threshold=60):
+            best_score = 0
+            best_idx = -1
+            # Special check for exact matches to priority terms
+            for idx, h in enumerate(headers_list):
+                if not h: continue
+                norm_h = normalize_string(h)
+                for syn in synonyms:
+                    norm_syn = normalize_string(syn)
+                    # 1. Exact match
+                    if norm_syn == norm_h:
+                        return idx + 1, 100
+                    # 2. Substring match
+                    if norm_syn in norm_h:
+                        score = 85
+                        if score > best_score:
+                            best_score = score
+                            best_idx = idx
+                
+                # 3. Fuzzy match
+                match = process.extractOne(norm_h, [normalize_string(s) for s in synonyms], scorer=fuzz.WRatio)
+                if match and match[1] > best_score:
+                    best_score = match[1]
+                    best_idx = idx
+            
+            if best_score >= threshold:
+                return best_idx + 1, best_score
+            return 0, 0
+
+        # Mapping (1-based index)
+        id_col, id_score = find_best_col(headers, dict_id)
+        name_col, name_score = find_best_col(headers, dict_name)
+        score_col, score_score = find_best_col(headers, dict_score)
+        level_col, level_score = find_best_col(headers, dict_level)
+        remark_col, remark_score = find_best_col(headers, dict_remark)
+        
+        # 4. DATA VALIDATION (HEURISTICS) TO VERIFY MISSING/LOW CONFIDENCE
+        data_rows = sample_data[best_header_row_idx+1 : best_header_row_idx+10]
+        
+        # Heuristic 1: Score Column Validation
+        if score_col == 0:
+            for c_idx in range(len(headers)):
+                if c_idx + 1 in [id_col, name_col, level_col, remark_col]: continue
+                numeric_count = 0
+                for dr in data_rows:
+                    vals = dr.get('values', [])
+                    if c_idx < len(vals):
+                        val = vals[c_idx]
+                        if val is not None:
+                            try:
+                                fv = float(str(val).replace(',', '.'))
+                                if 0.0 <= fv <= 10.0:
+                                    numeric_count += 1
+                            except Exception:
+                                pass
+                if numeric_count >= 2: # At least 2 numbers in the sample looking like school marks
+                    score_col = c_idx + 1
+                    break
+        
+        # Heuristic 2: Name Column Validation (Many string parts)
+        if name_col == 0:
+            for c_idx in range(len(headers)):
+                if c_idx + 1 in [id_col, score_col, level_col, remark_col]: continue
+                name_like = 0
+                for dr in data_rows:
+                    vals = dr.get('values', [])
+                    if c_idx < len(vals):
+                        val = str(vals[c_idx] or "")
+                        # Names usually have 2-5 words, no numbers
+                        if len(val.split()) >= 2 and not any(char.isdigit() for char in val):
+                            name_like += 1
+                if name_like >= 2:
+                    name_col = c_idx + 1
+                    break
+                    
+        # Calculate overall confidence
+        found_cols = [c for c in [id_col, name_col, score_col, level_col, remark_col] if c > 0]
+        confidence = int((len(found_cols) / 5.0) * 100)
+        
+        result = {
+            "idCol": id_col,
+            "nameCol": name_col,
+            "scoreCol": score_col,
+            "levelCol": level_col,
+            "remarkCol": remark_col,
+            "headerRow": header_row_number,
+            "dataRowStart": header_row_number + 1,
+            "confidence": max(confidence, 60), # At least 60 if it ran successfully
+            "suggestedRemarkRules": [], # Fast Local matcher doesn't generate rules via AI
+            "cleaningRules": [f"Smart Local Mapper scanned {len(headers)} columns via Fuzzy Matching."]
         }
-        for field, default in default_fields.items():
-            if field not in result:
-                result[field] = default
-
-        print(f"🕵️ Structural Intelligence Result (Confidence: {result['confidence']}%): {result}")
+        
+        print(f"🕵️ Local Smart Mapper Result (Confidence: {result['confidence']}%): {result}")
         return Response(result)
 
     except Exception as e:
-        print(f"❌ Error in analyze_excel_columns: {str(e)}")
-        # Don't return defaults here, so the frontend knows something actually failed
+        print(f"❌ Error in analyze_excel_columns (Local Mapper): {str(e)}")
+        import traceback
+        traceback.print_exc()
         return Response({
-            "error": "AI không thể phân tích file này. Vui lòng kiểm tra lại API Key hoặc quota.",
+            "error": "Lỗi thuật toán ánh xạ thư mục cục bộ.",
             "details": str(e)
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
