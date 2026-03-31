@@ -320,8 +320,8 @@ function App() {
                           setDataRowStart(suggestedMapping.dataRowStart);
                         }
 
-                        // AUTO-CONFIRM: If heuristics are very confident, skip mapping screen
-                        if ((suggestedMapping.confidence || 0) >= 80) {
+                        // AUTO-CONFIRM: If heuristics are confident (>= 60%), skip mapping screen
+                        if ((suggestedMapping.confidence || 0) >= 60) {
                           setMappingConfig(suggestedMapping);
                           await processWorksheet(
                             id,

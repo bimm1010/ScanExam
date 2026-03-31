@@ -752,7 +752,7 @@ def analyze_excel_columns(request):
         best_header_row_idx = 0
         max_row_score = -1
         
-        for i, row in enumerate(sample_data[:20]):  # scan up to 20 rows
+        for i, row in enumerate(sample_data[:30]):  # Scan up to 30 rows to handle complex school headers
             raw_values = row.get('values', [])
             values = [str(v).strip() for v in raw_values if str(v).strip()]
             num_cols = len(values)
@@ -878,7 +878,18 @@ def analyze_excel_columns(request):
                     
         # Calculate overall confidence
         found_cols = [c for c in [id_col, name_col, score_col, level_col, remark_col] if c > 0]
-        confidence = int((len(found_cols) / 5.0) * 100)
+        
+        # Calculate base confidence
+        count = len(found_cols)
+        confidence = int((count / 5.0) * 100)
+        
+        # 5. SMART BOOST: If we have the "Holy Trinity" (ID, Name, Score) with high confidence, boost to >= 80%
+        if id_col > 0 and name_col > 0 and score_col > 0:
+            # If these 3 core columns are very clear, boost confidence to allow AUTO-SKIP
+            if id_score >= 80 and name_score >= 80 and score_score >= 80:
+                confidence = max(confidence, 85)
+            else:
+                confidence = max(confidence, 60) # Guarantee auto-skip if 3 core columns found
         
         result = {
             "idCol": id_col,
