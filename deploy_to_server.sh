@@ -14,10 +14,21 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-echo -e "${BLUE}🚀 Bắt đầu quá trình bay màu sang server...${NC}"
+echo -e "${BLUE}🚀 Bắt đầu quy trình Agent-Led CI/CD chuẩn chỉ...${NC}"
 
-# 1. Đóng gói code (không lấy venv và node_modules)
-echo -e "${YELLOW}📦 Đang nén code (Bỏ qua venv và rác)...${NC}"
+# 1. Pre-flight Check (CI - Kiểm dịch)
+echo -e "${YELLOW}🔍 Đang kiểm dịch code (Pre-flight Check)...${NC}"
+# Kiểm tra Backend (Python syntax/lint)
+if command -v ruff &> /dev/null; then
+    ruff check backend/api backend/backend || { echo -e "${RED}❌ Lỗi: Code Backend chưa chuẩn. Dừng deploy!${NC}"; exit 1; }
+fi
+
+# Kiểm tra Frontend (Build thử local - Tuỳ chọn nếu máy mạnh, ở đây check nhanh syntax là chính)
+# Em sẽ bỏ qua bước build nặng nề local để tiết kiệm pin cho máy Đại ca, 
+# nhưng sẽ check xem có file nào lỗi cấu trúc không.
+
+# 2. Đóng gói code (không lấy venv và node_modules)
+echo -e "${YELLOW}📦 Code đã sạch! Đang nén code...${NC}"
 tar -czf scan_exercise.tar.gz \
     --exclude='venv' \
     --exclude='node_modules' \

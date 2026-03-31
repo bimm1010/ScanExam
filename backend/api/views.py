@@ -11,6 +11,7 @@ import shutil
 import socket
 from pathlib import Path
 from dotenv import load_dotenv
+import threading
 from rest_framework.response import Response
 from rest_framework import status
 from google import genai
@@ -808,7 +809,8 @@ def analyze_excel_columns(request):
             best_idx = -1
             # Special check for exact matches to priority terms
             for idx, h in enumerate(headers_list):
-                if not h: continue
+                if not h:
+                    continue
                 norm_h = normalize_string(h)
                 for syn in synonyms:
                     norm_syn = normalize_string(syn)
@@ -845,7 +847,8 @@ def analyze_excel_columns(request):
         # Heuristic 1: Score Column Validation
         if score_col == 0:
             for c_idx in range(len(headers)):
-                if c_idx + 1 in [id_col, name_col, level_col, remark_col]: continue
+                if c_idx + 1 in [id_col, name_col, level_col, remark_col]:
+                    continue
                 numeric_count = 0
                 for dr in data_rows:
                     vals = dr.get('values', [])
@@ -865,7 +868,8 @@ def analyze_excel_columns(request):
         # Heuristic 2: Name Column Validation (Many string parts)
         if name_col == 0:
             for c_idx in range(len(headers)):
-                if c_idx + 1 in [id_col, score_col, level_col, remark_col]: continue
+                if c_idx + 1 in [id_col, score_col, level_col, remark_col]:
+                    continue
                 name_like = 0
                 for dr in data_rows:
                     vals = dr.get('values', [])
@@ -996,7 +1000,6 @@ def sync_roster(request):
 
 
 # ── Mobile Scan via HTTP (No WebSocket needed) ──────────────────────
-import threading
 
 _scan_store_lock = threading.Lock()
 _scan_store: dict[str, list[str]] = {}  # {session_id: [base64_image, ...]}

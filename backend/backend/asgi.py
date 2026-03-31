@@ -8,7 +8,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
 
 django_asgi_app = get_asgi_application()
 
-import api.routing
+import api.routing  # noqa: E402
 
 application = ProtocolTypeRouter({
     "http": django_asgi_app,
