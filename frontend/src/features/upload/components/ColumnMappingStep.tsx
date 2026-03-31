@@ -73,7 +73,7 @@ const ColumnMappingStep = ({
               <option value={0}>-- Chọn cột --</option>
               {Array.from({ length: totalColumns }).map((_, i) => <option key={`name-${i + 1}`} value={i + 1}>Cột {getColumnLetter(i + 1)}</option>)}
             </select>
-            <p className="text-[10px] text-slate-400 mt-2 px-1 font-medium">Dùng để kiểm tra lại nếu AI không đọc được mã.</p>
+            <p className="text-[10px] text-slate-400 mt-2 px-1 font-medium">Đối chiếu nếu hệ thống không tự động đọc được dữ liệu.</p>
           </div>
           <div className="w-full">
             <label htmlFor="score-col-select" className="block text-xs font-black text-rose-600/60 mb-2 uppercase tracking-widest pl-1">Điểm số</label>
@@ -81,7 +81,7 @@ const ColumnMappingStep = ({
               <option value={0}>-- Chọn cột --</option>
               {Array.from({ length: totalColumns }).map((_, i) => <option key={`score-${i + 1}`} value={i + 1}>Cột {getColumnLetter(i + 1)}</option>)}
             </select>
-            <p className="text-[10px] text-rose-400/80 mt-2 px-1 font-medium italic">Điểm AI sẽ được ghi vào đây.</p>
+            <p className="text-[10px] text-rose-400/80 mt-2 px-1 font-medium italic">Dòng điểm sau khi chấm bài sẽ được ghi vào cột này.</p>
           </div>
           <div className="w-full">
             <label htmlFor="level-col-select" className="block text-xs font-black text-rose-600/60 mb-2 uppercase tracking-widest pl-1">Mức đạt</label>

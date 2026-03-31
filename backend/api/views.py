@@ -737,7 +737,7 @@ def download_updated_excel(request):
 @api_view(['POST'])
 def analyze_excel_columns(request):
     """
-    Uses Smart Fuzzy Matching and Data Validation (Zero-Cost Local AI) to identify columns.
+    Uses Smart Fuzzy Matching and Data Validation (Local Logic) to identify columns.
     Input: sample_data (list of RowSample objects)
     Output: { idCol, nameCol, scoreCol, levelCol, remarkCol, headerRow, dataRowStart, confidence }
     """

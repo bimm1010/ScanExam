@@ -320,7 +320,7 @@ function App() {
                           setDataRowStart(suggestedMapping.dataRowStart);
                         }
 
-                        // MAGIC IMPORT: If AI is very confident, skip mapping screen
+                        // AUTO-CONFIRM: If heuristics are very confident, skip mapping screen
                         if ((suggestedMapping.confidence || 0) >= 80) {
                           setMappingConfig(suggestedMapping);
                           await processWorksheet(
@@ -336,12 +336,12 @@ function App() {
                           return;
                         }
                       } else {
-                        setError("AI không phản hồi hoặc hết lượt dùng. Vui lòng tự chọn các cột.");
+                        setError("Hệ thống không tự động nhận diện được cột. Vui lòng tự chọn bằng tay.");
                       }
                     }
                   } catch (e: unknown) {
                     console.error("Selection Flow Error:", e);
-                    setError("Lỗi khi phân tích dữ liệu: " + (e instanceof Error ? e.message : "Unknown error"));
+                    setError("Lỗi khi phân tích dữ liệu: " + (e instanceof Error ? e.message : "Hãy kiểm tra định dạng file"));
                   } finally {
                     setIsProcessing(false);
                   }
