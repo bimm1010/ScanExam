@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useState } from 'react';
+import { forwardRef, useEffect, useRef, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Smartphone } from 'lucide-react';
@@ -13,100 +13,69 @@ interface QRCodeScannerModalProps {
 export const QRCodeScannerModal = forwardRef<HTMLDivElement, QRCodeScannerModalProps>(
   ({ isOpen, onClose, onScanResult }, ref) => {
     const [sessionId, setSessionId] = useState<string>('');
-    const [status, setStatus] = useState<'waiting' | 'connected'>('waiting');
     const [scanCount, setScanCount] = useState(0);
     const [serverIp, setServerIp] = useState<string>('');
+    const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-    // Fetch real LAN IP — only needed for generating the QR code URL for the phone
+    // Fetch real LAN IP for QR code URL
     useEffect(() => {
-      if (!isOpen) return;
-      fetch(`/api/server-info/`)
-        .then(r => r.json())
-        .then(data => {
-          if (data.local_ip) setServerIp(data.local_ip);
-        })
-        .catch(() => setServerIp(window.location.hostname));
+      if (isOpen) {
+        setServerIp(window.location.hostname);
+      }
     }, [isOpen]);
 
+    // Generate session ID when modal opens
     useEffect(() => {
       if (isOpen && !sessionId) {
         setSessionId(uuidv4().replace(/-/g, '').substring(0, 16));
         setScanCount(0);
-        setStatus('waiting');
       }
     }, [isOpen, sessionId]);
 
+    // Poll server for new images every 2 seconds
     useEffect(() => {
       if (!sessionId || !isOpen) return;
 
-      // Desktop WS: use same-origin (window.location.host = localhost:5173)
-      // so the self-signed cert is valid. Only the QR URL uses LAN IP.
-      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const wsUrl = `${protocol}//${window.location.host}/ws/scan/${sessionId}/`;
-      console.log('[Desktop WS] Connecting to:', wsUrl);
+      console.log('[Desktop Poll] Starting poll for session:', sessionId);
 
-      let ws: WebSocket | null = null;
+      pollRef.current = setInterval(async () => {
+        try {
+          const resp = await fetch(`/api/scan-poll/${sessionId}/`);
+          if (!resp.ok) return;
 
-      const connect = () => {
-        ws = new WebSocket(wsUrl);
+          const data = await resp.json();
+          const images = data.images || [];
 
-        ws.onopen = () => {
-          console.log('[Desktop WS] Connected ✅');
-          setStatus('connected');
-        };
+          for (const base64Img of images) {
+            // Convert base64 → File → dispatch event for App.tsx
+            const byteString = atob(base64Img);
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+            const blob = new Blob([ab], { type: 'image/jpeg' });
+            const file = new File([blob], `mobile_scan_${Date.now()}.jpg`, { type: 'image/jpeg' });
 
-        ws.onmessage = (event) => {
-          try {
-            const data = JSON.parse(event.data);
-            console.log('[Desktop WS] Received:', data.type);
-
-            // Phone notifies it's ready → update status badge
-            if (data.type === 'phone_ready') {
-              setStatus('connected');
-            }
-
-            if (data.type === 'scan_result' && data.imageBase64) {
-              // Phone sent a real image → convert base64 → File → dispatch
-              const byteString = atob(data.imageBase64);
-              const ab = new ArrayBuffer(byteString.length);
-              const ia = new Uint8Array(ab);
-              for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
-              const blob = new Blob([ab], { type: 'image/jpeg' });
-              const file = new File([blob], `mobile_scan_${Date.now()}.jpg`, { type: 'image/jpeg' });
-
-              setScanCount(prev => prev + 1);
-              // Dispatch custom event with the actual File for App.tsx to process
-              window.dispatchEvent(new CustomEvent('mobileScanFile', { detail: { file } }));
-              onScanResult('mobile');
-            }
-          } catch (e) {
-            console.error('[Desktop WS] Parse error:', e);
+            setScanCount(prev => prev + 1);
+            window.dispatchEvent(new CustomEvent('mobileScanFile', { detail: { file } }));
+            onScanResult('mobile');
+            console.log('[Desktop Poll] Received image from phone');
           }
-        };
-
-        ws.onclose = (e) => {
-          console.warn('[Desktop WS] Closed, code:', e.code, '— retrying in 3s');
-          setStatus('waiting');
-          setTimeout(connect, 3000);
-        };
-
-        ws.onerror = (e) => {
-          console.error('[Desktop WS] Error:', e);
-        };
-      };
-
-      connect();
+        } catch (err) {
+          // Silent — network hiccup
+        }
+      }, 2000);
 
       return () => {
-        ws?.close();
+        if (pollRef.current) clearInterval(pollRef.current);
       };
     }, [sessionId, isOpen, onScanResult]);
 
     if (!isOpen) return null;
 
-    // QR URL uses LAN IP so phone can reach it; desktop WS uses localhost
+    // QR URL uses LAN IP so phone can reach it
+    const port = window.location.port ? `:${window.location.port}` : '';
     const phoneUrl = serverIp
-      ? `https://${serverIp}:5173/scan/${sessionId}`
+      ? `${window.location.protocol}//${serverIp}${port}/scan/${sessionId}`
       : '';
 
     return (
@@ -146,20 +115,15 @@ export const QRCodeScannerModal = forwardRef<HTMLDivElement, QRCodeScannerModalP
                       fgColor="#0f172a"
                       level="Q"
                     />
-                    <p className="mt-2 text-[10px] font-mono text-slate-400 break-all">{serverIp}:5173</p>
+                    <p className="mt-2 text-[10px] font-mono text-slate-400 break-all">{serverIp}{port}</p>
                   </>
                 ) : (
                   <div className="w-[200px] h-[200px] bg-slate-50 animate-pulse rounded-xl flex items-center justify-center text-slate-400 text-xs">Đang lấy IP...</div>
                 )}
 
                 <div className="absolute inset-x-0 -bottom-4 flex justify-center">
-                  <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm border
-                    ${status === 'connected'
-                      ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
-                      : 'bg-amber-50 text-amber-600 border-amber-100 animate-pulse'
-                    }`}
-                  >
-                    {status === 'connected' ? 'Đã kết nối' : 'Đang chờ điện thoại...'}
+                  <span className="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm border bg-emerald-50 text-emerald-600 border-emerald-100">
+                    Sẵn sàng nhận ảnh
                   </span>
                 </div>
               </div>

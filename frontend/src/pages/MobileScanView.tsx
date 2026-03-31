@@ -1,218 +1,203 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useRef, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Camera, CheckCircle2, WifiOff, Wifi } from 'lucide-react';
+import { Camera, CheckCircle2, AlertTriangle, Upload } from 'lucide-react';
 
-type WsStatus = 'connecting' | 'connected' | 'error';
-type CaptureStatus = 'idle' | 'processing' | 'success' | 'error';
+type SendStatus = 'idle' | 'processing' | 'success' | 'error';
 
 export const MobileScanView = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
-  const wsRef = useRef<WebSocket | null>(null);
-  const [wsStatus, setWsStatus] = useState<WsStatus>('connecting');
-  const [captureStatus, setCaptureStatus] = useState<CaptureStatus>('idle');
-  const [cameraReady, setCameraReady] = useState(false);
-
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const [sendStatus, setSendStatus] = useState<SendStatus>('idle');
+  const [sentCount, setSentCount] = useState(0);
+  const [errorMsg, setErrorMsg] = useState('');
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // 1. WebSocket Connection
-  useEffect(() => {
+  // Compress image via Canvas then POST to server
+  const uploadImage = useCallback(async (file: File) => {
     if (!sessionId) return;
+    setSendStatus('processing');
+    setErrorMsg('');
 
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws/scan/${sessionId}/`;
-    console.log('[Phone WS] Connecting to:', wsUrl);
+    try {
+      // 1. Read file into Image
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
 
-    let ws: WebSocket;
-    let retryTimer: ReturnType<typeof setTimeout>;
+      const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const i = new Image();
+        i.onload = () => resolve(i);
+        i.onerror = reject;
+        i.src = dataUrl;
+      });
 
-    const connect = () => {
-      ws = new WebSocket(wsUrl);
-      wsRef.current = ws;
+      // 2. Resize via Canvas (max 1280px width)
+      const canvas = canvasRef.current;
+      if (!canvas) throw new Error('Canvas not found');
+      const maxW = 1280;
+      const scale = Math.min(1, maxW / img.width);
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Canvas context failed');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-      ws.onopen = () => {
-        console.log('[Phone WS] Connected ✅');
-        setWsStatus('connected');
-        // Notify desktop that phone is ready
-        ws.send(JSON.stringify({ type: 'phone_ready', sessionId }));
-      };
-      ws.onerror = (e) => console.error('[Phone WS] Error:', e);
-      ws.onclose = (e) => {
-        console.warn('[Phone WS] Closed, code:', e.code, '— retry in 3s');
-        setWsStatus('error');
-        retryTimer = setTimeout(connect, 3000);
-      };
-    };
+      // 3. Convert to Blob (JPEG 75%)
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob(
+          b => (b ? resolve(b) : reject(new Error('toBlob failed'))),
+          'image/jpeg',
+          0.75
+        );
+      });
 
-    connect();
+      // 4. POST to server via FormData (works on all browsers, all protocols)
+      const formData = new FormData();
+      formData.append('image', blob, `scan_${Date.now()}.jpg`);
 
-    return () => {
-      clearTimeout(retryTimer);
-      ws?.close();
-    };
-  }, [sessionId]);
+      const resp = await fetch(`/api/scan-upload/${sessionId}/`, {
+        method: 'POST',
+        body: formData,
+      });
 
-  // 2. Camera Stream
-  useEffect(() => {
-    let stream: MediaStream | null = null;
+      if (!resp.ok) throw new Error(`Server error ${resp.status}`);
 
-    const startCamera = async () => {
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
-        });
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          await videoRef.current.play();
-          setCameraReady(true);
-          console.log('[Phone Camera] Ready ✅');
-        }
-      } catch (err) {
-        console.error('[Phone Camera] Error:', err);
-      }
-    };
-
-    startCamera();
-    return () => stream?.getTracks().forEach(t => t.stop());
-  }, []);
-
-  // 3. Capture → base64 → WS send
-  const captureAndSend = useCallback(() => {
-    if (!videoRef.current || !canvasRef.current) return;
-    if (captureStatus === 'processing') return;
-
-    setCaptureStatus('processing');
-
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-
-    // Scale down to max 1280px wide to keep blob size reasonable
-    const maxW = 1280;
-    const scale = Math.min(1, maxW / video.videoWidth);
-    canvas.width = Math.round(video.videoWidth * scale);
-    canvas.height = Math.round(video.videoHeight * scale);
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) { setCaptureStatus('idle'); return; }
-
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    // toDataURL strips the "data:image/jpeg;base64," prefix ourselves
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-    const imageBase64 = dataUrl.replace(/^data:image\/jpeg;base64,/, '');
-
-    const ws = wsRef.current;
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({ type: 'scan_result', imageBase64 }));
-      console.log('[Phone] Sent image, base64 length:', imageBase64.length);
-      setCaptureStatus('success');
-    } else {
-      console.warn('[Phone] WS not open, status:', ws?.readyState);
-      setCaptureStatus('error');
+      const result = await resp.json();
+      console.log('[Phone] Upload OK:', result);
+      setSendStatus('success');
+      setSentCount(prev => prev + 1);
+    } catch (err: any) {
+      console.error('[Phone] Upload failed:', err);
+      setErrorMsg(err.message || 'Lỗi gửi ảnh');
+      setSendStatus('error');
     }
 
-    setTimeout(() => setCaptureStatus('idle'), 2500);
-  }, [captureStatus]);
+    setTimeout(() => setSendStatus('idle'), 2500);
+  }, [sessionId]);
+
+  const openCamera = () => inputRef.current?.click();
 
   if (!sessionId) {
     return (
-      <div className="p-10 text-center font-bold text-slate-800">
-        Không tìm thấy mã kết nối (Session ID)
+      <div className="min-h-screen flex items-center justify-center bg-slate-900 p-8">
+        <div className="bg-white rounded-3xl p-8 text-center max-w-sm">
+          <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
+          <p className="font-bold text-slate-800">Không tìm thấy mã kết nối (Session ID)</p>
+        </div>
       </div>
     );
   }
 
-  const wsIcon = wsStatus === 'connected'
-    ? <Wifi className="w-4 h-4 text-emerald-400" />
-    : <WifiOff className="w-4 h-4 text-rose-400 animate-pulse" />;
-
-  const wsLabel = {
-    connected: 'Đã kết nối',
-    connecting: 'Đang kết nối...',
-    error: 'Mất kết nối (thử lại...)',
-  }[wsStatus];
-
-  const captureDisabled = !cameraReady || captureStatus === 'processing';
-
   return (
-    <div className="fixed inset-0 bg-black flex flex-col z-[9999]">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-b from-black/80 to-transparent absolute top-0 inset-x-0 z-10">
-        <h1 className="text-white font-bold text-base drop-shadow-md">SCANEXERCISE Mobile</h1>
-        <div className="flex items-center gap-1.5 bg-black/40 px-3 py-1.5 rounded-full">
-          {wsIcon}
-          <span className="text-white text-xs font-medium">{wsLabel}</span>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex flex-col items-center justify-center p-6">
+      <canvas ref={canvasRef} className="hidden" />
+      
+      {/* Hidden file input — triggers native camera */}
+      <input 
+        ref={inputRef}
+        type="file" 
+        accept="image/*" 
+        capture="environment" 
+        className="hidden" 
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) uploadImage(file);
+          // Reset so same file can be selected again
+          e.target.value = '';
+        }}
+      />
 
-      {/* Camera */}
-      <div className="flex-1 relative bg-slate-900 overflow-hidden">
-        <video
-          ref={videoRef}
-          className="absolute inset-0 w-full h-full object-cover"
-          playsInline muted autoPlay
-        />
-        <canvas ref={canvasRef} className="hidden" />
-
-        {/* Viewfinder */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-[15%] border-2 border-dashed border-white/30 rounded-2xl">
-            {(['tl','tr','bl','br'] as const).map(corner => (
-              <div key={corner} className={`absolute w-8 h-8 border-emerald-400
-                ${corner === 'tl' ? 'top-0 left-0 border-t-4 border-l-4 rounded-tl-xl -translate-x-0.5 -translate-y-0.5' : ''}
-                ${corner === 'tr' ? 'top-0 right-0 border-t-4 border-r-4 rounded-tr-xl translate-x-0.5 -translate-y-0.5' : ''}
-                ${corner === 'bl' ? 'bottom-0 left-0 border-b-4 border-l-4 rounded-bl-xl -translate-x-0.5 translate-y-0.5' : ''}
-                ${corner === 'br' ? 'bottom-0 right-0 border-b-4 border-r-4 rounded-br-xl translate-x-0.5 translate-y-0.5' : ''}
-              `} />
-            ))}
-          </div>
+      {/* Main Card */}
+      <div className="w-full max-w-sm">
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <h1 className="text-white font-black text-2xl tracking-tight">SCANEXERCISE</h1>
+          <p className="text-slate-400 text-sm font-medium mt-1">Quét bài thần tốc 📱</p>
         </div>
 
-        {/* Status Overlay */}
-        {captureStatus !== 'idle' && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-            className="absolute inset-0 flex items-center justify-center z-20 bg-black/30"
-          >
-            <div className="bg-slate-900/90 backdrop-blur-md px-8 py-5 rounded-3xl flex items-center gap-4 border border-slate-700/50">
-              {captureStatus === 'processing' && (
-                <>
-                  <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-                  <span className="text-white font-bold text-lg">Đang gửi ảnh...</span>
-                </>
-              )}
-              {captureStatus === 'success' && (
-                <>
-                  <CheckCircle2 className="w-7 h-7 text-emerald-400" />
-                  <span className="text-white font-bold text-lg">Đã gửi lên máy tính!</span>
-                </>
-              )}
-              {captureStatus === 'error' && (
-                <>
-                  <WifiOff className="w-7 h-7 text-rose-400" />
-                  <span className="text-white font-bold text-lg">Chưa kết nối — thử lại!</span>
-                </>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </div>
-
-      {/* Shutter Button */}
-      <div className="h-36 bg-black flex flex-col items-center justify-center gap-2 border-t border-slate-800">
-        <button
-          onClick={captureAndSend}
-          disabled={captureDisabled}
-          className="w-20 h-20 rounded-full bg-white border-4 border-slate-300 disabled:opacity-40 flex items-center justify-center active:scale-95 transition-transform shadow-[0_0_24px_rgba(255,255,255,0.25)]"
+        {/* Camera Button */}
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          onClick={openCamera}
+          disabled={sendStatus === 'processing'}
+          className="w-full bg-gradient-to-br from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 
+                     disabled:opacity-50 text-white rounded-[28px] p-8 shadow-2xl shadow-rose-500/30
+                     flex flex-col items-center gap-4 transition-all active:shadow-lg"
         >
-          <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200">
-            <Camera className="w-8 h-8 text-slate-800" />
+          <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+            <Camera className="w-10 h-10" />
           </div>
-        </button>
-        {!cameraReady && (
-          <p className="text-slate-600 text-xs animate-pulse">Đang khởi động camera...</p>
+          <div>
+            <p className="font-black text-xl">CHỤP & GỬI</p>
+            <p className="text-rose-100 text-sm font-medium mt-1">
+              Nhấn để mở camera → Chụp → Gửi tự động
+            </p>
+          </div>
+        </motion.button>
+
+        {/* Status Messages */}
+        <div className="mt-6 min-h-[80px]">
+          {sendStatus === 'processing' && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+              className="bg-slate-700/50 backdrop-blur-md rounded-2xl p-4 flex items-center gap-3"
+            >
+              <div className="w-6 h-6 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
+              <span className="text-white font-bold">Đang nén & gửi ảnh...</span>
+            </motion.div>
+          )}
+
+          {sendStatus === 'success' && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+              className="bg-emerald-500/20 backdrop-blur-md rounded-2xl p-4 flex items-center gap-3 border border-emerald-500/30"
+            >
+              <CheckCircle2 className="w-7 h-7 text-emerald-400 flex-shrink-0" />
+              <span className="text-emerald-100 font-bold">Đã gửi lên máy tính!</span>
+            </motion.div>
+          )}
+
+          {sendStatus === 'error' && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+              className="bg-rose-500/20 backdrop-blur-md rounded-2xl p-4 flex items-center gap-3 border border-rose-500/30"
+            >
+              <AlertTriangle className="w-7 h-7 text-rose-400 flex-shrink-0" />
+              <span className="text-rose-100 font-bold text-sm">{errorMsg || 'Lỗi — thử lại!'}</span>
+            </motion.div>
+          )}
+        </div>
+
+        {/* Sent count */}
+        {sentCount > 0 && (
+          <div className="text-center mt-4">
+            <span className="bg-white/10 text-white/80 px-4 py-2 rounded-full text-sm font-bold">
+              Đã gửi {sentCount} ảnh ✅
+            </span>
+          </div>
         )}
+
+        {/* Gallery fallback */}
+        <div className="mt-8 text-center">
+          <label className="text-slate-500 text-xs font-medium cursor-pointer hover:text-slate-300 transition-colors flex items-center justify-center gap-2">
+            <Upload className="w-4 h-4" />
+            <span>Hoặc chọn ảnh từ thư viện</span>
+            <input 
+              type="file" 
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) uploadImage(file);
+                e.target.value = '';
+              }}
+            />
+          </label>
+        </div>
       </div>
     </div>
   );

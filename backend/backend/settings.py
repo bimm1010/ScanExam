@@ -21,7 +21,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-4^#k^k*sxv@p!!6h+7-)-2y&&_
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
 # ALLOWED_HOSTS: IPs or domains (e.g. 10.10.10.184, localhost)
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
+ALLOWED_HOSTS = [host.strip() for host in os.getenv("ALLOWED_HOSTS", "*").split(",") if host.strip()]
 
 
 # Application definition
@@ -154,5 +154,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CORS_ALLOW_ALL_ORIGINS = DEBUG  # Only allow all during DEBUG
 
 if not CORS_ALLOW_ALL_ORIGINS:
-    CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:5173").split(",")
-    CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", "http://localhost:5173").split(",")
+    CORS_ALLOWED_ORIGINS = [o.strip() for o in os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:5173").split(",") if o.strip()]
+    CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.getenv("CSRF_TRUSTED_ORIGINS", "http://localhost:5173").split(",") if o.strip()]

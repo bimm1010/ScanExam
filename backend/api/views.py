@@ -1,4 +1,7 @@
 import os
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.permissions import AllowAny
+from rest_framework.decorators import api_view, permission_classes
 import json
 import base64
 import datetime
@@ -8,7 +11,6 @@ import shutil
 import socket
 from pathlib import Path
 from dotenv import load_dotenv
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from google import genai
@@ -991,3 +993,45 @@ def sync_roster(request):
     except Exception as e:
         print(f"❌ Sync Roster Error: {str(e)}")
         return Response({"error": f"Lỗi đồng bộ dữ liệu: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# ── Mobile Scan via HTTP (No WebSocket needed) ──────────────────────
+import threading
+
+_scan_store_lock = threading.Lock()
+_scan_store: dict[str, list[str]] = {}  # {session_id: [base64_image, ...]}
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+@csrf_exempt
+def scan_upload(request, session_id):
+    """Phone uploads a compressed image for a given scan session."""
+    file_obj = request.FILES.get('image')
+    image_b64 = request.data.get('image_base64')
+
+    if file_obj:
+        raw = file_obj.read()
+        if len(raw) > MAX_IMAGE_SIZE_BYTES:
+            return Response({"error": "Ảnh quá lớn"}, status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)
+        image_b64 = base64.b64encode(raw).decode('ascii')
+    elif image_b64:
+        # strip data-url prefix if present
+        if ';base64,' in image_b64:
+            image_b64 = image_b64.split(';base64,')[1]
+    else:
+        return Response({"error": "No image"}, status=status.HTTP_400_BAD_REQUEST)
+
+    with _scan_store_lock:
+        _scan_store.setdefault(session_id, []).append(image_b64)
+
+    print(f"📸 scan_upload: session={session_id}, queue_len={len(_scan_store[session_id])}")
+    return Response({"ok": True, "queued": len(_scan_store[session_id])})
+
+
+@api_view(['GET'])
+def scan_poll(request, session_id):
+    """Desktop polls for new images in a given scan session."""
+    with _scan_store_lock:
+        images = _scan_store.pop(session_id, [])
+    return Response({"images": images})
