@@ -101,6 +101,7 @@ function App() {
 
   const {
     batchProgress,
+    aiStatusMsg,
     handleImageCapture,
     handleMobileFile,
     forceFlushPending,
@@ -113,16 +114,23 @@ function App() {
     remarkRules
   });
 
+  // Use a ref to always point to the latest handleMobileFile
+  const handleMobileFileRef = useRef(handleMobileFile);
+  useEffect(() => {
+    handleMobileFileRef.current = handleMobileFile;
+  }, [handleMobileFile]);
+
   // Listen for images sent from mobile phone via WebSocket
   useEffect(() => {
     const handler = (e: Event) => {
       const file = (e as CustomEvent<{ file: File }>).detail.file;
       console.log('📱 [App] mobileScanFile event received:', file.name);
-      handleMobileFile(file);
+      // Always call the latest version via Ref
+      handleMobileFileRef.current(file);
     };
     window.addEventListener('mobileScanFile', handler);
     return () => window.removeEventListener('mobileScanFile', handler);
-  }, [handleMobileFile]);
+  }, []); // Only register once
 
   // --- ACTIONS ---
   const handleDownload = async () => {
@@ -202,28 +210,54 @@ function App() {
     console.log("📥 [App] Traditional download triggered as fallback");
   };
 
-  const resetFlow = () => {
-    // Xóa dữ liệu cũ nhưng giữ lại remarkRules
-    const savedStateStr = localStorage.getItem('aigrande_state');
-    if (savedStateStr) {
-      try {
-        const savedState = JSON.parse(savedStateStr);
-        // Chỉ giữ lại remarkRules, reset các thứ khác
-        const newState = {
-          remarkRules: savedState.remarkRules || []
-        };
-        localStorage.setItem('aigrande_state', JSON.stringify(newState));
-      } catch (e) {
-        localStorage.removeItem('aigrande_state');
-      }
-    } else {
-      localStorage.removeItem('aigrande_state');
-    }
-    
-    scannedImages.forEach(img => URL.revokeObjectURL(img.url));
-    window.location.reload(); // Reload để khởi tạo lại state sạch
-  };
+  const resetAllApp = async () => {
+    setIsProcessing(true);
+    try {
+      // 1. Call Backend Reset API with Security Header
+      const API_URL = (import.meta as any).env.VITE_API_URL || "";
+      await fetch(`${API_URL}/api/reset-system/`, { 
+        method: 'POST',
+        headers: { 'X-Confirm-Reset': 'TRUE' }
+      });
 
+      // 2. Revoke all object URLs to prevent memory leaks
+      scannedImages.forEach(img => URL.revokeObjectURL(img.url));
+
+      // 3. Clear Storage
+      localStorage.removeItem('aigrande_state');
+
+      // 4. Reset ALL State Variables to initial values
+      setStep('upload');
+      setStudents([]);
+      setFileName(null);
+      setSelectedSheetName(null);
+      setSelectedSheetId(null);
+      setMappingConfig(null);
+      setBackendExcelFilename(null);
+      setSelectedIdCol(0);
+      setSelectedNameCol(0);
+      setSelectedScoreCol(0);
+      setSelectedLevelCol(0);
+      setSelectedRemarkCol(0);
+      setHeaderRowIndex(1);
+      setDataRowStart(2);
+      setSheetSampleData([]);
+      setTotalColumns(0);
+      setProcessedFiles([]);
+      setScannedImages([]);
+      setExcelUpdateCount(0);
+      setError(null);
+      setLastMatchedStudent(null);
+      setMismatchData(null);
+      
+      console.log("🧹 [App] System cleaned successfully without reload.");
+    } catch (e: unknown) {
+      console.error("❌ [App] Reset failed:", e);
+      setError("Lỗi khi xóa dữ liệu hệ thống.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   const handleExport = () => {
     exportToJson(students, selectedSheetName);
@@ -276,7 +310,7 @@ function App() {
   };
 
   return (
-    <Layout>
+    <Layout currentStep={step} onReset={resetAllApp}>
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-4xl mx-auto px-4 text-center my-auto h-full">
         {/* Header Section - Refined Staggered Layout */}
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-16 md:mb-20 w-full flex flex-col items-center">
@@ -307,34 +341,26 @@ function App() {
                   try {
                     const sample = await extractSheetSample(id);
                     if (sample) {
-                      const suggestedMapping = await autoDetectMapping(sample.slice(0, 10));
-                      if (suggestedMapping) {
-                        // Crucial: Update each state individually
-                        setSelectedIdCol(suggestedMapping.idCol);
-                        setSelectedNameCol(suggestedMapping.nameCol);
-                        setSelectedScoreCol(suggestedMapping.scoreCol);
-                        setSelectedLevelCol(suggestedMapping.levelCol);
-                        setSelectedRemarkCol(suggestedMapping.remarkCol);
-                        setHeaderRowIndex(suggestedMapping.headerRow);
+                      const response = await autoDetectMapping(sample.slice(0, 10));
+                      if (response && response.success && response.mapping) {
+                        const suggestedMapping = response.mapping;
+                        console.log("🚀 [App] Received AI Mapping:", suggestedMapping);
+                        
+                        // Crucial: Update each state individually with AI's guesses
+                        setSelectedIdCol(suggestedMapping.idCol || 0);
+                        setSelectedNameCol(suggestedMapping.nameCol || 0);
+                        setSelectedScoreCol(suggestedMapping.scoreCol || 0);
+                        setSelectedLevelCol(suggestedMapping.levelCol || 0);
+                        setSelectedRemarkCol(suggestedMapping.remarkCol || 0);
+                        setHeaderRowIndex(suggestedMapping.headerRow || 1);
                         if (suggestedMapping.dataRowStart) {
                           setDataRowStart(suggestedMapping.dataRowStart);
                         }
 
-                        // AUTO-CONFIRM: If heuristics are confident (>= 60%), skip mapping screen
-                        if ((suggestedMapping.confidence || 0) >= 60) {
-                          setMappingConfig(suggestedMapping);
-                          await processWorksheet(
-                            id,
-                            suggestedMapping.headerRow,
-                            suggestedMapping.idCol,
-                            suggestedMapping.nameCol,
-                            suggestedMapping.scoreCol,
-                            suggestedMapping.levelCol,
-                            suggestedMapping.remarkCol,
-                            suggestedMapping.dataRowStart
-                          );                          setStep('success');
-                          return;
-                        }
+                        // REMOVED AUTO-CONFIRM LOGIC
+                        // We want the user to land on the 'map-columns' step so they can REVIEW the AI's guesses.
+                        // The dropdowns will be pre-filled with the AI's choices.
+                        console.log("✅ [App] AI Mapping Applied to UI. Waiting for user review.");
                       } else {
                         setError("Hệ thống không tự động nhận diện được cột. Vui lòng tự chọn bằng tay.");
                       }
@@ -345,8 +371,9 @@ function App() {
                   } finally {
                     setIsProcessing(false);
                   }
+                  // Always go to map-columns step to allow user review/editing
                   setStep('map-columns');
-              }} onReset={resetFlow} />
+              }} onReset={resetAllApp} />
             )}
             {step === 'map-columns' && (
               <>
@@ -384,7 +411,7 @@ function App() {
                 onStartScanning={() => setStep('scan')} onExportJson={handleExport}
                 onBackToMap={() => setStep('map-columns')} 
                 onBackToSelectSheet={() => setStep('select-sheet')}
-                onReset={resetFlow}
+                onReset={resetAllApp}
                 onDownload={handleDownload}
                 hasSheets={availableSheets.length > 1} hasScores={students.some(s => s.score != null)}
                 isProcessing={isProcessing}
@@ -397,6 +424,7 @@ function App() {
                   studentsWithScoresCount={students.filter(s => s.score !== null && s.score !== undefined && s.score !== '' && isFinite(Number(s.score))).length}
                   isProcessing={isProcessing}
                   batchProgress={batchProgress}
+                  aiStatusMsg={aiStatusMsg}
                   onCameraClick={() => cameraInputRef.current?.click()}
                   onGalleryClick={() => galleryInputRef.current?.click()}
                   onShowGallery={() => setShowImageGallery(true)}

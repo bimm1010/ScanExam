@@ -2,7 +2,7 @@ import requests
 import base64
 import os
 
-API_BASE = "http://localhost:8000/api"
+API_BASE = "http://127.0.0.1:8000/api"
 
 def test_ai_flow():
     print("🔬 Testing AI Flow & Excel Persistence...")
@@ -61,14 +61,14 @@ def test_ai_flow():
 
     try:
         print(f"📡 Sending request to {API_BASE}/process-test-paper/...")
-        res = requests.post(f"{API_BASE}/process-test-paper/", json=payload)
+        res = requests.post(f"{API_BASE}/process-test-paper/", json=payload, timeout=30)
         print(f"📥 Response Code: {res.status_code}")
         if res.status_code == 200:
             print("✅ AI Processing Success")
             
             # 3. Test Download Endpoint
             print(f"📡 Testing Download: {API_BASE}/download-updated-excel/?filename={roster_filename}")
-            download_res = requests.get(f"{API_BASE}/download-updated-excel/", params={"filename": roster_filename})
+            download_res = requests.get(f"{API_BASE}/download-updated-excel/", params={"filename": roster_filename}, timeout=30)
             print(f"📥 Download Response Code: {download_res.status_code}")
             
             if download_res.status_code == 200:

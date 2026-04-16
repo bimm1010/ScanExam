@@ -214,9 +214,9 @@ export const useExcel = ({
       });
       
       if (response.ok) {
-        const mapping = await response.json();
+        const result = await response.json();
         setIsProcessing(false);
-        return mapping as MappingConfig;
+        return result;
       }
     } catch (e) {
       console.error("AI Auto-detection failed", e);
@@ -262,16 +262,16 @@ export const useExcel = ({
 
     worksheet.eachRow((row, rowNumber) => {
       if (rowNumber >= actualStartRow) { 
-        const idValue = formatCellValue(row.getCell(selectedIdCol).value);
-        const nameValue = formatCellValue(row.getCell(selectedNameCol).value);
+        const idValue = selectedIdCol > 0 ? formatCellValue(row.getCell(selectedIdCol).value) : "";
+        const nameValue = selectedNameCol > 0 ? formatCellValue(row.getCell(selectedNameCol).value) : "";
         
         if (idValue && nameValue) {
            parsedStudents.push({
              id: idValue,
              name: nameValue,
-             score: formatCellValue(row.getCell(selectedScoreCol).value),
-             level: formatCellValue(row.getCell(selectedLevelCol).value),
-             remark: formatCellValue(row.getCell(selectedRemarkCol).value)
+             score: selectedScoreCol > 0 ? formatCellValue(row.getCell(selectedScoreCol).value) : null,
+             level: selectedLevelCol > 0 ? formatCellValue(row.getCell(selectedLevelCol).value) : null,
+             remark: selectedRemarkCol > 0 ? formatCellValue(row.getCell(selectedRemarkCol).value) : null
            });
         } else if (rowNumber < actualStartRow + 5) {
           console.warn(`⚠️ [useExcel] Missing ID or Name at row ${rowNumber}:`, { idValue, nameValue });

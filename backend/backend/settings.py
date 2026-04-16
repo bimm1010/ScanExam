@@ -21,7 +21,12 @@ SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-4^#k^k*sxv@p!!6h+7-)-2y&&_
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
 # ALLOWED_HOSTS: IPs or domains (e.g. 10.10.10.184, localhost)
-ALLOWED_HOSTS = [host.strip() for host in os.getenv("ALLOWED_HOSTS", "*").split(",") if host.strip()]
+ALLOWED_HOSTS = ["*"]
+
+# Security Settings for Large Uploads
+DATA_UPLOAD_MAX_MEMORY_SIZE = 20971520  # 20MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 20971520  # 20MB
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000
 
 
 # Application definition

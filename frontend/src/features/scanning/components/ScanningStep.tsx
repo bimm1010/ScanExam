@@ -6,6 +6,7 @@ interface ScanningStepProps {
   studentsWithScoresCount: number;
   isProcessing: boolean;
   batchProgress: { total: number; current: number };
+  aiStatusMsg?: string | null;
   onCameraClick: () => void;
   onGalleryClick: () => void;
   onShowGallery: () => void;
@@ -30,6 +31,7 @@ const ScanningStep = ({
   studentsWithScoresCount,
   isProcessing,
   batchProgress,
+  aiStatusMsg,
   onCameraClick,
   onGalleryClick,
   onShowGallery,
@@ -108,34 +110,38 @@ const ScanningStep = ({
            </button>
         </div>
 
-        {isProcessing && batchProgress.total > 0 && (
+        {isProcessing && (
           <div className="mb-8 bg-white/80 backdrop-blur-md p-5 rounded-[28px] border border-white/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)] animate-in fade-in slide-in-from-bottom-4 duration-500">
-             <div className="flex items-center gap-2 mb-3">
-                <div className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-[pulse_1.5s_ease-in-out_infinite]"></div>
-                <span className="text-xs font-black text-rose-500 uppercase tracking-[0.2em]">Trí tuệ nhân tạo đang phân tích...</span>
+             <div className="flex items-center gap-3 mb-3">
+                <div className="w-4 h-4 border-2 border-rose-500 border-t-transparent rounded-full animate-spin"></div>
+                <span className="text-xs font-black text-rose-500 uppercase tracking-[0.2em]">
+                  {aiStatusMsg || "Trí tuệ nhân tạo đang phân tích..."}
+                </span>
              </div>
              
-             <div className="w-full h-10 bg-slate-100 rounded-2xl overflow-hidden relative shadow-inner border border-slate-200/60">
-                <motion.div 
-                   className="h-full bg-gradient-to-r from-rose-500 via-rose-400 to-amber-400 absolute left-0 top-0 rounded-r-2xl" 
-                   initial={{ width: 0 }}
-                   animate={{ width: `${(batchProgress.current / batchProgress.total) * 100}%` }}
-                   transition={{ duration: 0.6, ease: "easeOut" }}
-                />
-                <motion.div 
-                   className="h-full bg-white/20 absolute inset-0 w-[200%] mix-blend-overlay" 
-                   animate={{ x: ["-50%", "0%"] }}
-                   transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-                >
-                   <div className="w-full h-full bg-gradient-to-r from-transparent via-white/60 to-transparent skew-x-12" />
-                </motion.div>
-                
-                <div className="absolute inset-0 flex items-center justify-center z-10 w-full h-full">
-                  <span className="text-[13px] font-black tracking-widest text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
-                     ĐÃ XỬ LÝ {batchProgress.current}/{batchProgress.total} ẢNH ({Math.round((batchProgress.current / batchProgress.total) * 100)}%)
-                  </span>
-                </div>
-             </div>
+             {batchProgress.total > 0 && (
+               <div className="w-full h-10 bg-slate-100 rounded-2xl overflow-hidden relative shadow-inner border border-slate-200/60">
+                  <motion.div 
+                     className="h-full bg-gradient-to-r from-rose-500 via-rose-400 to-amber-400 absolute left-0 top-0 rounded-r-2xl" 
+                     initial={{ width: 0 }}
+                     animate={{ width: `${(batchProgress.current / batchProgress.total) * 100}%` }}
+                     transition={{ duration: 0.6, ease: "easeOut" }}
+                  />
+                  <motion.div 
+                     className="h-full bg-white/20 absolute inset-0 w-[200%] mix-blend-overlay" 
+                     animate={{ x: ["-50%", "0%"] }}
+                     transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                  >
+                     <div className="w-full h-full bg-gradient-to-r from-transparent via-white/60 to-transparent skew-x-12" />
+                  </motion.div>
+                  
+                  <div className="absolute inset-0 flex items-center justify-center z-10 w-full h-full">
+                    <span className="text-[13px] font-black tracking-widest text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+                       ĐÃ XỬ LÝ {batchProgress.current}/{batchProgress.total} ẢNH ({Math.round((batchProgress.current / batchProgress.total) * 100)}%)
+                    </span>
+                  </div>
+               </div>
+             )}
           </div>
         )}
 

@@ -2,10 +2,10 @@
 # (≧◡≦) BẬT CHẾ ĐỘ CHIẾN ĐẤU - DEPLOY ScanExercise XUYÊN MÀN ĐÊM
 
 # Cấu hình server nhà
-SERVER_IP="10.10.10.184"
+SERVER_IP="10.10.10.172"
 SERVER_USER="bimm"
 SSH_KEY="~/.ssh/id_antigravity"
-REMOTE_PATH="/home/bimm/ScanExercise"
+REMOTE_PATH="/Users/bimm/ScanExercise"
 
 # Màu sắc cho rực rỡ
 GREEN='\033[0;32m'

@@ -14,8 +14,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
     libjpeg-dev \
     zlib1g-dev \
+    curl \
+    gnupg \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+# Cài đặt Node.js 20 và Gemini CLI toàn cục (Ý tưởng từ Đại Ca!)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g @google/gemini-cli
+
+# Cấu hình môi trường cho Gemini CLI
+RUN mkdir -p /root/.gemini
 
 # Cài đặt dependencies
 COPY requirements.txt .

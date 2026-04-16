@@ -29,6 +29,7 @@ services:
       - DB_PORT=5432
 
     volumes:
+      - ~/.gemini:/root/.gemini:ro
       - ./backend/media:/app/media
       - ./backend/staticfiles:/app/staticfiles
     depends_on:

@@ -46,22 +46,14 @@ export const MobileScanView = () => {
       if (!ctx) throw new Error('Canvas context failed');
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-      // 3. Convert to Blob (JPEG 75%)
-      const blob = await new Promise<Blob>((resolve, reject) => {
-        canvas.toBlob(
-          b => (b ? resolve(b) : reject(new Error('toBlob failed'))),
-          'image/jpeg',
-          0.75
-        );
-      });
+      // 3. Convert to Base64 (JPEG 75%)
+      const base64Data = canvas.toDataURL('image/jpeg', 0.75).split(',')[1];
 
-      // 4. POST to server via FormData (works on all browsers, all protocols)
-      const formData = new FormData();
-      formData.append('image', blob, `scan_${Date.now()}.jpg`);
-
+      // 4. POST to server via JSON
       const resp = await fetch(`/api/scan-upload/${sessionId}/`, {
         method: 'POST',
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image_base64: base64Data }),
       });
 
       if (!resp.ok) throw new Error(`Server error ${resp.status}`);
