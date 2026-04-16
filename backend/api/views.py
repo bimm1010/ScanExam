@@ -49,13 +49,13 @@ import re
 
 def call_gemini_native(image_filename, excel_filename, subject, roster_json):
     """
-    🎯 NATIVE GEMINI CLI: Gọi trực tiếp trong Docker (Ý tưởng của Đại Ca).
+    🎯 NATIVE GEMINI CLI: Gọi trực tiếp trong Docker.
     """
-    # Đường dẫn file nội bộ trong Container
+    # 1. Đường dẫn tuyệt đối trong Container
     image_path = (get_backend_root() / 'media' / 'scanned_images' / image_filename).absolute()
     excel_path = (get_backend_root() / 'media' / 'rosters' / excel_filename).absolute()
 
-    # Kiểm tra file tồn tại trước khi gọi AI để tránh lỗi vô nghĩa
+    # Kiểm tra file tồn tại
     if not image_path.exists():
         logger.error(f"❌ [GEMINI-NATIVE] File ảnh không tồn tại: {image_path}")
         return {"status": "error", "msg": "Image file not found"}
@@ -63,7 +63,7 @@ def call_gemini_native(image_filename, excel_filename, subject, roster_json):
         logger.error(f"❌ [GEMINI-NATIVE] File Excel không tồn tại: {excel_path}")
         return {"status": "error", "msg": "Excel file not found"}
 
-    # Xây dựng SIÊU PROMPT cho Gemini CLI
+    # 2. Xây dựng SIÊU PROMPT cho Gemini CLI
     prompt = (
         f"Nhiệm vụ: Chấm điểm bài thi viết tay môn {subject}. "
         f"1. Mở ảnh tại {image_path} và nhận diện điểm số. "
@@ -73,15 +73,17 @@ def call_gemini_native(image_filename, excel_filename, subject, roster_json):
         f"Trả về duy nhất JSON kết quả: {{'studentId': '...', 'score': '...', 'status': 'success'}}"
     )
 
-    # Lệnh gọi trực tiếp gemini cli (Sử dụng full path nếu cần, hoặc đảm bảo shell có PATH)
-    # Trong Dockerfile bạn cài npm install -g, nên nó nằm trong /usr/local/bin/gemini hoặc tương đương
+    # 3. ÉP MÔI TRƯỜNG HOME để Gemini CLI đọc /root/.gemini (mount từ Mac)
+    env = os.environ.copy()
+    env["HOME"] = "/root"
+
     cmd = f"gemini --vision --image \"{image_path}\" --prompt \"{prompt}\""
 
-    
     try:
         logger.info(f"🚀 [GEMINI-NATIVE] Đang xử lý nội bộ: {image_filename}")
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=120)
-        
+        # Truyền env=env để đảm bảo Gemini CLI tìm thấy token auth từ volume mount
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=120, env=env)
+
         if result.returncode == 0:
             match = re.search(r'\{.*\}', result.stdout, re.DOTALL)
             if match:
@@ -96,7 +98,7 @@ def call_gemini_native(image_filename, excel_filename, subject, roster_json):
         return None
 
 def call_gemini_cli_on_mac(image_filename, excel_filename, subject, roster_json):
-    # DEPRECATED: Chuyển sang dùng call_gemini_native cho ổn định (Ý tưởng Đại Ca)
+    # DEPRECATED: Chuyển sang dùng call_gemini_native cho ổn định
     return call_gemini_native(image_filename, excel_filename, subject, roster_json)
 
 # --- API ENDPOINTS ---
