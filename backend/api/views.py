@@ -6,12 +6,14 @@ import logging
 import threading
 import subprocess
 import socket
+import re
 from pathlib import Path
 from dotenv import load_dotenv
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from django.views.decorators.csrf import csrf_exempt
+import google.generativeai as genai
 
 # Configure Logging
 logger = logging.getLogger(__name__)
@@ -30,11 +32,12 @@ _current_session_config = {
 # Load environment variables
 load_dotenv()
 
-# Mac Host Config
-MAC_USER = "bimm"
-MAC_IP = "10.10.10.172"
-GEMINI_CLI_PATH = "/opt/homebrew/bin/gemini"
-MAC_PROJECT_ROOT = "/Users/bimm/ScanExercise"
+# Cấu hình Gemini API
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+if GEMINI_API_KEY:
+    genai.configure(api_key=GEMINI_API_KEY)
+else:
+    logger.warning("⚠️ GEMINI_API_KEY not found in environment variables!")
 
 def get_backend_root():
     return Path(__file__).resolve().parent.parent
@@ -45,60 +48,57 @@ def extract_base64_data(image_data_base64):
         return base64.b64decode(imgstr)
     except: return None
 
-import re
-
 def call_gemini_native(image_filename, excel_filename, subject, roster_json):
     """
-    🎯 NATIVE GEMINI CLI: Gọi trực tiếp trong Docker.
+    🎯 GEMINI API: Sử dụng Google Generative AI SDK (Thay thế hoàn toàn CLI).
     """
-    # 1. Đường dẫn tuyệt đối trong Container
-    image_path = (get_backend_root() / 'media' / 'scanned_images' / image_filename).absolute()
-    excel_path = (get_backend_root() / 'media' / 'rosters' / excel_filename).absolute()
-
-    # Kiểm tra file tồn tại
-    if not image_path.exists():
-        logger.error(f"❌ [GEMINI-NATIVE] File ảnh không tồn tại: {image_path}")
-        return {"status": "error", "msg": "Image file not found"}
-    if not excel_path.exists():
-        logger.error(f"❌ [GEMINI-NATIVE] File Excel không tồn tại: {excel_path}")
-        return {"status": "error", "msg": "Excel file not found"}
-
-    # 2. Xây dựng SIÊU PROMPT cho Gemini CLI
-    prompt = (
-        f"Nhiệm vụ: Chấm điểm bài thi viết tay môn {subject}. "
-        f"1. Mở ảnh tại {image_path} và nhận diện điểm số. "
-        f"2. Mở file Excel tại {excel_path}. "
-        f"3. Tìm đúng học sinh dựa trên danh sách: {roster_json}. "
-        f"4. Ghi điểm vào file Excel và lưu lại. "
-        f"Trả về duy nhất JSON kết quả: {{'studentId': '...', 'score': '...', 'status': 'success'}}"
-    )
-
-    # 3. ÉP MÔI TRƯỜNG HOME để Gemini CLI đọc /root/.gemini (mount từ Mac)
-    env = os.environ.copy()
-    env["HOME"] = "/root"
-
-    cmd = f"gemini --vision --image \"{image_path}\" --prompt \"{prompt}\""
+    if not GEMINI_API_KEY:
+        logger.error("❌ API Key is missing. Please set GEMINI_API_KEY in .env")
+        return {"status": "error", "msg": "API Key missing"}
 
     try:
-        logger.info(f"🚀 [GEMINI-NATIVE] Đang xử lý nội bộ: {image_filename}")
-        # Truyền env=env để đảm bảo Gemini CLI tìm thấy token auth từ volume mount
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=120, env=env)
+        # 1. Chuẩn bị file ảnh
+        image_path = (get_backend_root() / 'media' / 'scanned_images' / image_filename).absolute()
+        if not image_path.exists():
+            return {"status": "error", "msg": "Image file not found"}
 
-        if result.returncode == 0:
-            match = re.search(r'\{.*\}', result.stdout, re.DOTALL)
-            if match:
-                return json.loads(match.group())
-            logger.warning(f"⚠️ [GEMINI-NATIVE] Không tìm thấy JSON trong output: {result.stdout}")
-            return {"raw_output": result.stdout}
-        else:
-            logger.error(f"❌ [GEMINI-NATIVE] Lỗi CLI: {result.stderr}")
-            return None
+        # Đọc ảnh dưới dạng bytes cho SDK
+        with open(image_path, "rb") as f:
+            image_bytes = f.read()
+
+        # 2. Xây dựng Prompt
+        # Lưu ý: Với API, chúng ta yêu cầu mô hình trả về JSON chuẩn
+        prompt = (
+            f"Nhiệm vụ: Chấm điểm bài thi viết tay môn {subject}. "
+            f"Hãy phân tích hình ảnh đính kèm và tìm điểm số của học sinh. "
+            f"Danh sách học sinh hiện tại: {roster_json}. "
+            f"Trả về kết quả dưới dạng JSON duy nhất với định dạng: "
+            f"{{'studentId': '...', 'score': '...', 'status': 'success'}}"
+        )
+
+        # 3. Gọi Model Gemini 1.5 Flash (Free & Fast)
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        # Gửi prompt và ảnh
+        # Cấu hình response_mime_type để đảm bảo nhận được JSON
+        response = model.generate_content(
+            [prompt, {"mime_type": "image/jpeg", "data": image_bytes}],
+            generation_config={"response_mime_type": "application/json"}
+        )
+
+        # 4. Xử lý kết quả
+        result_text = response.text.strip()
+        logger.info(f"✅ [GEMINI-API] Kết quả cho {image_filename}: {result_text}")
+        
+        # Parse JSON từ text
+        return json.loads(result_text)
+
     except Exception as e:
-        logger.error(f"⚠️ [GEMINI-NATIVE] Exception: {str(e)}")
+        logger.error(f"⚠️ [GEMINI-API] Exception: {str(e)}", exc_info=True)
         return None
 
 def call_gemini_cli_on_mac(image_filename, excel_filename, subject, roster_json):
-    # DEPRECATED: Chuyển sang dùng call_gemini_native cho ổn định
+    # Wrapper để không làm gãy các lời gọi hàm cũ
     return call_gemini_native(image_filename, excel_filename, subject, roster_json)
 
 # --- API ENDPOINTS ---
@@ -106,36 +106,22 @@ def call_gemini_cli_on_mac(image_filename, excel_filename, subject, roster_json)
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def health_check(request):
-    try:
-        # Check gemini version
-        v_res = subprocess.run("gemini --version", shell=True, capture_output=True, text=True, timeout=5)
-        gemini_v = v_res.stdout.strip() if v_res.returncode == 0 else "Error"
-        
-        # Check if auth files exist
-        auth_res = subprocess.run("ls -la /root/.gemini", shell=True, capture_output=True, text=True, timeout=5)
-        auth_files = auth_res.stdout.strip() if auth_res.returncode == 0 else "Folder not found"
-        
-    except Exception as e:
-        gemini_v = str(e)
-        auth_files = "Error"
-    
     return Response({
         "status": "healthy", 
-        "mode": "Gemini CLI Native",
-        "gemini_version": gemini_v,
-        "auth_files": auth_files
+        "mode": "Gemini API SDK",
+        "api_key_configured": bool(GEMINI_API_KEY)
     })
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def server_info(request):
-    return Response({"hostname": socket.gethostname(), "ai": "Gemini CLI Mac Native"})
+    return Response({"hostname": socket.gethostname(), "ai": "Gemini 1.5 Flash API"})
 
 @api_view(['POST'])
 @csrf_exempt
 @permission_classes([AllowAny])
 def process_test_paper(request):
-    print(f"🚀 [BACKEND] Nhận ảnh từ Đại Ca, đang chuyển cho Gemini CLI...")
+    print(f"🚀 [BACKEND] Nhận ảnh, đang chuyển cho Gemini API...")
     img_list = request.data.get('image_data_list', [])
     if not img_list and request.data.get('image_data'): img_list = [request.data.get('image_data')]
     
@@ -144,7 +130,6 @@ def process_test_paper(request):
     roster_data = request.data.get('roster', [])
     roster_str = json.dumps(roster_data, ensure_ascii=False)
 
-    # Cập nhật cấu hình phiên quét hiện tại để Mobile dùng
     if excel_filename: _current_session_config["excel_filename"] = excel_filename
     if subject: _current_session_config["subject"] = subject
     if roster_str: _current_session_config["roster_json"] = roster_str
@@ -155,16 +140,14 @@ def process_test_paper(request):
             raw_bytes = extract_base64_data(img_b64)
             if not raw_bytes: continue
             
-            # Lưu ảnh tạm thời để Gemini CLI đọc trên Host
-            img_name = f"cli_scan_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S_%f')}.jpg"
+            img_name = f"api_scan_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S_%f')}.jpg"
             save_path = get_backend_root() / 'media' / 'scanned_images' / img_name
             save_path.parent.mkdir(parents=True, exist_ok=True)
             with open(save_path, 'wb') as f: f.write(raw_bytes)
             
-            # GIAO NHIỆM VỤ CHO GEMINI CLI
             res = call_gemini_cli_on_mac(img_name, excel_filename, subject, roster_str)
             if res:
-                res['excelUpdated'] = True # Gemini CLI tự hứa là đã ghi
+                res['excelUpdated'] = True 
                 final_results.append(res)
         
         return Response(final_results)
@@ -190,9 +173,6 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
 def send_ws_update(session_id, message_type, data):
-    """
-    Gửi cập nhật thời gian thực qua WebSocket tới Desktop
-    """
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
         f"scan_{session_id}",
@@ -206,14 +186,10 @@ def send_ws_update(session_id, message_type, data):
     )
 
 def background_ai_task(image_filename, config, session_id):
-    """
-    Hàm chạy ngầm để gọi AI và báo cáo tình hình qua WebSocket.
-    """
     try:
-        # Báo cáo: Bắt đầu xử lý
-        send_ws_update(session_id, "ai_status", {"status": "analyzing", "msg": "🤖 Gemini đang đọc bài..."})
+        send_ws_update(session_id, "ai_status", {"status": "analyzing", "msg": "🤖 Gemini đang phân tích bài..."})
         
-        logger.info(f"🧵 [THREAD-AI] Bắt đầu chấm bài: {image_filename}")
+        logger.info(f"🧵 [THREAD-AI] Bắt đầu chấm bài API: {image_filename}")
         res = call_gemini_native(
             image_filename, 
             config['excel_filename'], 
@@ -222,8 +198,7 @@ def background_ai_task(image_filename, config, session_id):
         )
         
         if res:
-            logger.info(f"✅ [THREAD-AI] Hoàn thành {image_filename}")
-            # Báo cáo: Thành công + Gửi kết quả
+            logger.info(f"✅ [THREAD-AI] Hoàn thành API {image_filename}")
             send_ws_update(session_id, "ai_result", {
                 "status": "success", 
                 "studentId": res.get('studentId'),
@@ -231,7 +206,7 @@ def background_ai_task(image_filename, config, session_id):
                 "image": f"/media/scanned_images/{image_filename}"
             })
         else:
-            send_ws_update(session_id, "ai_status", {"status": "error", "msg": "❌ Gemini không nhận diện được"})
+            send_ws_update(session_id, "ai_status", {"status": "error", "msg": "❌ Gemini API không nhận diện được"})
             
     except Exception as e:
         logger.error(f"❌ [THREAD-AI] Crash: {str(e)}")
@@ -244,14 +219,11 @@ def scan_upload(request, session_id):
     try:
         img_b64 = request.data.get('image_base64', '')
         if img_b64:
-            # Thông báo cho Desktop có ảnh mới
             send_ws_update(session_id, "ai_status", {"status": "uploading", "msg": "📩 Nhận ảnh từ điện thoại..."})
             
-            # 1. Lưu vào RAM để Desktop poll (giữ tính năng cũ)
             with _scan_store_lock:
                 _scan_store.setdefault(session_id, []).append(img_b64)
             
-            # 2. Lưu thành file vật lý
             raw_bytes = extract_base64_data(img_b64)
             if raw_bytes:
                 filename = f"mobile_{session_id}_{datetime.datetime.now().strftime('%H%M%S_%f')}.jpg"
@@ -260,14 +232,13 @@ def scan_upload(request, session_id):
                 with open(save_path, 'wb') as f:
                     f.write(raw_bytes)
                 
-                # 3. Kích hoạt AI nếu có cấu hình
                 if _current_session_config["excel_filename"]:
                     threading.Thread(
                         target=background_ai_task,
                         args=(filename, _current_session_config.copy(), session_id),
                         daemon=True
                     ).start()
-                    logger.info(f"🚀 [MOBILE] Đã đẩy {filename} vào hàng đợi AI.")
+                    logger.info(f"🚀 [MOBILE] Đã đẩy {filename} vào hàng đợi API AI.")
                 else:
                     send_ws_update(session_id, "ai_status", {"status": "warning", "msg": "⚠️ Chưa chọn Excel/Môn học"})
 
@@ -288,7 +259,6 @@ def scan_poll(request, session_id):
         logger.error(f"❌ [SCAN-POLL] Lỗi: {str(e)}", exc_info=True)
         return Response({"images": [], "error": str(e)}, status=500)
 
-# Các hàm khác giữ placeholder để tránh lỗi URL
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def get_sheet_results(request): return Response({"results": []})
