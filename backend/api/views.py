@@ -76,6 +76,16 @@ def normalize_string(s):
     s = re.sub(r'\s+', ' ', s)
     return s
 
+def secure_filename(filename):
+    """Dọn sạch ký tự nguy hiểm (Path Traversal) khỏi tên file."""
+    import os
+    if not filename: return ""
+    # Chỉ lấy phần tên, bỏ qua mọi đường dẫn
+    clean_name = os.path.basename(str(filename))
+    # Loại bỏ triệt để thư mục cha và dấu nháy
+    clean_name = clean_name.replace("..", "").replace("/", "").replace("\\", "")
+    return clean_name
+
 def extract_base64_data(image_data_base64):
     try:
         if not image_data_base64: return None
@@ -193,7 +203,7 @@ def process_test_paper(request):
         img_list = [request.data.get('image_data')]
 
     subject = request.data.get('expected_subject')
-    excel_filename = request.data.get('excel_filename')
+    excel_filename = secure_filename(request.data.get('excel_filename'))
     roster_data = request.data.get('roster', [])
     roster_str = json.dumps(roster_data, ensure_ascii=False)
 
@@ -235,7 +245,7 @@ def upload_roster_excel(request):
     file_obj = request.FILES.get('file')
     if not file_obj: return Response({"error": "No file"}, status=400)
     try:
-        filename = f"roster_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}_{file_obj.name}"
+        filename = f"roster_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}_{secure_filename(file_obj.name)}"
         save_path = get_backend_root() / 'media' / 'rosters' / filename
         save_path.parent.mkdir(parents=True, exist_ok=True)
         with open(save_path, 'wb+') as f:
@@ -255,7 +265,7 @@ def upload_roster_excel(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def preview_excel(request):
-    filename = request.query_params.get('filename')
+    filename = secure_filename(request.query_params.get('filename'))
     sheet_name = request.query_params.get('sheet')
     if not filename: return Response({"error": "Filename required"}, status=400)
 
@@ -286,7 +296,7 @@ def preview_excel(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def analyze_excel_columns(request):
-    filename = request.data.get('filename')
+    filename = secure_filename(request.data.get('filename'))
     sheet_name = request.data.get('sheet')
     if not filename: return Response({"error": "No filename"}, status=400)
 
@@ -312,7 +322,7 @@ def analyze_excel_columns(request):
 @permission_classes([AllowAny])
 def sync_roster(request):
     """Lưu dữ liệu roster từ frontend ngược lại file Excel."""
-    filename = request.data.get('filename')
+    filename = secure_filename(request.data.get('filename'))
     sheet_name = request.data.get('sheet')
     roster_data = request.data.get('roster')
     mapping = request.data.get('mapping')
