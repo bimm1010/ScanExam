@@ -1,68 +1,62 @@
 /// <reference lib="webworker" />
+import { createWorker } from 'tesseract.js';
 
 /**
  * ocr.worker.ts
- * Web Worker for running Local OCR without blocking the main browser thread.
- * 
- * Optimized for memory management and future WASM integration.
+ * Web Worker for running Local OCR using Tesseract.js.
  */
+
+let worker: Tesseract.Worker | null = null;
 
 self.addEventListener('message', async (e: MessageEvent) => {
   const { type, payload } = e.data;
 
   if (type === 'INIT') {
-    // Future: Initialize PaddleOCR WASM or ONNX runtime here
-    // Example: await ocr.init();
-    console.log('[OCR Worker] System ready for processing.');
-    self.postMessage({ type: 'INIT_SUCCESS' });
+    try {
+      console.log('[OCR Worker] Initializing Tesseract...');
+      worker = await createWorker('vie+eng', 1, {
+        logger: m => console.log(`[OCR Worker Progress] ${m.status}: ${Math.round(m.progress * 100)}%`),
+        workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@v5.0.0/dist/worker.min.js',
+        corePath: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@v5.0.0/tesseract-core.wasm.js',
+      });
+      console.log('[OCR Worker] System ready.');
+      self.postMessage({ type: 'INIT_SUCCESS' });
+    } catch (err) {
+      console.error('[OCR Worker] Init failed:', err);
+      self.postMessage({ type: 'INIT_FAIL', payload: { error: String(err) } });
+    }
   }
 
   if (type === 'RECOGNIZE') {
     const { imageBlob, id } = payload;
-    console.log(`[OCR Worker] Task [${id}] starting...`);
-    
-    let imageUrl: string | null = null;
-    try {
-      // Memory Optimization: Limit the lifetime of the Blob URL
-      imageUrl = URL.createObjectURL(imageBlob);
-      
-      /** 
-       * MOCK OCR LOGIC (Future Integration Point)
-       * In a real app, you would use: const res = await ocr.recognize(imageUrl);
-       */
-      await new Promise(r => setTimeout(r, 800)); // Simulate processing latency
-      
-      const mockResult = {
-        text: "Mã SV: 102\nĐiểm: 8.5", 
-        confidence: 0.95
-      };
+    if (!worker) {
+      self.postMessage({ type: 'RECOGNIZE_FAIL', payload: { id, error: 'Worker not initialized' } });
+      return;
+    }
 
-      // CRITICAL: Immediately release the blob memory from browser's internal store
-      if (imageUrl) URL.revokeObjectURL(imageUrl);
-      imageUrl = null;
+    console.log(`[OCR Worker] Task [${id}] recognizing...`);
+    try {
+      const { data: { text, confidence } } = await worker.recognize(imageBlob);
       
       self.postMessage({ 
         type: 'RECOGNIZE_SUCCESS', 
-        payload: { id, result: mockResult.text } 
+        payload: { id, result: text, confidence } 
       });
-
     } catch (error) {
-      if (imageUrl) URL.revokeObjectURL(imageUrl);
       console.error(`[OCR Worker] Task [${id}] failed:`, error);
       self.postMessage({ 
         type: 'RECOGNIZE_FAIL', 
         payload: { id, error: String(error) } 
       });
-    } finally {
-      // Clean up local variables for GC (Garbage Collection)
-      console.log(`[OCR Worker] Task [${id}] completed cleanup.`);
     }
   }
 
   if (type === 'TERMINATE') {
-    // Future: Properly shut down WASM runtime to prevent memory leak
-    // await ocr.destroy();
-    console.log('[OCR Worker] Terminated gracefully.');
+    if (worker) {
+      await worker.terminate();
+      worker = null;
+    }
+    console.log('[OCR Worker] Terminated.');
     self.close();
   }
 });
