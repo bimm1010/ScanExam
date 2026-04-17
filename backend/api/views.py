@@ -15,7 +15,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from django.views.decorators.csrf import csrf_exempt
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from django.core.cache import cache
 from rapidfuzz import process, fuzz
 
@@ -53,11 +54,9 @@ def pop_scan_store(session_id):
 # Load environment variables
 load_dotenv()
 
-# Cấu hình Gemini API
+# Kiểm tra Gemini API Key
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
-else:
+if not GEMINI_API_KEY:
     logger.warning("⚠️ GEMINI_API_KEY not found in environment variables!")
 
 def get_backend_root():
