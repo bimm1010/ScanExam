@@ -119,7 +119,7 @@ def update_excel_score(excel_filename, sheet_name, student_id, score):
         return False
 
 def call_gemini_native(image_filename, excel_filename, subject, roster_json):
-    """🎯 GEMINI API: Sử dụng Google Generative AI SDK."""
+    """🎯 GEMINI API: Sử dụng Google GenAI SDK mới."""
     if not GEMINI_API_KEY:
         logger.error("❌ API Key is missing.")
         return {"status": "error", "msg": "API Key missing"}
@@ -141,10 +141,17 @@ def call_gemini_native(image_filename, excel_filename, subject, roster_json):
             f"Chỉ trả về JSON duy nhất: {{'studentId': '...', 'studentName': '...', 'score': '...', 'status': 'success'}}"
         )
 
-        model = genai.GenerativeModel('gemini-1.5-flash')
-        response = model.generate_content(
-            [prompt, {"mime_type": "image/jpeg", "data": image_bytes}],
-            generation_config={"response_mime_type": "application/json"}
+        client = genai.Client(api_key=GEMINI_API_KEY)
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=[
+                prompt,
+                types.Part.from_bytes(data=image_bytes, mime_type="image/jpeg")
+            ],
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                temperature=0.0
+            )
         )
 
         result_text = response.text.strip()
