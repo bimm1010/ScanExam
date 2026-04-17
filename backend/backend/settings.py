@@ -161,3 +161,11 @@ CORS_ALLOW_ALL_ORIGINS = DEBUG  # Only allow all during DEBUG
 if not CORS_ALLOW_ALL_ORIGINS:
     CORS_ALLOWED_ORIGINS = [o.strip() for o in os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:5173").split(",") if o.strip()]
     CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.getenv("CSRF_TRUSTED_ORIGINS", "http://localhost:5173").split(",") if o.strip()]
+
+# Multi-worker Cache (Shared across Gunicorn workers via mounted volume)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': BASE_DIR / 'media' / 'django_cache',
+    }
+}

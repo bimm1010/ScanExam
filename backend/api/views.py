@@ -16,26 +16,39 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from django.views.decorators.csrf import csrf_exempt
 import google.generativeai as genai
+from django.core.cache import cache
 from rapidfuzz import process, fuzz
 
 # Configure Logging
 logger = logging.getLogger(__name__)
 
-# Locks & Store
-_scan_store_lock = threading.Lock()
-_scan_store = {}
-
 # AI Processing Pool to prevent Rate Limit and Server Crash
 ai_executor = ThreadPoolExecutor(max_workers=5)
 
-# Session Context
-_current_session_config = {
-    "excel_filename": None,
-    "subject": None,
-    "roster_json": None,
-    "sheet_name": None,
-    "mapping": {}
-}
+def get_session_config():
+    return cache.get("global_session_config", {
+        "excel_filename": None,
+        "subject": None,
+        "roster_json": None,
+        "sheet_name": None,
+        "mapping": {}
+    })
+
+def set_session_config(config):
+    cache.set("global_session_config", config, timeout=86400)
+
+def add_to_scan_store(session_id, image_b64):
+    key = f"scan_store_{session_id}"
+    imgs = cache.get(key, [])
+    imgs.append(image_b64)
+    cache.set(key, imgs, timeout=86400)
+
+def pop_scan_store(session_id):
+    key = f"scan_store_{session_id}"
+    imgs = cache.get(key, [])
+    if imgs:
+        cache.delete(key)
+    return imgs
 
 # Load environment variables
 load_dotenv()
@@ -84,7 +97,8 @@ def update_excel_score(excel_filename, sheet_name, student_id, score):
 
         sheet = wb[sheet_name]
         # Tìm cột điểm dựa trên mapping lưu trong session
-        score_col_name = _current_session_config["mapping"].get("score")
+        config = get_session_config()
+        score_col_name = config.get("mapping", {}).get("score")
         if not score_col_name: return False
 
         # Tìm index của cột điểm
@@ -97,7 +111,7 @@ def update_excel_score(excel_filename, sheet_name, student_id, score):
         if not col_idx: return False
 
         # Tìm dòng của học sinh dựa trên student_id (giả định cột ID là cột đầu hoặc theo mapping)
-        id_col_name = _current_session_config["mapping"].get("id")
+        id_col_name = config.get("mapping", {}).get("id")
         id_col_idx = None
         for cell in sheet[1]:
             if cell.value == id_col_name:
@@ -185,9 +199,11 @@ def process_test_paper(request):
     roster_str = json.dumps(roster_data, ensure_ascii=False)
 
     # Sync session config
-    if excel_filename: _current_session_config["excel_filename"] = excel_filename
-    if subject: _current_session_config["subject"] = subject
-    if roster_str: _current_session_config["roster_json"] = roster_str
+    config = get_session_config()
+    if excel_filename: config["excel_filename"] = excel_filename
+    if subject: config["subject"] = subject
+    if roster_str: config["roster_json"] = roster_str
+    set_session_config(config)
 
     try:
         final_results = []
@@ -204,7 +220,7 @@ def process_test_paper(request):
             if res:
                 # Tự động ghi vào Excel nếu có thông tin
                 if res.get('studentId') and res.get('score'):
-                    update_excel_score(excel_filename, _current_session_config.get("sheet_name", ""), res['studentId'], res['score'])
+                    update_excel_score(excel_filename, config.get("sheet_name", ""), res['studentId'], res['score'])
 
                 res['image_url'] = f"/media/scanned_images/{img_name}"
                 final_results.append(res)
@@ -227,7 +243,9 @@ def upload_roster_excel(request):
             for chunk in file_obj.chunks(): f.write(chunk)
 
         # Update session config
-        _current_session_config["excel_filename"] = filename
+        config = get_session_config()
+        config["excel_filename"] = filename
+        set_session_config(config)
 
         # Kích hoạt xử lý lại các ảnh đang chờ (nếu có trong scan_store)
         # Ở đây ta có thể quét thư mục scanned_images để xử lý những ảnh chưa có điểm
@@ -250,7 +268,9 @@ def preview_excel(request):
         sheets = xl.sheet_names
 
         target_sheet = sheet_name if sheet_name in sheets else sheets[0]
-        _current_session_config["sheet_name"] = target_sheet # Save to session
+        config = get_session_config()
+        config["sheet_name"] = target_sheet # Save to session
+        set_session_config(config)
 
         df = pd.read_excel(file_path, sheet_name=target_sheet).fillna("")
 
@@ -282,7 +302,9 @@ def analyze_excel_columns(request):
             if any(x in c for x in ["tên", "họ", "name"]): mapping["name"] = df.columns[i]
             if any(x in c for x in ["điểm", "score", "grade"]): mapping["score"] = df.columns[i]
 
-        _current_session_config["mapping"] = mapping # Save to session
+        config = get_session_config()
+        config["mapping"] = mapping # Save to session
+        set_session_config(config)
         return Response({"success": True, "mapping": mapping, "columns": list(df.columns)})
     except Exception as e:
         return Response({"error": str(e)}, status=500)
@@ -312,9 +334,7 @@ def sync_roster(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def reset_system(request):
-    global _current_session_config
-    _current_session_config = {"excel_filename": None, "subject": None, "roster_json": None, "sheet_name": None, "mapping": {}}
-    with _scan_store_lock: _scan_store.clear()
+    set_session_config({"excel_filename": None, "subject": None, "roster_json": None, "sheet_name": None, "mapping": {}})
     return Response({"success": True})
 
 # --- WebSocket Helpers & Scan Endpoints ---
@@ -353,7 +373,7 @@ def background_ai_task(image_filename, config, session_id):
 def scan_upload(request, session_id):
     img_b64 = request.data.get('image_base64', '')
     if img_b64:
-        with _scan_store_lock: _scan_store.setdefault(session_id, []).append(img_b64)
+        add_to_scan_store(session_id, img_b64)
         raw_bytes = extract_base64_data(img_b64)
         if raw_bytes:
             filename = f"mobile_{session_id}_{datetime.datetime.now().strftime('%H%M%S_%f')}.jpg"
@@ -361,9 +381,10 @@ def scan_upload(request, session_id):
             save_path.parent.mkdir(parents=True, exist_ok=True)
             with open(save_path, 'wb') as f: f.write(raw_bytes)
 
-            if _current_session_config["excel_filename"]:
+            config = get_session_config()
+            if config.get("excel_filename"):
                 # Sử dụng ThreadPoolExecutor thay vì threading.Thread trực tiếp
-                ai_executor.submit(background_ai_task, filename, _current_session_config.copy(), session_id)
+                ai_executor.submit(background_ai_task, filename, config.copy(), session_id)
             else:
                 # Gửi thông báo cho User là ảnh đã lưu nhưng chưa có Excel để xử lý
                 send_ws_update(session_id, "ai_status", {"status": "pending", "msg": "⏳ Ảnh đã lưu, vui lòng upload file Excel để bắt đầu chấm điểm."})
@@ -373,7 +394,7 @@ def scan_upload(request, session_id):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def scan_poll(request, session_id):
-    with _scan_store_lock: imgs = _scan_store.pop(session_id, [])
+    imgs = pop_scan_store(session_id)
     return Response({"images": imgs, "count": len(imgs)})
 
 @api_view(['GET'])
