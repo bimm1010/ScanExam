@@ -9,8 +9,15 @@ interface ExcelPreviewModalProps {
   subject?: string;
 }
 
+interface PreviewState {
+  columns: string[];
+  rows: Record<string, any>[];
+  currentSheet: string;
+  sheets: string[];
+}
+
 export const ExcelPreviewModal = ({ isOpen, onClose, filename, subject }: ExcelPreviewModalProps) => {
-  const [data, setData] = useState<string[][]>([]);
+  const [preview, setPreview] = useState<PreviewState | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,11 +27,11 @@ export const ExcelPreviewModal = ({ isOpen, onClose, filename, subject }: ExcelP
     setLoading(true);
     setError(null);
     
-    // Construct URL
+    // Construct URL — backend reads 'sheet' query param, not 'subject'
     const url = new URL('/api/preview-excel/', window.location.origin);
     url.searchParams.append('filename', filename);
     if (subject) {
-      url.searchParams.append('subject', subject);
+      url.searchParams.append('sheet', subject);
     }
     url.searchParams.append('t', Date.now().toString()); // Prevent browser cache
     
@@ -33,8 +40,15 @@ export const ExcelPreviewModal = ({ isOpen, onClose, filename, subject }: ExcelP
       .then(resData => {
         if (resData.error) {
           setError(resData.error);
-        } else if (resData.previewData) {
-          setData(resData.previewData);
+        } else if (resData.previewData && resData.columns) {
+          setPreview({
+            columns: resData.columns,
+            rows: resData.previewData,
+            currentSheet: resData.currentSheet || '',
+            sheets: resData.sheets || []
+          });
+        } else {
+          setError('Phản hồi từ server không hợp lệ.');
         }
       })
       .catch(err => {
@@ -74,7 +88,7 @@ export const ExcelPreviewModal = ({ isOpen, onClose, filename, subject }: ExcelP
                 <div>
                   <h3 className="text-xl font-bold text-slate-900 tracking-tight">Dữ liệu Excel Hiện tại</h3>
                   <p className="text-sm text-slate-500 font-medium truncate max-w-[300px] md:max-w-md">
-                    {filename} {subject && `— Môn: ${subject}`}
+                    {filename} {preview?.currentSheet && `— Sheet: ${preview.currentSheet}`}
                   </p>
                 </div>
               </div>
@@ -101,7 +115,7 @@ export const ExcelPreviewModal = ({ isOpen, onClose, filename, subject }: ExcelP
                   <h4 className="text-lg font-bold text-slate-800 mb-2">Không thể xem trước</h4>
                   <p className="text-slate-500 text-sm max-w-md mx-auto">{error}</p>
                 </div>
-              ) : data.length === 0 ? (
+              ) : !preview || preview.rows.length === 0 ? (
                 <div className="p-10 text-center text-slate-500 flex-1">File Excel trống</div>
               ) : (
                 <div className="flex-1 overflow-auto rounded-2xl border border-slate-200 relative scrollbar-custom">
@@ -109,36 +123,36 @@ export const ExcelPreviewModal = ({ isOpen, onClose, filename, subject }: ExcelP
                     <thead className="bg-slate-50 text-slate-600 font-semibold sticky top-0 z-10 shadow-[0_1px_0_0_#e2e8f0]">
                       <tr>
                         <th className="px-4 py-3 bg-slate-50 border-r border-b border-slate-200 w-12 text-center text-slate-400 sticky left-0 z-20">#</th>
-                        {/* Headers extracted from the first row */}
-                        {Array.from({ length: Math.max(...data.map(r => r.length), 1) }).map((_, i) => (
+                        {preview.columns.map((col, i) => (
                           <th key={i} className="px-4 py-3 bg-slate-50 border-b border-r border-slate-200 last:border-r-0 min-w-[120px] font-bold">
-                            {data[0][i] || `Cột ${i + 1}`}
+                            {col}
                           </th>
                         ))}
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {data.slice(1).map((row, rowIdx) => (
+                      {preview.rows.map((row, rowIdx) => (
                         <tr key={rowIdx} className={rowIdx % 2 === 0 ? 'bg-white hover:bg-slate-50' : 'bg-slate-50/30 hover:bg-slate-50'}>
                           <td className="px-4 py-3 text-center text-slate-400 font-medium border-r border-slate-100 bg-white sticky left-0 shadow-[1px_0_0_0_#f1f5f9]">
-                            {rowIdx + 2}
+                            {rowIdx + 1}
                           </td>
-                          {Array.from({ length: Math.max(...data.map(r => r.length), 1) }).map((_, colIdx) => {
-                            const val = row[colIdx] || "";
+                          {preview.columns.map((col, colIdx) => {
+                            const val = row[col];
+                            const displayVal = val === null || val === undefined ? '' : String(val);
                             
                             // Style highlights for scores
-                            const isScore = !isNaN(parseFloat(val)) && parseFloat(val) <= 10 && val.includes(".");
+                            const numVal = parseFloat(displayVal);
+                            const isScore = !isNaN(numVal) && numVal >= 0 && numVal <= 10 && displayVal.trim() !== '';
                             let scoreClass = '';
-                            if (isScore) {
-                              const v = parseFloat(val);
-                               if (v >= 8.0) scoreClass = 'text-emerald-700 font-bold bg-emerald-50/50';
-                               else if (v < 5.0) scoreClass = 'text-rose-700 font-bold bg-rose-50/50';
-                               else scoreClass = 'text-blue-700 font-bold bg-blue-50/50';
+                            if (isScore && (col.toLowerCase().includes('điểm') || col.toLowerCase().includes('score'))) {
+                              if (numVal >= 8.0) scoreClass = 'text-emerald-700 font-bold bg-emerald-50/50';
+                              else if (numVal < 5.0) scoreClass = 'text-rose-700 font-bold bg-rose-50/50';
+                              else scoreClass = 'text-blue-700 font-bold bg-blue-50/50';
                             }
                             
                             return (
                               <td key={colIdx} className={`px-4 py-3 border-r border-slate-100 last:border-r-0 truncate max-w-[250px] ${scoreClass}`}>
-                                {val}
+                                {displayVal}
                               </td>
                             );
                           })}
@@ -151,8 +165,8 @@ export const ExcelPreviewModal = ({ isOpen, onClose, filename, subject }: ExcelP
             </div>
             
             <div className="bg-slate-50 p-4 rounded-b-[32px] border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium">
-              <span>Nguồn: <b>{filename}</b> {subject && `— Môn: ${subject}`}</span>
-              <span>* Độ dài sheet: {data.length} dòng</span>
+              <span>Nguồn: <b>{filename}</b> {preview?.currentSheet && `— Sheet: ${preview.currentSheet}`}</span>
+              <span>* Tổng: {preview?.rows.length || 0} học sinh</span>
             </div>
           </motion.div>
         </motion.div>
@@ -160,3 +174,4 @@ export const ExcelPreviewModal = ({ isOpen, onClose, filename, subject }: ExcelP
     </AnimatePresence>
   );
 };
+
