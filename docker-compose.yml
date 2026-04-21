@@ -39,6 +39,7 @@ services:
     restart: unless-stopped
 
   frontend:
+
     build:
       context: .
       dockerfile: frontend/Dockerfile

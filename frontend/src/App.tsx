@@ -292,9 +292,8 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           roster: students,
-          excel_filename: backendExcelFilename,
-          mapping_config: mappingConfig,
-          expected_subject: selectedSheetName
+          filename: backendExcelFilename,
+          sheet: selectedSheetName
         }),
       });
       

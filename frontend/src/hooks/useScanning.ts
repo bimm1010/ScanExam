@@ -25,6 +25,7 @@ export const useScanning = ({
   selectedSheetName,
   backendExcelFilename,
   mappingConfig,
+  students,
   setStudents,
   setProcessedFiles,
   setScannedImages,
@@ -95,6 +96,7 @@ export const useScanning = ({
   const backendExcelFilenameRef = useRef(backendExcelFilename);
   const mappingConfigRef = useRef(mappingConfig);
   const remarkRulesRef = useRef(remarkRules);
+  const studentsRef = useRef(students);
   const isProcessingRef = useRef(false);
 
   useEffect(() => {
@@ -102,7 +104,8 @@ export const useScanning = ({
     backendExcelFilenameRef.current = backendExcelFilename;
     mappingConfigRef.current = mappingConfig;
     remarkRulesRef.current = remarkRules;
-  }, [selectedSheetName, backendExcelFilename, mappingConfig, remarkRules]);
+    studentsRef.current = students;
+  }, [selectedSheetName, backendExcelFilename, mappingConfig, remarkRules, students]);
 
   useEffect(() => {
     return () => {
@@ -115,6 +118,15 @@ export const useScanning = ({
     console.log(`🚀 [AI Engine] Đang xử lý ảnh: ${file.name}`);
     try {
       const imageData = await compressImage(file, 1600, 1600, 0.75);
+      
+      // Bug #1 fix: Build real roster from current students for fuzzy matching
+      const currentStudents = studentsRef.current;
+      const rosterPayload = currentStudents.map(s => ({
+        id: String(s.id),
+        name: String(s.name)
+      }));
+      console.log(`📋 [AI Engine] Sending roster with ${rosterPayload.length} students for fuzzy matching`);
+
       const response = await fetch(`/api/process-test-paper/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -124,7 +136,7 @@ export const useScanning = ({
           excel_filename: backendExcelFilenameRef.current,
           mapping_config: mappingConfigRef.current,
           remark_rules: remarkRulesRef.current,
-          roster: []
+          roster: rosterPayload
         }),
       });
 
