@@ -602,35 +602,22 @@ def background_ai_task(image_filename, config, session_id):
     try:
         send_ws_update(session_id, "ai_status", {"status": "analyzing", "msg": "🔍 Đang quét bài bằng Local HTR..."})
         
-        # 1. Thử nhận diện bằng Local HTR trước
+        # 1. 100% Local HTR Pipeline (Không dùng Gemini nữa)
         image_path = (get_backend_root() / 'media' / 'scanned_images' / image_filename).absolute()
         img_cv = cv2.imread(str(image_path))
         
         htr_engine = HTREngine()
-        htr_res = htr_engine.predict_digit(img_cv)
+        extracted_data = htr_engine.extract_exam_info(img_cv)
         
-        res = None
+        res = {
+            "method": "local_paddleocr",
+            "score": extracted_data.get("score") if extracted_data else None,
+            "studentId": extracted_data.get("studentId") if extracted_data else None,
+            "studentName": extracted_data.get("studentName") if extracted_data else None,
+            "confidence": extracted_data.get("confidence") if extracted_data else 0.0
+        }
         
-        # Ngưỡng tin cậy 90% (0.9) để dùng score từ Local HTR
-        htr_score = None
-        if htr_res and htr_res.get('confidence', 0) > 0.9 and htr_res.get('value'):
-            htr_score = htr_res['value']
-            logger.info(f"✅ [HTR-SUCCESS] High confidence ({htr_res['confidence']}): {htr_score}")
-        else:
-            if htr_res and htr_res.get('value'):
-                logger.info(f"⚠️ [HTR-LOW-CONF] Confidence {htr_res['confidence']} for '{htr_res['value']}'. Will use Gemini score.")
-
-        # Luôn gọi Gemini để lấy studentId/Name (cho đến khi Plan 02 bổ sung nhận diện ID local)
-        send_ws_update(session_id, "ai_status", {"status": "analyzing", "msg": "🤖 Đang phân tích bài bằng Gemini API..."})
-        res = call_gemini_native(image_filename, config['excel_filename'], config['subject'], config['roster_json'])
-
-        if res:
-            res["method"] = "gemini"
-            # Nếu Local HTR đã đọc được score với confidence cao, ưu tiên dùng score đó
-            if htr_score:
-                logger.info(f"🔀 [HYBRID] Merging: HTR score='{htr_score}' overrides Gemini score='{res.get('score')}'")
-                res['score'] = htr_score
-                res['method'] = "hybrid_htr+gemini"
+        logger.info(f"✅ [LOCAL-HTR-SUCCESS] Extracted: {res}")
 
         if res:
             # 🎯 Thực hiện Fuzzy Matching để chuẩn hoá ID học sinh

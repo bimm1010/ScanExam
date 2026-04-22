@@ -19,5 +19,5 @@ opencv-python-headless
 shapely
 pyclipper
 scikit-image
-# paddleocr (Not supported on Python 3.14 yet, use ONNX fallback)
-# paddlepaddle (Not supported on Python 3.14 yet)
+paddlepaddle
+paddleocr

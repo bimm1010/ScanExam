@@ -95,20 +95,51 @@ def find_score_region(image_np):
         logger.error(f"❌ [PREPROCESSOR] find_score_region error: {str(e)}")
         return []
 
-def resize_for_model(image_np, target_size=(32, 128)):
-    """Resize ảnh về chuẩn đầu vào của model (thường là H=32, W=tùy biến)"""
-    if image_np is None: return None
-    h, w = image_np.shape[:2]
-    target_h, target_w = target_size
-    
-    scale = target_h / h
-    new_w = int(w * scale)
-    resized = cv2.resize(image_np, (new_w, target_h), interpolation=cv2.INTER_AREA)
-    
-    if new_w < target_w:
-        padding = np.zeros((target_h, target_w - new_w), dtype=np.uint8)
-        resized = np.hstack((resized, padding))
-    else:
-        resized = cv2.resize(resized, (target_w, target_h), interpolation=cv2.INTER_AREA)
+def auto_prepare_exam_for_ocr(image_np):
+    """
+    🎯 Pipeline tiền xử lý hoàn toàn mới (V5) dành riêng cho PaddleOCR.
+    1. Xoay ảnh về đúng hướng đọc (Portrait ngang -> Xoay 90 CCW).
+    2. Nhận diện vùng giấy (loại bỏ mặt bàn).
+    3. Cắt ra 2 vùng có khả năng chứa điểm và thông tin: Top (Header) và Bottom Left.
+    """
+    try:
+        if image_np is None: return None, {}
         
-    return resized
+        # 1. Xoay 90 độ ngược chiều kim đồng hồ (CCW) vì ảnh chụp từ app ngang máy
+        h, w = image_np.shape[:2]
+        if h > w:
+            rotated = cv2.rotate(image_np, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        else:
+            rotated = image_np.copy()
+            
+        rh, rw = rotated.shape[:2]
+        gray = cv2.cvtColor(rotated, cv2.COLOR_BGR2GRAY)
+        
+        # 2. Tìm vùng giấy trắng để loại bỏ nền bàn
+        _, mask = cv2.threshold(gray, 160, 255, cv2.THRESH_BINARY)
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (50, 50))
+        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+        
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        paper_rect = None
+        if contours:
+            largest = max(contours, key=cv2.contourArea)
+            rect = cv2.boundingRect(largest)
+            # Nếu vùng giấy lớn hơn 40% diện tích ảnh -> crop
+            if rect[2] * rect[3] > rh * rw * 0.4:
+                px, py, pw, ph = rect
+                rotated = rotated[py:py+ph, px:px+pw]
+                rh, rw = rotated.shape[:2]
+
+        # 3. Cắt các vùng quan tâm để tăng tốc độ OCR
+        regions = {
+            # Header: 35% phía trên (Chứa: Họ tên, Lớp, Trường, STT, Điểm dạng 1)
+            "header": rotated[0:int(rh*0.35), :],
+            # Bottom Left: 40% góc dưới trái (Chứa: Điểm dạng 2)
+            "bottom_left": rotated[int(rh*0.6):, 0:int(rw*0.4)]
+        }
+        
+        return rotated, regions
+    except Exception as e:
+        logger.error(f"❌ [PREPROCESSOR] auto_prepare error: {str(e)}")
+        return image_np, {"header": image_np}

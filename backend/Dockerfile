@@ -8,7 +8,7 @@ ENV PYTHONUNBUFFERED 1
 # Thiết lập thư mục làm việc
 WORKDIR /app
 
-# Cài đặt system dependencies cho Pillow, PostgreSQL, v.v.
+# Cài đặt system dependencies cho Pillow, PostgreSQL, OpenCV, và PaddleOCR
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
@@ -16,6 +16,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     zlib1g-dev \
     curl \
     gnupg \
+    libgomp1 \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
