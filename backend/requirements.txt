@@ -1,0 +1,23 @@
+django
+djangorestframework
+djangorestframework-simplejwt
+django-cors-headers
+channels
+daphne
+pandas
+openpyxl
+rapidfuzz
+python-dotenv
+google-genai
+redis
+gunicorn
+uvicorn
+psycopg2-binary
+requests
+onnxruntime
+opencv-python-headless
+shapely
+pyclipper
+scikit-image
+# paddleocr (Not supported on Python 3.14 yet, use ONNX fallback)
+# paddlepaddle (Not supported on Python 3.14 yet)

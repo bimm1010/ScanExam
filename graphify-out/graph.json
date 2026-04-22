@@ -1,0 +1,23 @@
+{
+  "nodes": [
+    {
+      "id": "scanexam-executor",
+      "type": "agent",
+      "community": 1,
+      "description": "GSD executor agent for ScanExam - executes PLAN.md with atomic commits"
+    },
+    {
+      "id": "scanexam-planner",
+      "type": "agent",
+      "community": 1,
+      "description": "GSD planner agent for ScanExam - creates executable phase plans"
+    },
+    {
+      "id": "scanexam-reviewer",
+      "type": "agent",
+      "community": 1,
+      "description": "GSD code reviewer agent - security, Vietnamese, API checks"
+    }
+  ],
+  "edges": []
+}
