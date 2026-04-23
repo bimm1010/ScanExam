@@ -8,7 +8,6 @@ pandas
 openpyxl
 rapidfuzz
 python-dotenv
-google-genai
 redis
 gunicorn
 uvicorn

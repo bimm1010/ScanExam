@@ -20,8 +20,6 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from django.views.decorators.csrf import csrf_exempt
-from google import genai
-from google.genai import types
 from django.core.cache import cache
 from rapidfuzz import process, fuzz
 from htr.engine import HTREngine
@@ -83,11 +81,6 @@ def pop_scan_store(session_id):
 
 # Load environment variables
 load_dotenv()
-
-# Kiểm tra Gemini API Key
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-if not GEMINI_API_KEY:
-    logger.warning("⚠️ GEMINI_API_KEY not found in environment variables!")
 
 def get_backend_root():
     return Path(__file__).resolve().parent.parent
@@ -284,57 +277,6 @@ def update_excel_score(excel_filename, sheet_name, student_id, score, id_col_idx
     excel_write_queue.put((_internal_save_score, (excel_filename, sheet_name, student_id, score, id_col_idx, score_col_idx, data_row_start), {}))
     return True
 
-def retry_ai_call(max_retries=3, delay=2):
-    """Decorator thực hiện thử lại cuộc gọi AI nếu thất bại."""
-    def decorator(func):
-        def wrapper(*args, **kwargs):
-            for i in range(max_retries):
-                try:
-                    res = func(*args, **kwargs)
-                    if res and res.get('status') == 'success':
-                        return res
-                    logger.warning(f"⚠️ [RETRY] {func.__name__} attempt {i+1} returned invalid data.")
-                except Exception as e:
-                    logger.warning(f"⚠️ [RETRY] {func.__name__} attempt {i+1} failed: {str(e)}")
-                
-                if i < max_retries - 1:
-                    time.sleep(delay * (2 ** i)) # Exponential backoff
-            return None
-        return wrapper
-    return decorator
-
-@retry_ai_call(max_retries=3)
-def call_gemini_native(image_filename, excel_filename, subject, roster_json):
-    """🎯 GEMINI API: Sử dụng Google GenAI SDK với Prompt tối ưu (Issue 6)."""
-    if not GEMINI_API_KEY:
-        return {"status": "error", "msg": "API Key missing"}
-
-    try:
-        image_path = (get_backend_root() / 'media' / 'scanned_images' / image_filename).absolute()
-        if not image_path.exists(): return None
-
-        with open(image_path, "rb") as f: image_bytes = f.read()
-
-        prompt = (
-            f"Nhiệm vụ: Chấm điểm bài thi môn {subject}. "
-            f"Phân tích ảnh và trích xuất: 1. Tên/ID học sinh, 2. Điểm số. "
-            f"Danh sách tham khảo: {roster_json}. "
-            f"CHỈ TRẢ VỀ JSON DUY NHẤT, KHÔNG CÓ TEXT THỪA, KHÔNG MARKDOWN. "
-            f"Format: {{\"studentId\": \"...\", \"studentName\": \"...\", \"score\": \"...\", \"status\": \"success\"}}"
-        )
-
-        client = genai.Client(api_key=GEMINI_API_KEY)
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=[prompt, types.Part.from_bytes(data=image_bytes, mime_type="image/jpeg")],
-            config=types.GenerateContentConfig(response_mime_type="application/json", temperature=0.0)
-        )
-
-        return json.loads(response.text.strip())
-    except Exception as e:
-        logger.error(f"⚠️ [GEMINI-API] Error: {str(e)}")
-        raise e
-
 # --- API ENDPOINTS ---
 
 @api_view(['GET'])
@@ -342,14 +284,14 @@ def call_gemini_native(image_filename, excel_filename, subject, roster_json):
 def health_check(request):
     return Response({
         "status": "healthy",
-        "mode": "Gemini API SDK + Pandas Core + OpenPyXL",
-        "api_key_configured": bool(GEMINI_API_KEY)
+        "mode": "Local HTR Engine (PaddleOCR + RapidFuzz)"
     })
 
 @api_view(['POST'])
 @csrf_exempt
 @permission_classes([AllowAny])
 def process_test_paper(request):
+    """🎯 Xử lý bài thi sử dụng Local HTR Engine (PaddleOCR) - Không dùng Gemini."""
     img_list = request.data.get('image_data_list', [])
     if not img_list and request.data.get('image_data'):
         img_list = [request.data.get('image_data')]
@@ -357,18 +299,15 @@ def process_test_paper(request):
     subject = request.data.get('expected_subject')
     excel_filename = secure_filename(request.data.get('excel_filename'))
     roster_data = request.data.get('roster', [])
-    roster_str = json.dumps(roster_data, ensure_ascii=False)
-    mapping_config = request.data.get('mapping_config')  # Frontend MappingConfig
+    mapping_config = request.data.get('mapping_config')
 
     # Sync session config
     config = get_session_config()
     if excel_filename: config["excel_filename"] = excel_filename
     if subject:
         config["subject"] = subject
-        config["sheet_name"] = subject  # Bug #3 fix: sync sheet_name
-    if roster_str: config["roster_json"] = roster_str
-    
-    # Bug #3 fix: sync mapping from frontend (column indices)
+        config["sheet_name"] = subject
+    if roster_data: config["roster_json"] = json.dumps(roster_data, ensure_ascii=False)
     if mapping_config:
         config["mapping"] = mapping_config
         logger.info(f"📊 [PROCESS-PAPER] Synced mapping_config: {mapping_config}")
@@ -380,49 +319,58 @@ def process_test_paper(request):
     data_row_start = mapping_config.get('dataRowStart', 2) if mapping_config else 2
     sheet_name = config.get("sheet_name", "")
 
-    logger.info(f"🚀 [PROCESS-PAPER] Processing {len(img_list)} images. excel={excel_filename}, sheet={sheet_name}, id_col={id_col_idx}, score_col={score_col_idx}")
+    logger.info(f"🚀 [PROCESS-PAPER] Processing {len(img_list)} images with Local HTR. excel={excel_filename}, sheet={sheet_name}")
 
     try:
+        htr_engine = HTREngine()
         final_results = []
+
         for img_b64 in img_list:
             raw_bytes = extract_base64_data(img_b64)
             if not raw_bytes: continue
 
+            # Save image
             img_name = f"scan_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S_%f')}.jpg"
             save_path = get_backend_root() / 'media' / 'scanned_images' / img_name
             save_path.parent.mkdir(parents=True, exist_ok=True)
             with open(save_path, 'wb') as f: f.write(raw_bytes)
 
-            res = call_gemini_native(img_name, excel_filename, subject, roster_str)
-            
-            if res:
-                # 🎯 Thực hiện Fuzzy Matching để chuẩn hoá ID học sinh
-                matched_id, matched_name, is_match, score = find_best_student_match(
-                    res.get('studentId'), res.get('studentName'), roster_data
+            # Process with Local HTR
+            img_cv = cv2.imread(str(save_path))
+            extracted_data = htr_engine.extract_exam_info(img_cv)
+
+            res = {
+                "method": "local_htr",
+                "studentId": extracted_data.get("studentId") if extracted_data else None,
+                "studentName": extracted_data.get("studentName") if extracted_data else None,
+                "score": extracted_data.get("score") if extracted_data else None,
+                "confidence": extracted_data.get("confidence") if extracted_data else 0.0
+            }
+
+            # Fuzzy matching với roster
+            matched_id, matched_name, is_match, fuzzy_score = find_best_student_match(
+                res.get('studentId'), res.get('studentName'), roster_data
+            )
+
+            if is_match:
+                res['studentId'] = matched_id
+                res['studentName'] = matched_name
+                res['isFuzzyMatch'] = True
+                res['fuzzyScore'] = fuzzy_score
+                logger.info(f"🎯 [PROCESS-PAPER] Fuzzy matched: '{matched_id}' (score={fuzzy_score})")
+            else:
+                res['isFuzzyMatch'] = False
+                res['fuzzyScore'] = fuzzy_score
+
+            # Ghi vào Excel
+            if res.get('studentId') and res.get('score'):
+                res['excelUpdated'] = update_excel_score(
+                    excel_filename, sheet_name, res['studentId'], res['score'],
+                    id_col_idx=id_col_idx, score_col_idx=score_col_idx, data_row_start=data_row_start
                 )
-                
-                if is_match:
-                    res['studentId'] = matched_id
-                    res['studentName'] = matched_name
-                    res['isFuzzyMatch'] = True
-                    res['fuzzyScore'] = score
-                    logger.info(f"🎯 [PROCESS-PAPER] Fuzzy matched: '{res.get('studentId')}' → '{matched_id}' (score={score})")
-                else:
-                    res['isFuzzyMatch'] = False
-                    res['fuzzyScore'] = score
-                    logger.warning(f"⚠️ [PROCESS-PAPER] No fuzzy match for ID='{res.get('studentId')}', Name='{res.get('studentName')}' (best_score={score})")
 
-                # Tự động ghi vào Excel nếu có thông tin (dùng ID đã được map chuẩn)
-                if res.get('studentId') and res.get('score'):
-                    res['excelUpdated'] = update_excel_score(
-                        excel_filename, sheet_name, res['studentId'], res['score'],
-                        id_col_idx=id_col_idx, score_col_idx=score_col_idx, data_row_start=data_row_start
-                    )
-                else:
-                    logger.warning(f"⚠️ [PROCESS-PAPER] Skipped Excel write: studentId={res.get('studentId')}, score={res.get('score')}")
-
-                res['image_url'] = f"/media/scanned_images/{img_name}"
-                final_results.append(res)
+            res['image_url'] = f"/media/scanned_images/{img_name}"
+            final_results.append(res)
 
         return Response(final_results)
     except Exception as e:
@@ -661,7 +609,7 @@ def background_ai_task(image_filename, config, session_id):
                 "image": f"/media/scanned_images/{image_filename}"
             })
         else:
-            logger.warning(f"⚠️ [BG-AI-TASK] Gemini returned None for {image_filename}")
+            logger.warning(f"⚠️ [BG-AI-TASK] No result returned for {image_filename}")
             send_ws_update(session_id, "ai_status", {"status": "error", "msg": "⚠️ AI không trả về kết quả."})
     except Exception as e:
         logger.error(f"💥 [BG-AI-TASK] Error: {str(e)}", exc_info=True)
@@ -700,7 +648,7 @@ def scan_poll(request, session_id):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def server_info(request):
-    return Response({"hostname": socket.gethostname(), "ai": "Gemini 1.5 Flash API + Pandas Core + OpenPyXL"})
+    return Response({"hostname": socket.gethostname(), "ai": "Local HTR Engine (PaddleOCR + RapidFuzz)"})
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
