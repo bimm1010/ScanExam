@@ -1,44 +1,51 @@
-# Sử dụng Python Image chính thức
-FROM python:3.11-slim
+# Stage 1: Builder - Install deps and build
+FROM python:3.11-slim-bookworm AS builder
 
-# Thiết lập biến môi trường
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-
-# Thiết lập thư mục làm việc
 WORKDIR /app
 
-# Cài đặt system dependencies cho Pillow, PostgreSQL, OpenCV, và PaddleOCR
+# Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
     libjpeg-dev \
     zlib1g-dev \
-    curl \
-    gnupg \
-    libgomp1 \
     libgl1 \
     libglib2.0-0 \
-    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Cài đặt Node.js 20 và Gemini CLI toàn cục (Ý tưởng từ Đại Ca!)
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs && \
-    npm install -g @google/gemini-cli
+# Install Python deps (no cache)
+COPY backend/requirements.txt .
+RUN pip install --no-cache-dir --user -r requirements.txt
 
-# Cấu hình môi trường cho Gemini CLI
-RUN mkdir -p /root/.gemini
+# Stage 2: Runtime - Minimal image
+FROM python:3.11-slim-bookworm
 
-# Cài đặt dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PATH=/root/.local/bin:$PATH
 
-# Copy mã nguồn dự án
+WORKDIR /app
+
+# Install only runtime dependencies (no build tools)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq5 \
+    libjpeg-turbo \
+    zlib1g \
+    libgl1 \
+    libglib2.0-0 \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy installed packages from builder
+COPY --from=builder /root/.local /root/.local
+COPY --from=builder /app /app
+
+# Copy project files
 COPY backend/ .
 
-# Expose port (Backend chạy trên 8000)
+# Create media directories
+RUN mkdir -p media/scanned_images media/rosters staticfiles
+
 EXPOSE 8000
 
-# Chạy Gunicorn thông qua config file
 CMD ["gunicorn", "-c", "gunicorn_config.py", "backend.wsgi:application"]
